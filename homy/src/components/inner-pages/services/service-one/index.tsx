@@ -6,7 +6,6 @@ import HomeBLockFeatureOne from "@/components/homes/home-one/BLockFeatureOne"
 import BlockFeatureTwo from "./BlockFeatureTwo"
 import Feedback from "@/components/homes/home-one/Feedback"
 import FancyBanner from "./FancyBanner"
-import BLockFeatureTwo from "@/components/homes/home-four/BLockFeatureTwo"
 import FancyBannerCommon from "@/components/common/FancyBanner"
 
 const ServiceOne = () => {
@@ -19,7 +18,6 @@ const ServiceOne = () => {
          <BlockFeatureTwo style={false} />
          <FancyBanner />
          <Feedback/>
-         <BLockFeatureTwo style={true} />
          <FancyBannerCommon />
          <FooterFour />
       </>

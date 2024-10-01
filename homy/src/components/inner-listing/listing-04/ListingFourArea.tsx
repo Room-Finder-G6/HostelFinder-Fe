@@ -60,7 +60,7 @@ const ListingFourArea = () => {
 
             <div className="listing-header-filter d-sm-flex justify-content-between align-items-center mb-40 lg-mb-30">
                <div>Showing <span className="color-dark fw-500">{itemOffset + 1}–{itemOffset + currentItems.length}</span> of <span
-                  className="color-dark fw-500">{sortedProperties.length}</span> results</div>
+                  className="color-dark fw-500">{sortedProperties.length}</span> results aa</div>
                <div className="d-flex align-items-center xs-mt-20">
                   <div className="short-filter d-flex align-items-center">
                      <div className="fs-16 me-2">Short by:</div>
