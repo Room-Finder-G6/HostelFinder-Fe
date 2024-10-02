@@ -1,12 +1,12 @@
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
-import AddPropertyBody from "./AddPropertyBody"
-const DashboardAddProperty = () => {
+import AddHostelBody from "./AddHostelBody"
+const DashboardAddHostel = () => {
    return (
       <>
          <DashboardHeaderOne />
-         <AddPropertyBody />
+         <AddHostelBody />
       </>
    )
 }
 
-export default DashboardAddProperty
+export default DashboardAddHostel

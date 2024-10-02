@@ -23,7 +23,7 @@ const HeaderOne = ({ style }: any) => {
                   <div className="d-flex align-items-center justify-content-between">
                   <div className="logo order-lg-0">
       <Link href="/" className="d-flex align-items-center">
-        <Image src="/assets/images/logo/logo_06.svg" alt="PhongTro24/7" width={50} height={50} />
+        <Image src="/assets/images/logo/logo_06.svg" alt=" PhongTro24/7" width={50} height={50} />
         <span className="logo-text" style={{ fontSize: '25px', color: 'black', marginRight: '10px' }}>PhongTro24/7</span>
       </Link>
     </div>
