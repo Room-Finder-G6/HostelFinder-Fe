@@ -8,28 +8,40 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Image from "next/image";
 
 import OpenEye from "@/assets/images/icon/icon_68.svg";
+import agent from "@/data/agent";
 
 interface FormData {
-   name: string;
+   userName: string;
    email: string;
    password: string;
+   phone: string;
 }
 
 const RegisterForm = () => {
 
    const schema = yup
       .object({
-         name: yup.string().required().label("Name"),
+         userName: yup.string().required().label("Name"),
          email: yup.string().required().email().label("Email"),
          password: yup.string().required().label("Password"),
+         phone: yup.string().required().label("Phone"),
       })
       .required();
 
-   const { register, handleSubmit, reset, formState: { errors }, } = useForm<FormData>({ resolver: yupResolver(schema), });
-   const onSubmit = (data: FormData) => {
-      const notify = () => toast('Registration successfully', { position: 'top-center' });
-      notify();
-      reset();
+   const { register, handleSubmit, reset, 
+      formState: { errors }, } = useForm<FormData>({ resolver: yupResolver(schema), });
+   
+   const onSubmit = async (data: FormData) => {
+      console.log("Form Data:", data); // Log form data
+      try {
+         const response = await agent.Auth.register(data);
+         console.log("API Response:", response); // Log API response
+         toast('Registration successfully', { position: 'top-center' });
+         reset();
+      } catch (error) {
+         console.error("API Error:", error); // Log any errors
+         toast.error('Registration failed', { position: 'top-center' });
+      }
    };
 
    const [isPasswordVisible, setPasswordVisibility] = useState(false);
@@ -43,9 +55,9 @@ const RegisterForm = () => {
          <div className="row">
             <div className="col-12">
                <div className="input-group-meta position-relative mb-25">
-                  <label>Name*</label>
-                  <input type="text" {...register("name")} placeholder="Zubayer Hasan" />
-                  <p className="form_error">{errors.name?.message}</p>
+                  <label>User Name*</label>
+                  <input type="text" {...register("userName")} placeholder="Zubayer Hasan" />
+                  <p className="form_error">{errors.userName?.message}</p>
                </div>
             </div>
             <div className="col-12">
@@ -61,6 +73,13 @@ const RegisterForm = () => {
                   <input type={isPasswordVisible ? "text" : "password"} {...register("password")} placeholder="Enter Password" className="pass_log_id" />
                   <span className="placeholder_icon"><span className={`passVicon ${isPasswordVisible ? "eye-slash" : ""}`}><Image onClick={togglePasswordVisibility} src={OpenEye} alt="" /></span></span>
                   <p className="form_error">{errors.password?.message}</p>
+               </div>
+            </div>
+            <div className="col-12">
+               <div className="input-group-meta position-relative mb-25">
+                  <label>Phone*</label>
+                  <input type="text" {...register("phone")} placeholder="Your phone number" />
+                  <p className="form_error">{errors.phone?.message}</p>
                </div>
             </div>
             <div className="col-12">

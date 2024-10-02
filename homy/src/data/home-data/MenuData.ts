@@ -41,7 +41,7 @@ const menu_data: MenuItem[] = [
                 id: 1,
                 mega_title: "Listing Type",
                 mega_menus: [
-                    { link: "/listing_01", title: "Grid Sidebar" },
+                    { link: "/listing_04", title: "Grid Sidebar" },
                     { link: "/listing_02", title: "Grid Top Filter" },
                     
                 ]
