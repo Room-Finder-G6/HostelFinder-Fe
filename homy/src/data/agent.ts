@@ -10,8 +10,18 @@ const Auth = {
     register: (data: any) => axios.post('api/v1/auth', data).then(responseBody),
 }
 
+const Room={
+    create: (data: any) => axios.post('api/room', data).then(responseBody),
+}
+
+const Amenity = {
+    list: () => axios.get('api/amenity/amenities').then(responseBody),
+}
+
 const agent = {
-    Auth
+    Auth,
+    Room,
+    Amenity,
 };
 
 export default agent;

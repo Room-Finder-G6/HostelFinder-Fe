@@ -1,4 +1,4 @@
-import DashboardAddProperty from "@/components/dashboard/add-property";
+import DashboardAddProperty from "@/components/dashboard/add-room";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
