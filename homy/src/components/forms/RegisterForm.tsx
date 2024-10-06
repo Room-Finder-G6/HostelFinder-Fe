@@ -9,6 +9,7 @@ import Image from "next/image";
 
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import agent from "@/data/agent";
+import apiInstance from "@/utils/apiInstance";
 
 interface FormData {
    userName: string;
@@ -32,15 +33,20 @@ const RegisterForm = () => {
       formState: { errors }, } = useForm<FormData>({ resolver: yupResolver(schema), });
    
    const onSubmit = async (data: FormData) => {
-      console.log("Form Data:", data); // Log form data
-      try {
-         const response = await agent.Auth.register(data);
-         console.log("API Response:", response); // Log API response
-         toast('Registration successfully', { position: 'top-center' });
+      try{
+         const response = await apiInstance.post("auth/register", data);
+         if(response.status === 200 && response.data.succeeded) {
+            const {message} = response.data;
+            toast.success(message || "Registration successfully", { position: 'top-center' });
+         }
          reset();
-      } catch (error) {
-         console.error("API Error:", error); // Log any errors
-         toast.error('Registration failed', { position: 'top-center' });
+      }catch(error : any) {
+         if(error.status === 400) {
+            toast.error(error.response.data.message,  {position: "top-center" });
+         }
+         else{
+         toast.error("Something went wrong. Please try again.", {position : 'top-center'});
+         }
       }
    };
 
