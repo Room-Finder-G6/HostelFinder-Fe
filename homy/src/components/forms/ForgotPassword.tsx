@@ -5,7 +5,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'react-toastify';
 
 
-
 interface FormData {
    name: string;
    email: string;

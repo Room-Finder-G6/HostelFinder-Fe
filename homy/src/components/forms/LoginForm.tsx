@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as yup from "yup";
+import axios, { AxiosError } from "axios";
 
 interface LoginFormProps {
   setShowForgotPassword: React.Dispatch<React.SetStateAction<boolean>>;
@@ -41,22 +42,30 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   } = useForm<FormData>({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+  try {
+    const res = await apiInstance.post("auth/login", data);
+    if (res.status === 200 && res.data.succeeded) {
+      const { message, data } = res.data;
+      // Lưu thông tin token và user vào localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-    const res = await apiInstance.post("v1/auth/login", data).then((res) => {
-      if (res.status === 200) {
-        localStorage.setItem("token", res.data.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.data.user));
-      }
-      if (res.status === 400) {
-        toast("Login failed", { position: "top-center" });
-      }
-    });
-    const notify = () =>
-      toast("Login successfully", { position: "top-center" });
-    notify();
-    reset();
-  };
+      // Hiển thị toast với thông điệp thành công từ API
+      toast.success(message, { position: "top-center" });
+    } 
+  } catch (error: any) {
+    // Hiển thị lỗi nếu có lỗi xảy ra khi gọi API
+    console.log(error.status);
+    if(error.status == 400) {
+      toast.error(error.response.data.message, { position: "top-center" });
+    }
+    else {
+      toast.error("Something went wrong!", { position: "top-center" });
+    }
+  }
+  
+  reset(); // Reset lại form sau khi xử lý
+};
 
   return ( 
     <div>
