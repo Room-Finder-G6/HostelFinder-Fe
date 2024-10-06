@@ -1,15 +1,13 @@
 "use client";
 import OpenEye from "@/assets/images/icon/icon_68.svg";
-// import apiInstance from "@/utils/apiInstance";
 import apiInstance from "../../utils/apiInstance";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import * as yup from "yup";
-import axios, { AxiosError } from "axios";
 
 interface LoginFormProps {
   setShowForgotPassword: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,6 +20,9 @@ interface FormData {
 
 const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
+  
+
+  
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
@@ -37,37 +38,36 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors },
   } = useForm<FormData>({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
-  try {
-    const res = await apiInstance.post("auth/login", data);
-    if (res.status === 200 && res.data.succeeded) {
-      const { message, data } = res.data;
-      // Lưu thông tin token và user vào localStorage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Hiển thị toast với thông điệp thành công từ API
-      toast.success(message, { position: "top-center" });
-    } 
-  } catch (error: any) {
-    // Hiển thị lỗi nếu có lỗi xảy ra khi gọi API
-    console.log(error.status);
-    if(error.status == 400) {
-      toast.error(error.response.data.message, { position: "top-center" });
+    try {
+      const res = await apiInstance.post("auth/login", data);
+      if (res.status === 200 && res.data.succeeded) {
+        const { message, data } = res.data;
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success(message, { position: "top-center" });
+        //redirec to / 
+        console.log(res.data.data); 
+        if(res.data.data.role === "User"){
+          window.location.href = "/";
+        }
+        if(res.data.data.role === "Admin"){
+          window.location.href= "/dashboard/dashboard-index";
+        }
+      }
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data.message, { position: "top-center" });
+      } else {
+        toast.error("Something went wrong!", { position: "top-center" });
+      }
     }
-    else {
-      toast.error("Something went wrong!", { position: "top-center" });
-    }
-  }
-  
-  reset(); // Reset lại form sau khi xử lý
-};
+  };
 
-  return ( 
+  return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="row">
