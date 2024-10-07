@@ -30,7 +30,7 @@ const HeaderOne = ({style}: any) => {
                                         fontSize: '25px',
                                         color: 'black',
                                         marginRight: '10px'
-                                    }}>PhongTro24/7</span>
+                                    }}><strong>&nbsp;PhongTro24/7</strong></span>
                                 </Link>
                             </div>
 
