@@ -34,11 +34,16 @@ const RegisterForm = () => {
    const onSubmit = async (data: FormData) => {
       try{
          const response = await apiInstance.post("auth/register", data);
+         console.log(response);
          if(response.status === 200 && response.data.succeeded) {
             const {message} = response.data;
             toast.success(message || "Registration successfully", { position: 'top-center' });
          }
          reset();
+         if(response.data.data.role === "1") {
+            window.location.href = "/";
+         }
+         console.log(response.data.data.role);
       }catch(error : any) {
          if(error.status === 400) {
             toast.error(error.response.data.message,  {position: "top-center" });
