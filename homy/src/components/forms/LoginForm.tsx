@@ -45,8 +45,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
             <div className="row">
                <div className="col-12">
                   <div className="input-group-meta position-relative mb-25">
-                     <label>Email*</label>
-                     <input type="email" {...register("email")} placeholder="Youremail@gmail.com" />
+                     <label>UserName*</label>
+                     <input type="email" {...register("email")} placeholder="Enter your username" />
                      <p className="form_error">{errors.email?.message}</p>
                   </div>
                </div>
