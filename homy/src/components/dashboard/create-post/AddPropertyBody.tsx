@@ -8,6 +8,7 @@ import AddressAndLocation from "../profile/AddressAndLocation";
 import agent from "@/data/agent";
 import {date} from "yup";
 import apiInstance from "@/utils/apiInstance";
+import {toast} from "react-toastify";
 
 export interface RoomData {
     hostelId: string;
@@ -80,13 +81,13 @@ const AddPropertyBody: React.FC = () => {
     
     const handleSubmit = async () => {
         try {
-            console.log("Room data before submit:", roomData);
             const response = await apiInstance.post("rooms", roomData);
-            console.log("Room posted successfully:", response);
+            toast.success("Tạo bài đăng thành công", { position: "top-center" });
         } catch (error: any) {
-            console.error("Error posting room:", error);
-            if (error.response) {
-                console.error("Response data:", error.response.data);
+            if(error.response && error.response.status === 400) {
+                toast.error(error.response.data.message, {position: "top-center"});
+            }else {
+                toast.error("Có lỗi xảy ra", {position: "top-center"});
             }
         }
     };
