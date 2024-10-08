@@ -1,6 +1,6 @@
 "use client"
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo"
-import Overview from "./Overview"
+import AddHostelForm from "./AddHostelForm"
 import Link from "next/link"
 
 const AddHostelBody = () => {
@@ -9,8 +9,8 @@ const AddHostelBody = () => {
          <div className="position-relative">
             <DashboardHeaderTwo title="Add New Property" />
             <h2 className="main-title d-block d-lg-none">Add New Hostel</h2>
-            <Overview />
-            <div className="bg-white card-box border-20 mt-40">
+            <AddHostelForm />
+            {/* <div className="bg-white card-box border-20 mt-40">
                <h4 className="dash-title-three">Photo & Video Attachment</h4>
                <div className="dash-input-wrapper mb-20">
                   <label htmlFor="">File Attachment*</label>
@@ -30,13 +30,13 @@ const AddHostelBody = () => {
                   <input type="file" id="uploadCV" name="uploadCV" placeholder="" />
                </div>
                <small>Upload file .jpg, .png, .mp4</small>
-            </div>
+            </div> */}
             
 
-            <div className="button-group d-inline-flex align-items-center mt-30">
+            {/* <div className="button-group d-inline-flex align-items-center mt-30">
                <Link href="#" className="dash-btn-two tran3s me-3">Submit Property</Link>
                <Link href="#" className="dash-cancel-btn tran3s">Cancel</Link>
-            </div>
+            </div> */}
          </div>
       </div>
    )
