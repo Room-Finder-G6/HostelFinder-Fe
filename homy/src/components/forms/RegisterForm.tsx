@@ -6,9 +6,10 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import Image from "next/image";
-import apiInstance from "@/utils/apiInstance";
+
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import agent from "@/data/agent";
+import apiInstance from "@/utils/apiInstance";
 
 interface FormData {
    userName: string;
