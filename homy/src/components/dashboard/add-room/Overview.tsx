@@ -86,11 +86,9 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                         <NiceSelect
                             className="nice-select"
                             options={[
-                                { value: "1", text: "Apartments" },
-                                { value: "2", text: "Condos" },
-                                { value: "3", text: "Houses" },
-                                { value: "4", text: "Industrial" },
-                                { value: "5", text: "Villas" },
+                                { value: "1", text: "Phòng Trọ" },
+                                { value: "2", text: "Chung Cư" },
+                                { value: "3", text: "Chung Cư Mini" },
                             ]}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange('roomType', e)}
@@ -103,7 +101,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                 {/* Monthly Rent Cost */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="monthlyRentCost">Monthly Rent Cost*</label>
+                        <label htmlFor="monthlyRentCost">Monthly Rent Cost (VND)*</label>
                         <input
                             type="number"
                             name="monthlyRentCost"
@@ -120,7 +118,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                         <input
                             type="number"
                             name="size"
-                            placeholder="Size (sqm)"
+                            placeholder="Size (m²)"
                             onChange={handleInputChange}
                         />
                     </div>

@@ -13,7 +13,14 @@ const CommonBanner = ({ title,monthlyRentCost,style_3 }: any) => {
          </div>
          <div className="col-lg-6 text-lg-end">
             <div className="d-inline-block md-mt-40">
-               <div className="price color-dark fw-500">Price: ${monthlyRentCost}/month</div>
+               <div className="price color-dark fw-500">
+                  Price: {monthlyRentCost.toLocaleString('vi-VN', {
+                  style: 'currency',
+                  currency: 'VND',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2
+               })}/month
+               </div>
                <ul className="style-none d-flex align-items-center action-btns">
                   <li className="me-auto fw-500 color-dark"><i className="fa-sharp fa-regular fa-share-nodes me-2"></i>
                      Share</li>

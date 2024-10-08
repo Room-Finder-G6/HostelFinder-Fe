@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import agent from "@/data/agent";
+import apiInstance from "@/utils/apiInstance";
 
 interface AmenityResponse {
     id: string;
@@ -17,8 +18,8 @@ const SelectAmenities: React.FC<SelectAmenitiesProps> = ({ onDataChange }) => {
     useEffect(() => {
         const fetchAmenities = async () => {
             try {
-                const data = await agent.Amenity.list();
-                setAmenities(data);
+                const response = await apiInstance.get("amenity/amenities");
+                setAmenities(response.data);
             } catch (error) {
                 console.error("Error fetching amenities:", error);
             }

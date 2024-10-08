@@ -49,10 +49,6 @@ interface RoomDetails {
     }[];
 }
 
-interface props {
-    roomId: string;
-}
-
 const ListingDetailsOneArea = () => {
     const { roomId } = useParams();
     
@@ -88,28 +84,31 @@ const ListingDetailsOneArea = () => {
                 <MediaGallery/>
                 <div className="property-feature-list bg-white shadow4 border-20 p-40 mt-50 mb-60">
                     <h4 className="sub-title-one mb-40 lg-mb-20">Property Overview</h4>
-                    <CommonPropertyOverview size={room?.size} roomType={room?.roomType}/>
+                    <CommonPropertyOverview size={room?.size ?? 0} 
+                                            roomType={room?.roomType ?? 0}
+                    bedRooms={room?.roomDetailsDto.bedRooms ?? 0}
+                    />
                 </div>
                 <div className="row">
                     <div className="col-xl-8">
                         <div className="property-overview mb-50 bg-white shadow4 border-20 p-40">
                             <h4 className="mb-20">Overview</h4>
-                            <p className="fs-20 lh-lg">Lorem ipsum dolor sit amet consectetur. Et velit varius ipsum
-                                tempor vel
-                                dignissim tincidunt. Aliquam accumsan laoreet ultricies tincidunt faucibus fames augue
-                                in
-                                sociis. Nisl enim integer neque nec.</p>
+                            <p className="fs-20 lh-lg">{room?.description}.</p>
                         </div>
                         <div className="property-feature-accordion bg-white shadow4 border-20 p-40 mb-50">
                             <h4 className="mb-20">Property Features</h4>
-                            <p className="fs-20 lh-lg">Risk management and compliance, when approached strategically,
-                                have the potential to go beyond mitigating threats.</p>
                             <div className="accordion-style-two mt-45">
-                                <CommonPropertyFeatureList/>
+                                <CommonPropertyFeatureList
+                                    bedRooms={room?.roomDetailsDto.bedRooms ?? 0}
+                                    bathRooms={room?.roomDetailsDto.bathRooms ?? 0}
+                                    kitchen={room?.roomDetailsDto.kitchen ?? 0}
+                                    size={room?.roomDetailsDto.size ?? 0}
+                                    status={room?.roomDetailsDto.status ?? false}
+                                />
                             </div>
                         </div>
                         <div className="property-amenities bg-white shadow4 border-20 p-40 mb-50">
-                            <CommonAmenities/>
+                            <CommonAmenities amenities={room?.amenityResponses ?? []} />
                         </div>
                         <div className="property-video-tour mb-50">
                             <CommonPropertyVideoTour/>

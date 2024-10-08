@@ -7,6 +7,7 @@ import SelectAmenities from "./SelectAmenities";
 import AddressAndLocation from "../profile/AddressAndLocation";
 import agent from "@/data/agent";
 import {date} from "yup";
+import apiInstance from "@/utils/apiInstance";
 
 export interface RoomData {
     hostelId: string;
@@ -80,7 +81,7 @@ const AddPropertyBody: React.FC = () => {
     const handleSubmit = async () => {
         try {
             console.log("Room data before submit:", roomData);
-            const response = await agent.Room.create(roomData);
+            const response = await apiInstance.post("rooms", roomData);
             console.log("Room posted successfully:", response);
         } catch (error: any) {
             console.error("Error posting room:", error);
