@@ -7,14 +7,14 @@ import Image from "next/image";
 import AddHostelForm from "../add-hostel/AddHostelForm"; // Import your AddHostelForm component
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 
-const PropertyListBody = () => {
+const HostelManagement = () => {
    const selectHandler = (e: any) => { };
 
    return (
       <div className="dashboard-body">
          <div className="position-relative">
             <DashboardHeaderTwo title="My Properties" />
-            <h2 className="main-title d-block d-lg-none">List</h2>
+            <h2 className="main-title d-block d-lg-none">My Properties</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                <div className="fs-16">Showing <span className="color-dark fw-500">1–5</span> of <span
                   className="color-dark fw-500">40</span> results</div>
@@ -74,4 +74,4 @@ const PropertyListBody = () => {
    )
 }
 
-export default PropertyListBody;
+export default HostelManagement;
