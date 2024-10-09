@@ -21,10 +21,12 @@ import dashboardIcon_7 from "@/assets/images/dashboard/icon/icon_7.svg";
 import dashboardIconActive_8 from "@/assets/images/dashboard/icon/icon_8_active.svg";
 import dashboardIcon_8 from "@/assets/images/dashboard/icon/icon_8.svg";
 import dashboardIconActive_9 from "@/assets/images/dashboard/icon/icon_9_active.svg";
-import dashboardIcon_9 from "@/assets/images/dashboard/icon/icon_9.svg";
+import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
 import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_active.svg";
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
-import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_41.svg";
+import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
+
+
 
 const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    const pathname = usePathname();

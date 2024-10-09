@@ -5,7 +5,11 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 interface CustomJwtPayload  {
+<<<<<<< HEAD
+  // landlordId : string;
+=======
   landlordId : string;
+>>>>>>> 01f96cc83d59399076b8de078abb323531c4285b
   UserId : string;
 }
 
