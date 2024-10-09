@@ -6,9 +6,10 @@ import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import Image from "next/image";
-import apiInstance from "@/utils/apiInstance";
+
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import agent from "@/data/agent";
+import apiInstance from "@/utils/apiInstance";
 
 interface FormData {
    userName: string;
@@ -34,11 +35,16 @@ const RegisterForm = () => {
    const onSubmit = async (data: FormData) => {
       try{
          const response = await apiInstance.post("auth/register", data);
+         console.log(response);
          if(response.status === 200 && response.data.succeeded) {
             const {message} = response.data;
             toast.success(message || "Registration successfully", { position: 'top-center' });
          }
          reset();
+         if(response.data.data.role === "1") {
+            window.location.href = "/";
+         }
+         console.log(response.data.data.role);
       }catch(error : any) {
          if(error.status === 400) {
             toast.error(error.response.data.message,  {position: "top-center" });
