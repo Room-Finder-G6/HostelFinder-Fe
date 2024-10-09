@@ -68,8 +68,9 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   <li><div className="nav-title">Listing</div></li>
                   <li className="plr"><Link href="/dashboard/properties-list" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/properties-list' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
-                     <span>My Properties</span>
+                     <span>List Room</span>
                   </Link></li>
+<<<<<<< HEAD
                   <li className="plr"><Link href="/dashboard/add-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/add-hostel' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/add-hostel' ? dashboardIconActive_7 : dashboardIcon_9} alt="" />
                      <span>Add Hostel</span>
@@ -77,6 +78,15 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                   <li className="plr"><Link href="/dashboard/add-property" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/add-property' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/add-property' ? dashboardIconActive_7 : dashboardIcon_11} alt="" />
                      <span>Add New Room</span>
+=======
+                  <li className="plr"><Link href="/dashboard/manager-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manager-hostel' ? 'active' : ''}`}>
+                     <Image src={pathname === '/dashboard/add-manager' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <span>Manager Hostel</span>
+                  </Link></li>
+                  <li className="plr"><Link href="/dashboard/create-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/create-post' ? 'active' : ''}`}>
+                     <Image src={pathname === '/dashboard/create-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <span>Create post</span>
+>>>>>>> 01f96cc83d59399076b8de078abb323531c4285b
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/favourites' ? dashboardIconActive_8 : dashboardIcon_8} alt="" />
