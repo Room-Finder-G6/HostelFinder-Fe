@@ -33,21 +33,14 @@ const RegisterForm = () => {
    const onSubmit = async (data: FormData) => {
       try {
          const response = await apiInstance.post("auth/register", data);
-<<<<<<< HEAD
          if (response.status === 200 && response.data.succeeded) {
             const { message } = response.data;
-=======
-         console.log(response);
-         if(response.status === 200 && response.data.succeeded) {
-            const {message} = response.data;
->>>>>>> 01f96cc83d59399076b8de078abb323531c4285b
             toast.success(message || "Registration successfully", { position: 'top-center' });
             reset();
             if (response.data.data.role === "1") {
                window.location.href = "/";
             }
          }
-<<<<<<< HEAD
       } catch (error: any) {
          if (error.response && error.response.status === 400) {
             const errors = error.response.data.errors;
@@ -55,19 +48,6 @@ const RegisterForm = () => {
             toast.error(errorsMessage, { position: "top-center" });
          } else {
             toast.error("Something went wrong. Please try again.", { position: 'top-center' });
-=======
-         reset();
-         if(response.data.data.role === "1") {
-            window.location.href = "/";
-         }
-         console.log(response.data.data.role);
-      }catch(error : any) {
-         if(error.status === 400) {
-            toast.error(error.response.data.message,  {position: "top-center" });
-         }
-         else{
-         toast.error("Something went wrong. Please try again.", {position : 'top-center'});
->>>>>>> 01f96cc83d59399076b8de078abb323531c4285b
          }
       }
    };
