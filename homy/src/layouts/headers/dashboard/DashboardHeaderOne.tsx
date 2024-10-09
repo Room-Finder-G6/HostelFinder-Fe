@@ -21,10 +21,12 @@ import dashboardIcon_7 from "@/assets/images/dashboard/icon/icon_7.svg";
 import dashboardIconActive_8 from "@/assets/images/dashboard/icon/icon_8_active.svg";
 import dashboardIcon_8 from "@/assets/images/dashboard/icon/icon_8.svg";
 import dashboardIconActive_9 from "@/assets/images/dashboard/icon/icon_9_active.svg";
-import dashboardIcon_9 from "@/assets/images/dashboard/icon/icon_9.svg";
+import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
 import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_active.svg";
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
-import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_41.svg";
+import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
+
+
 
 const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    const pathname = usePathname();
@@ -69,11 +71,11 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                      <span>My Properties</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/add-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/add-hostel' ? 'active' : ''}`}>
-                     <Image src={pathname === '/dashboard/add-hostel' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <Image src={pathname === '/dashboard/add-hostel' ? dashboardIconActive_7 : dashboardIcon_9} alt="" />
                      <span>Add Hostel</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/add-property" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/add-property' ? 'active' : ''}`}>
-                     <Image src={pathname === '/dashboard/add-property' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <Image src={pathname === '/dashboard/add-property' ? dashboardIconActive_7 : dashboardIcon_11} alt="" />
                      <span>Add New Room</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
