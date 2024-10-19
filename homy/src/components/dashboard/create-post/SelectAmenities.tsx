@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import agent from "@/data/agent";
 import apiInstance from "@/utils/apiInstance";
 
 interface AmenityResponse {
