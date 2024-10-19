@@ -1,7 +1,8 @@
 ﻿import React, { useEffect, useRef, useState } from 'react';
 
 interface GoongMapProps {
-    selectedLocation?: [number, number];
+    selectedLocation: [number, number];
+    onCoordinatesChange: (coordinates: string) => void;
 }
 
 declare global {
@@ -11,10 +12,11 @@ declare global {
     }
 }
 
-const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation }) => {
+const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChange }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const [map, setMap] = useState<any>(null);
     const [marker, setMarker] = useState<any>(null);
+    const [coordinates, setCoordinates] = useState<string>('105.83991,21.02800');
 
     useEffect(() => {
         if (typeof window !== 'undefined' && !window.goongjs) {
@@ -43,23 +45,28 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation }) => {
     }, []);
 
     useEffect(() => {
-        if (map && marker && selectedLocation) {
+        if (map && marker) {
             const [lng, lat] = selectedLocation;
             if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                // Di chuyển marker tới vị trí mới
-                marker.setLngLat(selectedLocation);
-                // Di chuyển bản đồ tới vị trí mới
-                map.flyTo({ center: selectedLocation });
+                // Kiểm tra xem tọa độ có thay đổi không trước khi cập nhật
+                if (coordinates !== `${lng},${lat}`) {
+                    marker.setLngLat(selectedLocation);
+                    map.flyTo({ center: selectedLocation });
+
+                    const newCoordinates = `${lng},${lat}`;
+                    setCoordinates(newCoordinates);
+                    onCoordinatesChange(newCoordinates);
+                }
             } else {
                 console.error('Invalid LngLat values:', selectedLocation);
             }
         }
-    }, [map, marker, selectedLocation]);
+    }, [map, marker, selectedLocation]); // Chỉ phụ thuộc vào map, marker và selectedLocation
 
     const initMap = () => {
         if (mapContainerRef.current && window.goongjs) {
             window.goongjs.accessToken = process.env.NEXT_PUBLIC_GOONG_MAPTILES_KEY;
-            const initialCenter = selectedLocation || [105.83991, 21.02800]; // [longitude, latitude]
+            const initialCenter = selectedLocation;
             const newMap = new window.goongjs.Map({
                 container: mapContainerRef.current,
                 style: 'https://tiles.goong.io/assets/goong_map_web.json',
@@ -67,23 +74,32 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation }) => {
                 zoom: 12
             });
 
-            // Tạo marker chỉ một lần khi bản đồ được khởi tạo
             const newMarker = new window.goongjs.Marker()
                 .setLngLat(initialCenter)
                 .addTo(newMap);
 
-            setMarker(newMarker); // Lưu marker vào state
-            setMap(newMap); // Lưu bản đồ vào state
+            setMarker(newMarker);
+            setMap(newMap);
 
-            // Lắng nghe sự kiện di chuyển bản đồ
             newMap.on('moveend', () => {
                 const center = newMap.getCenter();
-                newMarker.setLngLat([center.lng, center.lat]); // Di chuyển marker theo bản đồ
+                const newCoordinates = `${center.lng},${center.lat}`;
+                newMarker.setLngLat([center.lng, center.lat]);
+
+                // Chỉ cập nhật nếu tọa độ thay đổi
+                if (coordinates !== newCoordinates) {
+                    setCoordinates(newCoordinates);
+                    onCoordinatesChange(newCoordinates);
+                }
             });
         }
     };
 
-    return <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }} />;
+    return (
+        <div>
+            <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }} />
+        </div>
+    );
 };
 
 export default GoongMap;

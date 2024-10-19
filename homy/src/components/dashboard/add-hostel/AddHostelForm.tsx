@@ -5,8 +5,6 @@ import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
 import {jwtDecode} from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
-import {placeService} from "@/services/placeService";
-import { debounce } from 'lodash';
 
 interface CustomJwtPayload {
     landlordId: string;
@@ -33,14 +31,18 @@ interface Location {
     id: string;
     name: string;
 }
+
 const AddHostelForm: React.FC = () => {
     const [provinces, setProvinces] = useState<{ value: number; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: number; text: string }[]>([]);
     const [communes, setCommunes] = useState<{ value: number; text: string }[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [locations, setLocations] = useState<Location[]>([]); // Danh sách kết quả tìm kiếm
-    const [selectedLocation, setSelectedLocation] = useState<[number, number] | undefined>(undefined);
-    
+    const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
+
+    const handleCoordinatesChange = (newCoordinates: string) => {
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number]; // Chuyển đổi chuỗi thành tuple
+        setCoordinates([lng, lat]);
+    };
+
     const [formData, setFormData] = useState<FormData>({
         landlordId: "",
         hostelName: "",
@@ -135,7 +137,7 @@ const AddHostelForm: React.FC = () => {
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const provinceCode = parseInt(e.target.value);
         const province = provinces.find((p) => p.value === provinceCode);
-        
+
         setSelectedProvince(provinceCode);
         setFormData({
             ...formData,
@@ -195,34 +197,6 @@ const AddHostelForm: React.FC = () => {
         }
     };
 
-    const handleSearch = debounce(async (query: string) => {
-        if (query) {
-            try {
-                const data = await placeService.autocomplete(query);
-                setLocations(data.predictions.map((pred: any) => ({
-                    id: pred.place_id,
-                    name: pred.description,
-                    coordinates: [0, 0] // We'll fetch these when a location is selected
-                })));
-            } catch (error) {
-                console.error('Error fetching locations:', error);
-                setLocations([]);
-            }
-        } else {
-            setLocations([]);
-        }
-    }, 300); 
-
-    const handleLocationSelect = async (placeId: string) => {
-        try {
-            const details = await placeService.getPlaceDetails(placeId);
-            const { lat, lng } = details.result.geometry.location; // Giả sử response có cấu trúc như vậy
-            setSelectedLocation([lat, lng]); // Cập nhật vị trí được chọn
-        } catch (error) {
-            console.error("Error fetching place details:", error);
-        }
-    };
-    
     return (
         <form onSubmit={handleSubmit}>
             <div className="bg-white card-box border-20">
@@ -336,30 +310,19 @@ const AddHostelForm: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="dash-input-wrapper">
-                        <label htmlFor="">Search Location*</label>
-                        <div className="position-relative">
+                    <div className="map-frame mb-10">
+                        <div className="dash-input-wrapper mb-10">
+                            <label htmlFor="">Tọa độ*</label>
                             <input
+                                className={'w-25'}
                                 type="text"
-                                placeholder="Search for a place..."
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    setSearchQuery(e.target.value);
-                                    handleSearch(e.target.value);
-                                }}
+                                readOnly
+                                name="detailAddress"
+                                value={coordinates.join(', ')}
+                                onChange={handleInputChange}
                             />
-                            <ul>
-                                {locations.map((location) => (
-                                    <li key={location.id} onClick={() => handleLocationSelect(location.id)}>
-                                        {location.name}
-                                    </li>
-                                ))}
-                            </ul>
                         </div>
-                    </div>
-
-                    <div className="map-frame mt-30 mb-10">
-                        <GoongMap  />
+                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
                     </div>
 
                 </div>
