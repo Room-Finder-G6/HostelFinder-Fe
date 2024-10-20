@@ -1,27 +1,26 @@
 "use client"
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Overview from "./Overview";
 import ListingDetails from "./ListingDetails";
 import SelectAmenities from "./SelectAmenities";
 import AddressAndLocation from "../profile/AddressAndLocation";
-import agent from "@/data/agent";
-import {date} from "yup";
 import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
+import UploadImage from "@/components/UploadImage";
 
 export interface RoomData {
     hostelId: string;
     title: string;
     description: string;
-    primaryImageUrl: string;
+    primaryImage: File | null;
     roomType: number;
-    imagesUrls: string[];
+    images: File[];
     size: number;
     monthlyRentCost: number;
     isAvailable: boolean;
     dateAvailable: string;
-    addRoomAmenity: { id: string; isSelected: boolean }[]; 
+    addRoomAmenity: { id: string; isSelected: boolean }[];
     roomDetails: {
         bedRooms: number;
         bathRooms: number;
@@ -30,39 +29,35 @@ export interface RoomData {
         status: boolean;
         otherDetails: string;
     };
-    serviceCosts: {         
+    serviceCosts: {
         serviceName: string;
         cost: number;
-    }[];  
+    }[];
 }
+
 
 const AddPropertyBody: React.FC = () => {
     const [roomData, setRoomData] = useState<RoomData>({
         hostelId: '',
         title: '',
-        description: 'a',
-        primaryImageUrl: 'a',
+        description: '',
+        primaryImage: null,
         roomType: 1,
-        imagesUrls: ["string"],
+        images: [],
         size: 0,
         monthlyRentCost: 0,
         isAvailable: true,
         dateAvailable: new Date().toISOString(),
-        addRoomAmenity: [{ id: '', isSelected: true }],
+        addRoomAmenity: [],
         roomDetails: {
             bedRooms: 0,
             bathRooms: 0,
             kitchen: 0,
             size: 0,
             status: true,
-            otherDetails: 's',
+            otherDetails: '',
         },
-        serviceCosts: [
-            {
-                serviceName: 'a',
-                cost: 0,
-            },
-        ],
+        serviceCosts: [],
     });
 
     const handleData = (data: Partial<RoomData>) => {
@@ -78,17 +73,65 @@ const AddPropertyBody: React.FC = () => {
             addRoomAmenity: selectedAmenities,
         }));
     };
+
+    const handleImageUpload = (files: File[]) => {
+        handleData({images: files});
+    };
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
+    const validateFileSize = (file: File): boolean => {
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error(`File ${file.name} vượt quá kích thước cho phép (5MB)`);
+            return false;
+        }
+        return true;
+    };
     
-    const handleSubmit = async () => {
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (roomData.primaryImage && !validateFileSize(roomData.primaryImage)) {
+            return;
+        }
+
+        for (const image of roomData.images) {
+            if (!validateFileSize(image)) {
+                return;
+            }
+        }
+        
+        const formData = new FormData();
+
+        // Thêm các trường dữ liệu
+        formData.append('hostelId', roomData.hostelId);
+        formData.append('title', roomData.title);
+        formData.append('description', roomData.description);
+        formData.append('roomType', roomData.roomType.toString());
+        formData.append('size', roomData.size.toString());
+        formData.append('monthlyRentCost', roomData.monthlyRentCost.toString());
+        formData.append('isAvailable', roomData.isAvailable.toString());
+        formData.append('dateAvailable', roomData.dateAvailable);
+        formData.append('addRoomAmenity', JSON.stringify(roomData.addRoomAmenity));
+        formData.append('roomDetails', JSON.stringify(roomData.roomDetails));
+        formData.append('serviceCosts', JSON.stringify(roomData.serviceCosts));
+
+        if (roomData.primaryImage) {
+            formData.append('primaryImage', roomData.primaryImage);
+        }
+
+        roomData.images.forEach((image, index) => {
+            formData.append(`images`, image);
+        });
+
         try {
-            const response = await apiInstance.post("rooms", roomData);
+            console.log('Sending data:', formData);
+            const response = await apiInstance.post("rooms", formData);
+            console.log("Response:", response);
             toast.success("Tạo bài đăng thành công", { position: "top-center" });
         } catch (error: any) {
-            if(error.response && error.response.status === 400) {
-                toast.error(error.response.data.message, {position: "top-center"});
-            }else {
-                toast.error("Có lỗi xảy ra", {position: "top-center"});
-            }
+            console.error("Error submitting form:", error);
+            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, { position: "top-center" });
         }
     };
 
@@ -101,37 +144,13 @@ const AddPropertyBody: React.FC = () => {
                 <ListingDetails onDataChange={handleData}/>
 
                 <div className="bg-white card-box border-20 mt-40">
-                    <h4 className="dash-title-three">Photo & Video Attachment</h4>
-                    <div className="dash-input-wrapper mb-20">
-                        <label htmlFor="">File Attachment*</label>
-
-                        <div className="attached-file d-flex align-items-center justify-content-between mb-15">
-                            <span>PorpertyImage_01.jpg</span>
-                            <button type="button" className="remove-btn">
-                                <i className="bi bi-x"></i>
-                            </button>
-                        </div>
-                        <div className="attached-file d-flex align-items-center justify-content-between mb-15">
-                            <span>PorpertyImage_02.jpg</span>
-                            <button type="button" className="remove-btn">
-                                <i className="bi bi-x"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div className="dash-btn-one d-inline-block position-relative me-3">
-                        <i className="bi bi-plus"></i>
-                        Upload File
-                        <input type="file" id="uploadCV" name="uploadCV" placeholder=""/>
-                    </div>
-                    <small>Upload file .jpg, .png, .mp4</small>
+                    <h4 className="dash-title-three">Photo</h4>
+                    <UploadImage onImageUpload={handleImageUpload} multiple={true}/>
                 </div>
                 <SelectAmenities onDataChange={handleAmenitiesChange}/>
                 <AddressAndLocation/>
 
-                <form onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSubmit();
-                }}>
+                <form onSubmit={handleSubmit}>
                     <div className="button-group d-inline-flex align-items-center mt-30">
                         <button type="submit" className="dash-btn-two tran3s me-3">
                             Submit Property
