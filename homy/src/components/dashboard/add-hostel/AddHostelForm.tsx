@@ -25,6 +25,7 @@ interface FormData {
     address: Address;
     size: number | string;
     numberOfRooms: number | string;
+    coordinates : string
 }
 
 interface Location {
@@ -55,6 +56,7 @@ const AddHostelForm: React.FC = () => {
         },
         size: "",
         numberOfRooms: "",
+        coordinates: "",
     });
 
     const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
@@ -231,7 +233,7 @@ const AddHostelForm: React.FC = () => {
                         <div className="dash-input-wrapper mb-30">
                             <label htmlFor="">Diện tích*</label>
                             <input
-                                type="text"
+                                type="number"
                                 placeholder="Diện tích phòng trọ"
                                 name="size"
                                 value={formData.size}
@@ -312,12 +314,12 @@ const AddHostelForm: React.FC = () => {
 
                     <div className="map-frame mb-10">
                         <div className="dash-input-wrapper mb-10">
-                            <label htmlFor="">Tọa độ*</label>
+                            <label htmlFor="">Tọa độ</label>
                             <input
                                 className={'w-25'}
                                 type="text"
                                 readOnly
-                                name="detailAddress"
+                                name="coordinates"
                                 value={coordinates.join(', ')}
                                 onChange={handleInputChange}
                             />
