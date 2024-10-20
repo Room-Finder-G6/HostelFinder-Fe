@@ -5,11 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 interface CustomJwtPayload  {
-<<<<<<< HEAD
-  // landlordId : string;
-=======
   landlordId : string;
->>>>>>> 01f96cc83d59399076b8de078abb323531c4285b
   UserId : string;
 }
 
@@ -89,41 +85,43 @@ const AddHostelForm: React.FC = () => {
   }, [selectedDistrict]);
 
   const fetchProvinces = async () => {
-    const response = await fetch("https://provinces.open-api.vn/api/p");
+    const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
     const data = await response.json();
     setProvinces(
-      data.map((province: any) => ({
-        value: province.code,
+      data.data.map((province: any) => ({
+        value: province.id,
         text: province.name,
       }))
     );
   };
 
-  const fetchDistricts = async (provinceCode: number) => {
-    const response = await fetch(
-      `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
-    );
-    const data = await response.json();
-    setDistricts(
-      data.districts.map((district: any) => ({
-        value: district.code,
-        text: district.name,
-      }))
-    );
-  };
+    const fetchDistricts = async (provinceCode: number) => {
+      const response = await fetch(
+        `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
+      );
+      const data = await response.json();
+      setDistricts(
+        data.data.map((district: any) => ({
+          value: district.id,
+          text: district.name,
+        }))
+      );
+    };
+    
 
-  const fetchCommunes = async (districtCode: number) => {
-    const response = await fetch(
-      `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`
-    );
-    const data = await response.json();
-    setCommunes(
-      data.wards.map((ward: any) => ({
-        value: ward.code,
-        text: ward.name,
-      }))
-    );
-  };
+    const fetchCommunes = async (districtCode: number) => {
+      const response = await fetch(
+        `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
+      );
+      const data = await response.json();
+      setCommunes(
+        data.data.map((ward: any) => ({
+          value: ward.id,
+          text: ward.name,
+        }))
+      );
+    };
+    
 
   const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const provinceCode = parseInt(e.target.value);
