@@ -1,85 +1,73 @@
-import Image, {StaticImageData} from "next/image"
+"use client";
+import Image from "next/image"
 import Link from "next/link"
-
-import icon_1 from "@/assets/images/dashboard/icon/icon_18.svg";
-import icon_2 from "@/assets/images/dashboard/icon/icon_19.svg";
 import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
 import icon_4 from "@/assets/images/dashboard/icon/icon_21.svg";
-
-import listImg_1 from "@/assets/images/dashboard/img_01.jpg";
-import listImg_2 from "@/assets/images/dashboard/img_02.jpg";
-import listImg_3 from "@/assets/images/dashboard/img_03.jpg";
-import listImg_4 from "@/assets/images/dashboard/img_04.jpg";
-import listImg_5 from "@/assets/images/dashboard/img_05.jpg";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import apiInstance from "@/utils/apiInstance";
+import {jwtDecode} from "jwt-decode";
 
 interface DataType {
     id: string;
     hostelName: string;
     address: string;
-    date: string;
-    image: string; 
+    image: string;
     numberOfRooms: number;
+    rating: number;
+    createdOn: string;
 }
 
-/*
-const list_data: DataType[] = [
-   {
-      id: 1,
-      title: "Galaxy Flat",
-      address: "Mirpur 10, dhaka, BD",
-      price: 32800,
-      date: "13 Jan, 2023",
-      view: 1210,
-      img: listImg_1,
-      status: "Active",
-   },
-   {
-      id: 2,
-      title: "White House villa",
-      address: "Ranchview, California, USA",
-      price: 42130,
-      date: "09 Jan, 2023",
-      view: 0,
-      img: listImg_2,
-      status: "Pending",
-      status_bg: "pending"
-   },
-   {
-      id: 3,
-      title: "Luxury villa in Dal lake",
-      address: "Muza link road, ca, usa",
-      price: 2370,
-      date: "17 Oct, 2022",
-      view: 0,
-      img: listImg_3,
-      status: "Processing",
-      status_bg: "processing",
-   },
-   {
-      id: 4,
-      title: "Wooden World",
-      address: "Board Baxar, Califronia, USA",
-      price: 63300,
-      date: "23 Sep, 2022",
-      view: 970,
-      img: listImg_4,
-      status: "Active",
-   },
-   {
-      id: 5,
-      title: "Orkit Villa",
-      address: "Green Road, Uttara, BD",
-      price: 72000,
-      date: "15 Aug, 2022",
-      view: 2320,
-      img: listImg_5,
-      status: "Active",
-   },
-]*/
+interface JwtPayload {
+    UserId: string;
+}
+
+const getUserIdFromToken = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        console.error("Token không tồn tại trong localStorage");
+        return null;
+    }
+
+    try {
+        const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+        console.log("Decoded token:", decodedToken.UserId);
+        return decodedToken.UserId;
+    } catch (error) {
+        console.error("Lỗi khi giải mã token:", error);
+        return null;
+    }
+};
 
 const PropertyTableBody = () => {
     const [hostels, setHostels] = useState<DataType[]>([])
+    const [userId, setUserId] = useState<string | null>(null);
+
+    useEffect(() => {
+        const userIdFromToken = getUserIdFromToken();
+        setUserId(userIdFromToken);
+    }, []);
+    console.log("User ID:", userId);
+
+    useEffect(() => {
+        const fetchHostels = async () => {
+            if (!userId) return;
+            try {
+                const response = await apiInstance.get(`hostels/GetHostelsByLandlordId/${userId}`);
+                if (response.status === 200) {
+                    const data: DataType[] = response.data;
+                    console.log("Hostels:", data);
+                    setHostels(data);
+                } else {
+                    console.error("Failed to fetch hostels");
+                }
+            } catch (error) {
+                console.error("Error fetching hostels:", error);
+            }
+        };
+
+        fetchHostels();
+    }, [userId]);
 
     return (
         <tbody className="border-0">
@@ -87,20 +75,17 @@ const PropertyTableBody = () => {
             <tr key={item.id}>
                 <td>
                     <div className="d-lg-flex align-items-center position-relative">
-                        <Image src={item.img} alt="" className="p-img"/>
+                        <Image src={item.image} alt="" className="p-img"/>
                         <div className="ps-lg-4 md-pt-10">
                             <Link href="#"
-                                  className="property-name tran3s color-dark fw-500 fs-20 stretched-link">{item.title}</Link>
+                                  className="property-name tran3s color-dark fw-500 fs-20 stretched-link">{item.hostelName}</Link>
                             <div className="address">{item.address}</div>
-                            <strong className="price color-dark">${item.price}</strong>
+                            <strong className="price color-dark">{item.numberOfRooms}</strong>
                         </div>
                     </div>
                 </td>
-                <td>{item.date}</td>
-                <td>{item.view}</td>
-                <td>
-                    <div className={`property-status ${item.status_bg}`}>{item.status}</div>
-                </td>
+                <td>{item.createdOn}</td>
+                <td>{item.rating}</td>
                 <td>
                     <div className="action-dots float-end">
                         <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"

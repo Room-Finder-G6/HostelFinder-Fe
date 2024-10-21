@@ -4,7 +4,6 @@ import NiceSelect from "@/ui/NiceSelect";
 import PropertyTableBody from "./PropertyTableBody";
 import Link from "next/link";
 import Image from "next/image";
-import AddHostelForm from "../add-hostel/AddHostelForm"; // Import your AddHostelForm component
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 
 const HostelManagement = () => {
@@ -50,8 +49,8 @@ const HostelManagement = () => {
                         <tr>
                            <th scope="col">Title</th>
                            <th scope="col">Date</th>
-                           <th scope="col">View</th>
-                           <th scope="col">Status</th>
+                           <th scope="col">Rating</th>
+                       
                            <th scope="col">Action</th>
                         </tr>
                      </thead>
