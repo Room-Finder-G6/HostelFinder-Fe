@@ -270,6 +270,8 @@ const AddHostelForm: React.FC = () => {
                                 options={provinces}
                                 onChange={selectProvinceHandler}
                                 placeholder="Chọn Tỉnh/Thành phố"
+                                name={"province"}
+                                defaultCurrent= {0}
                                 required
                             />
                         </div>
@@ -284,6 +286,8 @@ const AddHostelForm: React.FC = () => {
                                 onChange={selectDistrictHandler}
                                 placeholder="Chọn Quận/Huyện"
                                 disabled={!selectedProvince}
+                                name={"district"}
+                                defaultCurrent={0}
                                 required
                             />
                         </div>
@@ -298,7 +302,8 @@ const AddHostelForm: React.FC = () => {
                                 onChange={selectCommuneHandler}
                                 placeholder="Chọn Xã/Phường"
                                 disabled={!selectedDistrict}
-                                required
+                                name={"commune"}
+                                defaultCurrent={0}
                             />
                         </div>
                     </div>

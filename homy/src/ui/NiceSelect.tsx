@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useCallback, useRef, FC, ChangeEvent } from "react";
 import { useClickAway } from "react-use";
 
@@ -14,7 +14,9 @@ type NiceSelectProps = {
   className?: string;
   onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   name: string;
-}
+  required?: boolean; // Đổi từ require thành required
+  disabled?: boolean; // Thêm thuộc tính disabled
+};
 
 const NiceSelect: FC<NiceSelectProps> = ({
   options,
@@ -23,13 +25,16 @@ const NiceSelect: FC<NiceSelectProps> = ({
   className,
   onChange,
   name,
+  required,
+  disabled, // Thêm thuộc tính này
 }) => {
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<Option>(options[defaultCurrent]);
+  const ref = useRef<HTMLDivElement | null>(null);
+
   const onClose = useCallback(() => {
     setOpen(false);
   }, []);
-  const ref = useRef<HTMLDivElement | null>(null);
 
   useClickAway(ref, onClose);
 
@@ -44,32 +49,37 @@ const NiceSelect: FC<NiceSelectProps> = ({
       className={`nice-select form-select-lg ${className || ""} ${open ? "open" : ""}`}
       role="button"
       tabIndex={0}
-      onClick={() => setOpen((prev) => !prev)}
-      onKeyDown={(e) => e}
+      onClick={() => !disabled && setOpen((prev) => !prev)} // Ngăn chặn mở khi disabled
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !disabled) {
+          setOpen((prev) => !prev);
+        }
+      }}
       ref={ref}
     >
       <span className="current">{current?.text || placeholder}</span>
-      <ul
-        className="list"
-        role="menubar"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
-      >
-        {options?.map((item, i) => (
-          <li
-            key={i}
-            data-value={item.value}
-            className={`option ${item.value === current?.value ? "selected focus" : ""
-              }`}
-            style={{ fontSize: '14px' }}
-            role="menuitem"
-            onClick={() => currentHandler(item)}
-            onKeyDown={(e) => e}
-          >
-            {item.text}
-          </li>
-        ))}
-      </ul>
+      {open && (
+        <ul
+          className="list"
+          role="menubar"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          {options?.map((item, i) => (
+            <li
+              key={i}
+              data-value={item.value}
+              className={`option ${item.value === current?.value ? "selected focus" : ""}`}
+              style={{ fontSize: '14px' }}
+              role="menuitem"
+              onClick={() => !disabled && currentHandler(item)} // Ngăn chặn chọn khi disabled
+              onKeyDown={(e) => e.stopPropagation()}
+            >
+              {item.text}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
