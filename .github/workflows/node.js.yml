@@ -30,15 +30,10 @@ jobs:
       
 
     - name: Build the project
-      run: npm run build --prefix ./homy
+      run: npm run dev --prefix ./homy
       
 
-    - name: Upload production-ready build artifacts
-      if: success()
-      uses: actions/upload-artifact@v3
-      with:
-        name: nextjs-build
-        path: .next/
+  
 
   deploy:
     runs-on: ubuntu-latest
