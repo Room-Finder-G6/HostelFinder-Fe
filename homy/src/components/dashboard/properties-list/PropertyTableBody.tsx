@@ -108,7 +108,7 @@ const PropertyTableBody = () => {
                      <ul className="dropdown-menu dropdown-menu-end">
                         <li><Link className="dropdown-item" href="#"><Image src={icon_1} alt="" className="lazy-img" /> View</Link></li>
                         <li><Link className="dropdown-item" href="#"><Image src={icon_2} alt="" className="lazy-img" /> Share</Link></li>
-                        <li><Link className="dropdown-item" href="#"><Image src={icon_3} alt="" className="lazy-img" /> Edit</Link></li>
+                        <li><Link className="dropdown-item" href="/dashboard/add-hostel"><Image src={icon_3} alt="" className="lazy-img" /> Edit</Link></li>
                         <li><Link className="dropdown-item" href="#"><Image src={icon_4} alt="" className="lazy-img" /> Delete</Link></li>
                      </ul>
                   </div>
