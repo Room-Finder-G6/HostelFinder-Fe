@@ -1,4 +1,4 @@
-import DashboardManagerHostel from "@/components/dashboard/manager-hostel";
+import DashboardManagerHostel from "@/components/dashboard/manage-hostel";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {

@@ -1,6 +1,7 @@
 import NiceSelect from "@/ui/NiceSelect";
 import React, { useState } from "react";
-import { RoomData } from "@/components/dashboard/add-room/AddPropertyBody";
+import { RoomData } from "@/components/dashboard/create-post/AddPropertyBody";
+import UploadImage from "@/components/UploadImage";
 
 interface OverviewProps {
     onDataChange: (data: Partial<RoomData>) => void;
@@ -27,16 +28,11 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
         onDataChange({ [name]: convertedValue });
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64String = reader.result as string;
-                setPrimaryImage(base64String);
-                onDataChange({ primaryImageUrl: base64String });
-            };
-            reader.readAsDataURL(file);
+    const handleImageUpload = (files: File[]) => {
+        if (files.length > 0) {
+            const imageUrl = URL.createObjectURL(files[0]);
+            setPrimaryImage(imageUrl);
+            onDataChange({ primaryImage: files[0] }); // Send File object to parent component
         }
     };
 
@@ -158,12 +154,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="primaryImageUrl">Primary Image*</label>
-                        <input
-                            type="file"
-                            name="primaryImageUrl"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                        />
+                        <UploadImage onImageUpload={handleImageUpload} multiple={true} />
                         {primaryImage && <img src={primaryImage} alt="Primary" style={{ marginTop: '10px', maxWidth: '100%' }} />}
                     </div>
                 </div>
