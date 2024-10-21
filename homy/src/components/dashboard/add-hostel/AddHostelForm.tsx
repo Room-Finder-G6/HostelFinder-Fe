@@ -35,9 +35,9 @@ interface Location {
 }
 
 const AddHostelForm: React.FC = () => {
-    const [provinces, setProvinces] = useState<{ value: number; text: string }[]>([]);
-    const [districts, setDistricts] = useState<{ value: number; text: string }[]>([]);
-    const [communes, setCommunes] = useState<{ value: number; text: string }[]>([]);
+    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
+    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
+    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
 
     const handleCoordinatesChange = (newCoordinates: string) => {
@@ -60,8 +60,8 @@ const AddHostelForm: React.FC = () => {
         coordinates: "",
     });
 
-    const [selectedProvince, setSelectedProvince] = useState<number | null>(null);
-    const [selectedDistrict, setSelectedDistrict] = useState<number | null>(null);
+    const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+    const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token"); // Adjust key based on how you store the token
@@ -103,6 +103,7 @@ const AddHostelForm: React.FC = () => {
   const fetchProvinces = async () => {
     const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
     const data = await response.json();
+    console.log(data.data)
     setProvinces(
       data.data.map((province: any) => ({
         value: province.id,
@@ -111,7 +112,7 @@ const AddHostelForm: React.FC = () => {
     );
   };
 
-    const fetchDistricts = async (provinceCode: number) => {
+    const fetchDistricts = async (provinceCode: string) => {
       const response = await fetch(
         `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
       );
@@ -125,7 +126,7 @@ const AddHostelForm: React.FC = () => {
     };
     
 
-    const fetchCommunes = async (districtCode: number) => {
+    const fetchCommunes = async (districtCode: string) => {
       const response = await fetch(
         `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
       );
@@ -140,36 +141,36 @@ const AddHostelForm: React.FC = () => {
     
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const provinceCode = parseInt(e.target.value);
-        const province = provinces.find((p) => p.value === provinceCode);
-
-        setSelectedProvince(provinceCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, province: province?.text || ""},
-        });
-        setSelectedDistrict(null);
-        setCommunes([]);
+      const provinceCode = e.target.value;
+      const province = provinces.find((p) => p.value === provinceCode);
+      setSelectedProvince(provinceCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, province: province?.text || "" },
+      });
+      setSelectedDistrict(null);
+      setCommunes([]);
     };
-
+  
     const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const districtCode = parseInt(e.target.value);
-        const district = districts.find((d) => d.value === districtCode);
-        setSelectedDistrict(districtCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, district: district?.text || ""},
-        });
+      const districtCode = e.target.value;
+      const district = districts.find((d) => d.value === districtCode);
+      setSelectedDistrict(districtCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, district: district?.text || "" },
+      });
     };
-
+  
     const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const communeCode = parseInt(e.target.value);
-        const commune = communes.find((c) => c.value === communeCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, commune: commune?.text || ""},
-        });
+      const communeCode = e.target.value;
+      const commune = communes.find((c) => c.value === communeCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, commune: commune?.text || "" },
+      });
     };
+  
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -187,6 +188,7 @@ const AddHostelForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log(formData)
         try {
             const response = await apiInstance.post("/hostels", formData);
             if (response.status === 200 && response.data.succeeded) {
