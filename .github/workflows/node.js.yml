@@ -30,7 +30,7 @@ jobs:
       
 
     - name: Build the project
-      run: npm run dev --prefix ./homy
+      run: npm run build --prefix ./homy
       
 
   
