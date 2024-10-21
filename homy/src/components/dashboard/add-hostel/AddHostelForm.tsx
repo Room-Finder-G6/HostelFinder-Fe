@@ -23,15 +23,15 @@ interface FormData {
     hostelName: string;
     description: string;
     address: Address;
-    size: number;
-    numberOfRooms: number;
-    coordinates: string
+    size: number | string;
+    numberOfRooms: number | string;
+    coordinates : string
 }
 
 const AddHostelForm: React.FC = () => {
-    const [provinces, setProvinces] = useState<{ value: number; text: string }[]>([]);
-    const [districts, setDistricts] = useState<{ value: number; text: string }[]>([]);
-    const [communes, setCommunes] = useState<{ value: number; text: string }[]>([]);
+    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
+    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
+    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
 
     const handleCoordinatesChange = (newCoordinates: string) => {
@@ -54,8 +54,8 @@ const AddHostelForm: React.FC = () => {
         coordinates: "",
     });
 
-    const [selectedProvince, setSelectedProvince] = useState<number | null>();
-    const [selectedDistrict, setSelectedDistrict] = useState<number | null>();
+    const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+    const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
     useEffect(() => {
         const token = localStorage.getItem("token"); // Adjust key based on how you store the token
@@ -94,100 +94,88 @@ const AddHostelForm: React.FC = () => {
         }
     }, [selectedDistrict]);
 
-    const fetchProvinces = async () => {
-        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
-        const data = await response.json();
-        setProvinces(
-            data.data.map((province: any) => ({
-                value: province.id.toString(),
-                text: province.name,
-            }))
-        );
+  const fetchProvinces = async () => {
+    const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
+    const data = await response.json();
+    console.log(data.data)
+    setProvinces(
+      data.data.map((province: any) => ({
+        value: province.id,
+        text: province.name,
+      }))
+    );
+  };
+
+    const fetchDistricts = async (provinceCode: string) => {
+      const response = await fetch(
+        `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
+      );
+      const data = await response.json();
+      setDistricts(
+        data.data.map((district: any) => ({
+          value: district.id,
+          text: district.name,
+        }))
+      );
     };
+    
 
-    const fetchDistricts = async (provinceCode: number) => {
-        const response = await fetch(
-            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
-        );
-        const data = await response.json();
-        setDistricts(
-            data.data.map((district: any) => ({
-                value: district.id.toString(),
-                text: district.name,
-            }))
-        );
-    };
-
-
-    const fetchCommunes = async (districtCode: number) => {
-        const response = await fetch(
-            `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
-        );
-        const data = await response.json();
-        setCommunes(
-            data.data.map((ward: any) => ({
-                value: ward.id.toString(),
-                text: ward.name,
-            }))
-        );
+    const fetchCommunes = async (districtCode: string) => {
+      const response = await fetch(
+        `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
+      );
+      const data = await response.json();
+      setCommunes(
+        data.data.map((ward: any) => ({
+          value: ward.id,
+          text: ward.name,
+        }))
+      );
     };
 
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const provinceCode = e.target.value; // Keep as string
-        // @ts-ignore
-        const province = provinces.find((p) => p.value === provinceCode);
-
-        console.log("Selected province code:", provinceCode);
-        console.log("Found province:", province);
-
-        setSelectedProvince(parseInt(provinceCode)); // Convert to number for state
-        setFormData(prevData => ({
-            ...prevData,
-            address: {...prevData.address, province: province?.text || "", district: "", commune: ""},
-        }));
-        setSelectedDistrict(null); // Reset selected district when province changes
-        setCommunes([]); // Reset communes when province changes
+      const provinceCode = e.target.value;
+      const province = provinces.find((p) => p.value === provinceCode);
+      setSelectedProvince(provinceCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, province: province?.text || "" },
+      });
+      setSelectedDistrict(null);
+      setCommunes([]);
     };
-
+  
     const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const districtCode = e.target.value;
-        // @ts-ignore
-        const district = districts.find((d) => d.value === districtCode);
-        console.log("district: ", district)
-        setSelectedDistrict(parseInt(districtCode));
-        setFormData(prevData => ({
-            ...prevData,
-            address: {...prevData.address, district: district?.text || "", commune: ""}, // Reset commune
-        }));
-        setCommunes([]); // Reset communes when district changes
-   
+      const districtCode = e.target.value;
+      const district = districts.find((d) => d.value === districtCode);
+      setSelectedDistrict(districtCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, district: district?.text || "" },
+      });
     };
-
+  
     const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const communeCode = e.target.value; // Keep as string
-        // @ts-ignore
-        const commune = communes.find((c) => c.value === communeCode);
-
-        console.log("Found commune:", commune);
-
-        setFormData(prevData => ({
-            ...prevData,
-            address: { ...prevData.address, commune: commune?.text || "" },
-        }));
+      const communeCode = e.target.value;
+      const commune = communes.find((c) => c.value === communeCode);
+      setFormData({
+        ...formData,
+        address: { ...formData.address, commune: commune?.text || "" },
+      });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         if (name === "size" || name === "numberOfRooms") {
-            setFormData(prevData => ({...prevData, [name]: parseInt(value)}));
+            setFormData({...formData, [name]: parseInt(value)});
         } else if (name === "detailAddress") {
-            setFormData(prevData => ({
-                ...prevData,
-                address: {...prevData.address, detailAddress: value},
-            }));
+            setFormData({
+                ...formData,
+                address: {...formData.address, detailAddress: value},
+            });
         } else {
-            setFormData(prevData => ({...prevData, [name]: value}));
+            setFormData({...formData, [name]: value});
         }
     };
 
@@ -284,12 +272,12 @@ const AddHostelForm: React.FC = () => {
                             <label htmlFor="">Tỉnh/Thành phố*</label>
                             <NiceSelect
                                 className="nice-select"
-                                name="province"
                                 options={provinces}
                                 onChange={selectProvinceHandler}
                                 placeholder="Chọn Tỉnh/Thành phố"
+                                name={"province"}
+                                defaultCurrent= {0}
                                 required
-                                value={selectedProvince?.toString()}
                             />
                         </div>
                     </div>
@@ -299,13 +287,13 @@ const AddHostelForm: React.FC = () => {
                             <label htmlFor="">Quận/Huyện*</label>
                             <NiceSelect
                                 className="nice-select"
-                                name="district"
                                 options={districts}
                                 onChange={selectDistrictHandler}
                                 placeholder="Chọn Quận/Huyện"
                                 disabled={!selectedProvince}
+                                name={"district"}
+                                defaultCurrent={0}
                                 required
-                                value={selectedDistrict?.toString()}
                             />
                         </div>
                     </div>
@@ -315,13 +303,12 @@ const AddHostelForm: React.FC = () => {
                             <label htmlFor="">Xã/Phường*</label>
                             <NiceSelect
                                 className="nice-select"
-                                name="commune"
                                 options={communes}
                                 onChange={selectCommuneHandler}
                                 placeholder="Chọn Xã/Phường"
                                 disabled={!selectedDistrict}
-                                required
-                                value={formData.address.commune}
+                                name={"commune"}
+                                defaultCurrent={0}
                             />
                         </div>
                     </div>

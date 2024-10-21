@@ -5,18 +5,19 @@ import PropertyTableBody from "./PropertyTableBody";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
+import useHostels from "./useHostels";
 
 const HostelManagement = () => {
    const selectHandler = (e: any) => { };
-
+   const {hostels,totalPages, pageIndex, setPageIndex, totalRecords, loading} = useHostels();
    return (
       <div className="dashboard-body">
          <div className="position-relative">
             <DashboardHeaderTwo title="My Properties" />
             <h2 className="main-title d-block d-lg-none">My Properties</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               <div className="fs-16">Showing <span className="color-dark fw-500">1–5</span> of <span
-                  className="color-dark fw-500">40</span> results</div>
+               <div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
+                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>
                <div className="d-flex ms-auto xs-mt-30">
                   <div className="short-filter d-flex align-items-center ms-sm-auto">
                      <div className="fs-16 me-2">Sort by:</div>

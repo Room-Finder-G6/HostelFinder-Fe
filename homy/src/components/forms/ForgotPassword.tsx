@@ -21,14 +21,14 @@ const ForgotPassword = ({ setShowForgotPassword }: any) => {
       email: yup.string().required().email().label("Email"),
    }).required();
 
-   const passwordSchema = yup.object({
-      newPassword: yup.string().min(6).required().label("New Password"),
-      confirmPassword: yup.string().oneOf([yup.ref('newPassword'), null], 'Passwords must match').required().label("Confirm Password")
-   }).required();
+   // const passwordSchema = yup.object({
+   //    newPassword: yup.string().min(6).required().label("New Password"),
+   //    confirmPassword: yup.string().oneOf([yup.ref('newPassword'), null], 'Passwords must match').required().label("Confirm Password")
+   // }).required();
 
-   const { register, handleSubmit, reset, formState: { errors } } = useForm({
-      resolver: yupResolver(step === 2 ? passwordSchema : emailSchema),
-   });
+   // const { register, handleSubmit, reset, formState: { errors } } = useForm({
+   //    resolver: yupResolver(step === 2 ? passwordSchema : emailSchema),
+   // });
 
    const handleEmailSubmit = (data: any) => {
       // Gửi email 
@@ -37,16 +37,16 @@ const ForgotPassword = ({ setShowForgotPassword }: any) => {
       setStep(2);
    };
 
-   const handlePasswordSubmit = (data: any) => {
-      // Xử lý đổi mật khẩu mới
-      toast('Password successfully changed!', { position: 'top-center' });
-      reset();
-      setShowForgotPassword(false); // Quay lại trang đăng nhập
-   };
+   // const handlePasswordSubmit = (data: any) => {
+   //    // Xử lý đổi mật khẩu mới
+   //    toast('Password successfully changed!', { position: 'top-center' });
+   //    reset();
+   //    setShowForgotPassword(false); // Quay lại trang đăng nhập
+   // };
 
    return (
       <div>
-         {step === 1 && (
+         {/* {step === 1 && (
             <form onSubmit={handleSubmit(handleEmailSubmit)}>
                <div className="input-group-meta mb-25">
                   <label>Email*</label>
@@ -55,9 +55,9 @@ const ForgotPassword = ({ setShowForgotPassword }: any) => {
                </div>
                <button type="submit" className="btn-two w-100 text-uppercase">Send Verification Link</button>
             </form>
-         )}
+         )} */}
 
-         {step === 2 && (
+         {/* {step === 2 && (
             <form onSubmit={handleSubmit(handlePasswordSubmit)}>
                <div className="input-group-meta mb-25">
                   <label>New Password*</label>
@@ -70,8 +70,8 @@ const ForgotPassword = ({ setShowForgotPassword }: any) => {
                   <p className="form_error">{errors.confirmPassword?.message}</p>
                </div>
                <button type="submit" className="btn-two w-100 text-uppercase">Reset Password</button>
-            </form>
-         )}
+            </form> */}
+         {/* )} */}
       </div>
    );
 };
