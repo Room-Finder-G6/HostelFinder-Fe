@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { RoomData } from "@/components/dashboard/add-room/AddPropertyBody";
+import { RoomData } from "./AddPropertyBody";
 
 interface ListingDetailsProps {
     onDataChange: (data: Partial<RoomData>) => void;

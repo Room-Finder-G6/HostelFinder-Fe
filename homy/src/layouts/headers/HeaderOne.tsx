@@ -7,6 +7,7 @@ import UseSticky from "@/hooks/UseSticky"
 import LoginModal from "@/modals/LoginModal"
 import logo_6 from "@/assets/images/logo/logo_06.svg";
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import Guess from "@/layouts/headers/right-header/Guess";
 
 
 const HeaderOne = ({style}: any) => {
@@ -34,19 +35,7 @@ const HeaderOne = ({style}: any) => {
                                 </Link>
                             </div>
 
-                            <div className="right-widget ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
-                                <ul className="d-flex align-items-center style-none">
-                                    <li>
-                                        <Link href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                                              className="btn-one"><i className="fa-regular fa-lock"></i> <span
-                                            style={{fontFamily: "'Fira Code', sans-serif"}}>Đăng nhập</span></Link>
-                                    </li>
-                                    <li className="d-none d-md-inline-block ms-3">
-                                        <Link href="/dashboard/add-room" className="btn-two" target="_blank"><span>Add Listing</span>
-                                            <i className="fa-thin fa-arrow-up-right"></i></Link>
-                                    </li>
-                                </ul>
-                            </div>
+                            <Guess/>
                             <nav className="navbar navbar-expand-lg p0 order-lg-2">
                                 <button className="navbar-toggler d-block d-lg-none" type="button"
                                         data-bs-toggle="collapse"
