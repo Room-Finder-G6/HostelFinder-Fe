@@ -61,11 +61,7 @@ const AddHostelForm: React.FC = () => {
         const token = localStorage.getItem("token"); // Adjust key based on how you store the token
         if (token) {
             try {
-                // Decode the token
                 const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                console.log(decodedToken);
-                console.log(decodedToken.UserId);
-                // If landlordId exists, update the formData
                 if (decodedToken.UserId) {
                     setFormData((prevData) => ({
                         ...prevData,
@@ -97,7 +93,6 @@ const AddHostelForm: React.FC = () => {
   const fetchProvinces = async () => {
     const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
     const data = await response.json();
-    console.log(data.data)
     setProvinces(
       data.data.map((province: any) => ({
         value: province.id,
@@ -191,8 +186,6 @@ const AddHostelForm: React.FC = () => {
             ...formData,
             coordinates: coordinates.join(', '), // Chuyển đổi tọa độ thành chuỗi
         };
-
-        console.log("Submitting data:", updatedFormData); // Để kiểm tra dữ liệu trước khi gửi
 
         try {
             const response = await apiInstance.post("/hostels", updatedFormData);
