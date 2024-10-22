@@ -2,7 +2,6 @@
 import React, {useState, useEffect} from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-
 import {toast} from "react-toastify";
 import {jwtDecode} from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
@@ -29,11 +28,6 @@ interface FormData {
     coordinates : string
 }
 
-interface Location {
-    id: string;
-    name: string;
-}
-
 const AddHostelForm: React.FC = () => {
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
@@ -41,7 +35,7 @@ const AddHostelForm: React.FC = () => {
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
 
     const handleCoordinatesChange = (newCoordinates: string) => {
-        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number]; // Chuyển đổi chuỗi thành tuple
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
         setCoordinates([lng, lat]);
     };
 
@@ -55,8 +49,8 @@ const AddHostelForm: React.FC = () => {
             commune: "",
             detailAddress: "",
         },
-        size: "",
-        numberOfRooms: "",
+        size: 0,
+        numberOfRooms: 0,
         coordinates: "",
     });
 
@@ -67,11 +61,7 @@ const AddHostelForm: React.FC = () => {
         const token = localStorage.getItem("token"); // Adjust key based on how you store the token
         if (token) {
             try {
-                // Decode the token
                 const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                console.log(decodedToken);
-                console.log(decodedToken.UserId);
-                // If landlordId exists, update the formData
                 if (decodedToken.UserId) {
                     setFormData((prevData) => ({
                         ...prevData,
@@ -103,7 +93,6 @@ const AddHostelForm: React.FC = () => {
   const fetchProvinces = async () => {
     const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
     const data = await response.json();
-    console.log(data.data)
     setProvinces(
       data.data.map((province: any) => ({
         value: province.id,
@@ -138,7 +127,7 @@ const AddHostelForm: React.FC = () => {
         }))
       );
     };
-    
+
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const provinceCode = e.target.value;
@@ -170,7 +159,6 @@ const AddHostelForm: React.FC = () => {
         address: { ...formData.address, commune: commune?.text || "" },
       });
     };
-  
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -188,9 +176,19 @@ const AddHostelForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log(formData)
+
+        if (!formData.address.province || !formData.address.district || !formData.address.commune) {
+            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", {position: "top-center"});
+            return;
+        }
+
+        const updatedFormData: FormData = {
+            ...formData,
+            coordinates: coordinates.join(', '), // Chuyển đổi tọa độ thành chuỗi
+        };
+
         try {
-            const response = await apiInstance.post("/hostels", formData);
+            const response = await apiInstance.post("/hostels", updatedFormData);
             if (response.status === 200 && response.data.succeeded) {
                 const {message} = response.data;
                 toast.success(message, {position: "top-center"});
