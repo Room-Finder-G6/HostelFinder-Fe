@@ -48,11 +48,10 @@ const HostelManagement = () => {
                   <table className="table property-list-table">
                      <thead>
                         <tr>
-                           <th scope="col">Title</th>
-                           <th scope="col">Date</th>
-                           <th scope="col">Rating</th>
-                       
-                           <th scope="col">Action</th>
+                           <th scope="col">Nhà trọ</th>
+                           <th scope="col">Ngày tạo</th>
+                           <th scope="col">Đánh giá</th>
+                           <th scope="col"></th>
                         </tr>
                      </thead>
                      <PropertyTableBody />
