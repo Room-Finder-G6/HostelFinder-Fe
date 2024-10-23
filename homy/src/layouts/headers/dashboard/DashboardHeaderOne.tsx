@@ -68,6 +68,10 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                      <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
                      <span>List Room</span>
                   </Link></li>
+                  <li className="plr"><Link href="/dashboard/manager-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manager-hostel' ? 'active' : ''}`}>
+                     <Image src={pathname === '/dashboard/add-hostel' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
+                     <span>Manager Hotel</span>
+                  </Link></li>
                   <li className="plr"><Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/create-post' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
                      <span>Manager Post</span>
