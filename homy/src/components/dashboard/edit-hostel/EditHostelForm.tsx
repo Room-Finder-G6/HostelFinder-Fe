@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, {useState, useEffect} from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
@@ -25,10 +25,14 @@ interface FormData {
     address: Address;
     size: number | string;
     numberOfRooms: number | string;
-    coordinates : string
+    coordinates : string;
 }
 
-const AddHostelForm: React.FC = () => {
+interface EditHostelFormProps {
+    hostelId: string;
+}
+
+const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
@@ -58,7 +62,7 @@ const AddHostelForm: React.FC = () => {
     const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token"); // Adjust key based on how you store the token
+        const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken = jwtDecode<CustomJwtPayload>(token);
@@ -76,7 +80,8 @@ const AddHostelForm: React.FC = () => {
 
     useEffect(() => {
         fetchProvinces();
-    }, []);
+        fetchHostelData(hostelId);
+    }, [hostelId]);
 
     useEffect(() => {
         if (selectedProvince) {
@@ -90,74 +95,93 @@ const AddHostelForm: React.FC = () => {
         }
     }, [selectedDistrict]);
 
-  const fetchProvinces = async () => {
-    const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
-    const data = await response.json();
-    setProvinces(
-      data.data.map((province: any) => ({
-        value: province.id,
-        text: province.name,
-      }))
-    );
-  };
+    const fetchProvinces = async () => {
+        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
+        const data = await response.json();
+        setProvinces(
+            data.data.map((province: any) => ({
+                value: province.id,
+                text: province.name,
+            }))
+        );
+    };
 
     const fetchDistricts = async (provinceCode: string) => {
-      const response = await fetch(
-        `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
-      );
-      const data = await response.json();
-      setDistricts(
-        data.data.map((district: any) => ({
-          value: district.id,
-          text: district.name,
-        }))
-      );
+        const response = await fetch(
+            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
+        );
+        const data = await response.json();
+        setDistricts(
+            data.data.map((district: any) => ({
+                value: district.id,
+                text: district.name,
+            }))
+        );
     };
-    
 
     const fetchCommunes = async (districtCode: string) => {
-      const response = await fetch(
-        `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
-      );
-      const data = await response.json();
-      setCommunes(
-        data.data.map((ward: any) => ({
-          value: ward.id,
-          text: ward.name,
-        }))
-      );
+        const response = await fetch(
+            `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
+        );
+        const data = await response.json();
+        setCommunes(
+            data.data.map((ward: any) => ({
+                value: ward.id,
+                text: ward.name,
+            }))
+        );
     };
 
+    const fetchHostelData = async (hostelId: string) => {
+        try {
+            const response = await apiInstance.get(`/hostels/getHostelsByLandlordId/${hostelId}`);
+            const hostelData = response.data;
+            setFormData({
+                ...formData,
+                hostelName: hostelData.hostelName,
+                description: hostelData.description,
+                address: hostelData.address,
+                size: hostelData.size,
+                numberOfRooms: hostelData.numberOfRooms,
+                coordinates: hostelData.coordinates,
+            });
+            setCoordinates(hostelData.coordinates.split(',').map(Number) as [number, number]);
+            setSelectedProvince(hostelData.address.province);
+            setSelectedDistrict(hostelData.address.district);
+        } catch (error) {
+            console.error("Failed to fetch hostel data:", error);
+        }
+    };
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const provinceCode = e.target.value;
-      const province = provinces.find((p) => p.value === provinceCode);
-      setSelectedProvince(provinceCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, province: province?.text || "" },
-      });
-      setSelectedDistrict(null);
-      setCommunes([]);
+        const provinceCode = e.target.value;
+        const province = provinces.find((p) => p.value === provinceCode);
+        setSelectedProvince(provinceCode);
+        setFormData({
+            ...formData,
+            address: { ...formData.address, province: province?.text || "" },
+        });
+        setSelectedDistrict(null);
+        setCommunes([]);
     };
-  
+
     const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const districtCode = e.target.value;
-      const district = districts.find((d) => d.value === districtCode);
-      setSelectedDistrict(districtCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, district: district?.text || "" },
-      });
+        const districtCode = e.target.value;
+        const district = districts.find((d) => d.value === districtCode);
+        setSelectedDistrict(districtCode);
+        setFormData({
+            ...formData,
+            address: { ...formData.address, district: district?.text || "" },
+        });
     };
-  
+
     const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const communeCode = e.target.value;
-      const commune = communes.find((c) => c.value === communeCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, commune: commune?.text || "" },
-      });
+        const communeCode = e.target.value;
+        const commune = communes.find((c) => c.value === communeCode);
+        setFormData({
+            ...formData,
+            address: { ...formData.address, commune: commune?.text || "" },
+        });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -188,7 +212,7 @@ const AddHostelForm: React.FC = () => {
         };
 
         try {
-            const response = await apiInstance.post("/hostels", updatedFormData);
+            const response = await apiInstance.put(`/hostels/${hostelId}`, updatedFormData);
             if (response.status === 200 && response.data.succeeded) {
                 const {message} = response.data;
                 toast.success(message, {position: "top-center"});
@@ -205,6 +229,8 @@ const AddHostelForm: React.FC = () => {
     return (
         <form onSubmit={handleSubmit}>
             <div className="bg-white card-box border-20">
+                <h4 className="dash-title-three">Chỉnh sửa phòng trọ</h4>
+
                 <div className="dash-input-wrapper mb-30">
                     <label htmlFor="">Tên nhà trọ*</label>
                     <input
@@ -342,9 +368,18 @@ const AddHostelForm: React.FC = () => {
                         Thoát
                     </button>
                 </div>
+
+                <div className="button-group d-inline-flex align-items-center mt-30">
+                    <button type="submit" className="dash-btn-two tran3s me-3">
+                        Cập nhật
+                    </button>
+                    <button className="dash-cancel-btn tran3s" type="button">
+                        Thoát
+                    </button>
+                </div>
             </div>
         </form>
     );
 };
 
-export default AddHostelForm;
+export default EditHostelForm;

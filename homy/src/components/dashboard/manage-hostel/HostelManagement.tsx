@@ -36,7 +36,7 @@ const HostelManagement = () => {
                   </div>
                   {/* Add Hostel Button */}
                   <li className="d-none d-md-inline-block ms-3">
-                     <Link href="/dashboard/add-hostel" className="btn-two" target="_blank"><span>Add Hostel</span>
+                     <Link href="/dashboard/add-hostel" className="btn-two" target="_blank"><span>Thêm nhà trọ</span>
                      </Link>
                   </li>
                </div>

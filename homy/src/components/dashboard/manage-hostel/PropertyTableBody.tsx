@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import DeleteModal from "@/modals/DeleteModal";
+import {toast} from "react-toastify";
 
 interface Address {
     province: string;
@@ -98,21 +99,17 @@ const PropertyTableBody = () => {
     const handleDelete = async (id: string) => {
         setIsLoading(true);
         setError(null);
-
         try {
             const token = window.localStorage.getItem("token");
             if (!token) {
                 throw new Error("No token found");
             }
 
-            await apiInstance.delete(`hostels/DeleteHostel/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            await apiInstance.delete(`hostels/DeleteHostel/${id}`);
 
-            setHostels((prevHostels) => prevHostels.filter(hostel => hostel.id !== id));
-            alert("Hostel deleted successfully");
+            // Refetch the data after successful deletion
+            await fetchHostels();
+            toast.success("Hostel deleted successfully");
         } catch (error: any) {
             console.error("Error deleting hostel:", error);
             setError(error.message || "An error occurred while deleting the hostel");
@@ -120,6 +117,7 @@ const PropertyTableBody = () => {
             setIsLoading(false);
         }
     };
+
 
     const openDeleteModal = (id: string) => {
         setDeleteId(id);
@@ -178,7 +176,7 @@ const PropertyTableBody = () => {
                                     {item.hostelName}
                                 </Link>
                                 <div className="address">
-                                    {`${item.address.detailAddress}, ${item.address.commune}, ${item.address.district}, ${item.address.province}`}
+                                    {`${item.address.commune}, ${item.address.district}, ${item.address.province}`}
                                 </div>
                                 <strong className="price color-dark">{item.numberOfRooms} rooms</strong>
                             </div>
@@ -193,7 +191,7 @@ const PropertyTableBody = () => {
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
-                                    <Link className="dropdown-item" href="#">
+                                    <Link className="dropdown-item" href={`/dashboard/edit-hostel/${item.id}`}>
                                         <Image src={icon_3} alt="" className="lazy-img" /> Edit
                                     </Link>
                                 </li>

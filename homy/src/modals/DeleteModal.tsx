@@ -13,10 +13,10 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ show, title, message, onConfi
    return (
        <>
           {show && (
-              <div className="modal fade show" tabIndex={-1} aria-hidden="false" style={{ display: 'block' }}>
+              <div className="modal fade show" tabIndex={-1} aria-hidden="true" style={{ display: 'block' }}>
                  <div className="modal-dialog modal-dialog-centered">
-                    <div className="container">
-                       <div className="remove-account-popup text-center modal-content">
+                    <div className="container modal-content">
+                       <div className="remove-account-popup text-center ">
                           <button type="button" className="btn-close" onClick={onCancel} aria-label="Close"></button>
                           <Image src={deleteIcon} alt="" className="lazy-img m-auto" />
                           <h2>{title}</h2>
