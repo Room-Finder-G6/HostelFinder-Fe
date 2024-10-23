@@ -1,15 +1,11 @@
 ﻿"use client";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
-import {jwtDecode} from "jwt-decode";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import GoongMap from "@/components/map/GoongMap";
-
-interface CustomJwtPayload {
-    landlordId: string;
-    UserId: string;
-}
+import Loading from "@/components/Loading";
 
 interface Address {
     province: string;
@@ -25,23 +21,20 @@ interface FormData {
     address: Address;
     size: number | string;
     numberOfRooms: number | string;
-    coordinates : string;
+    coordinates: string;
 }
 
 interface EditHostelFormProps {
     hostelId: string;
 }
 
-const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
+const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
+    const router = useRouter();
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
-
-    const handleCoordinatesChange = (newCoordinates: string) => {
-        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
-        setCoordinates([lng, lat]);
-    };
+    const [isLoading, setIsLoading] = useState(true);
 
     const [formData, setFormData] = useState<FormData>({
         landlordId: "",
@@ -61,27 +54,74 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
+    // Fetch hostel data
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
+        const fetchHostelData = async () => {
             try {
-                const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                if (decodedToken.UserId) {
-                    setFormData((prevData) => ({
-                        ...prevData,
-                        landlordId: decodedToken.UserId,
-                    }));
+                const response = await apiInstance.get(`/hostels/${hostelId}`);
+                const hostelData = response.data.data;
+
+                // Parse coordinates from string to array
+                const coordArray = hostelData.coordinates.split(',').map(Number) as [number, number];
+                setCoordinates(coordArray);
+
+                setFormData({
+                    ...hostelData,
+                    size: Number(hostelData.size),
+                    numberOfRooms: Number(hostelData.numberOfRooms)
+                });
+
+                // Set initial location selections
+                await fetchProvinces();
+                const provinceId = await findProvinceIdByName(hostelData.address.province);
+                if (provinceId) {
+                    setSelectedProvince(provinceId);
+                    await fetchDistricts(provinceId);
+
+                    const districtId = await findDistrictIdByName(hostelData.address.district, provinceId);
+                    if (districtId) {
+                        setSelectedDistrict(districtId);
+                        await fetchCommunes(districtId);
+                    }
                 }
+
+                setIsLoading(false);
             } catch (error) {
-                console.error("Error decoding token:", error);
+                console.error("Error fetching hostel data:", error);
+                toast.error("Không thể tải thông tin nhà trọ", { position: "top-center" });
+                setIsLoading(false);
             }
+        };
+
+        if (hostelId) {
+            fetchHostelData();
         }
-    }, []);
+    }, [hostelId]);
+
+    const handleCoordinatesChange = (newCoordinates: string) => {
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
+        setCoordinates([lng, lat]);
+    };
+
+    const findProvinceIdByName = async (provinceName: string) => {
+        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
+        const data = await response.json();
+        const province = data.data.find((p: any) => p.name === provinceName);
+        return province?.id || null;
+    };
+
+    const findDistrictIdByName = async (districtName: string, provinceId: string) => {
+        const response = await fetch(
+            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceId}`
+        );
+        const data = await response.json();
+        const district = data.data.find((d: any) => d.name === districtName);
+        return district?.id || null;
+    };
 
     useEffect(() => {
         fetchProvinces();
-        fetchHostelData(hostelId);
-    }, [hostelId]);
+    }, []);
 
     useEffect(() => {
         if (selectedProvince) {
@@ -132,27 +172,6 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         );
     };
 
-    const fetchHostelData = async (hostelId: string) => {
-        try {
-            const response = await apiInstance.get(`/hostels/getHostelsByLandlordId/${hostelId}`);
-            const hostelData = response.data;
-            setFormData({
-                ...formData,
-                hostelName: hostelData.hostelName,
-                description: hostelData.description,
-                address: hostelData.address,
-                size: hostelData.size,
-                numberOfRooms: hostelData.numberOfRooms,
-                coordinates: hostelData.coordinates,
-            });
-            setCoordinates(hostelData.coordinates.split(',').map(Number) as [number, number]);
-            setSelectedProvince(hostelData.address.province);
-            setSelectedDistrict(hostelData.address.district);
-        } catch (error) {
-            console.error("Failed to fetch hostel data:", error);
-        }
-    };
-
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const provinceCode = e.target.value;
         const province = provinces.find((p) => p.value === provinceCode);
@@ -185,16 +204,16 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         if (name === "size" || name === "numberOfRooms") {
-            setFormData({...formData, [name]: parseInt(value)});
+            setFormData({ ...formData, [name]: parseInt(value) });
         } else if (name === "detailAddress") {
             setFormData({
                 ...formData,
-                address: {...formData.address, detailAddress: value},
+                address: { ...formData.address, detailAddress: value },
             });
         } else {
-            setFormData({...formData, [name]: value});
+            setFormData({ ...formData, [name]: value });
         }
     };
 
@@ -202,35 +221,41 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         e.preventDefault();
 
         if (!formData.address.province || !formData.address.district || !formData.address.commune) {
-            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", {position: "top-center"});
+            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", { position: "top-center" });
             return;
         }
 
         const updatedFormData: FormData = {
             ...formData,
-            coordinates: coordinates.join(', '), // Chuyển đổi tọa độ thành chuỗi
+            coordinates: coordinates.join(', '),
         };
 
         try {
-            const response = await apiInstance.put(`/hostels/${hostelId}`, updatedFormData);
+            const response = await apiInstance.put(`/hostels/updateHostel/${hostelId}`, updatedFormData);
             if (response.status === 200 && response.data.succeeded) {
-                const {message} = response.data;
-                toast.success(message, {position: "top-center"});
+                toast.success("Cập nhật nhà trọ thành công", { position: "top-center" });
+                router.push('/dashboard/hostels'); // Redirect to hostel list
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
-                toast.error(error.response.data.message, {position: "top-center"});
+                toast.error(error.response.data.message, { position: "top-center" });
             } else {
-                toast.error("Something went wrong", {position: "top-center"});
+                toast.error("Đã xảy ra lỗi khi cập nhật", { position: "top-center" });
             }
         }
     };
 
+    const handleCancel = () => {
+        router.push('/dashboard/hostels');
+    };
+
+    if (isLoading) {
+        return <Loading/>;
+    }
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="bg-white card-box border-20">
-                <h4 className="dash-title-three">Chỉnh sửa phòng trọ</h4>
-
                 <div className="dash-input-wrapper mb-30">
                     <label htmlFor="">Tên nhà trọ*</label>
                     <input
@@ -293,7 +318,8 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 onChange={selectProvinceHandler}
                                 placeholder="Chọn Tỉnh/Thành phố"
                                 name={"province"}
-                                defaultCurrent= {0}
+                                defaultCurrent={0}
+                                value={selectedProvince || undefined}
                                 required
                             />
                         </div>
@@ -310,6 +336,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 disabled={!selectedProvince}
                                 name={"district"}
                                 defaultCurrent={0}
+                                value={selectedDistrict || undefined}
                                 required
                             />
                         </div>
@@ -326,6 +353,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 disabled={!selectedDistrict}
                                 name={"commune"}
                                 defaultCurrent={0}
+                                value={communes.find(c => c.text === formData.address.commune)?.value}
                             />
                         </div>
                     </div>
@@ -358,23 +386,18 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                         </div>
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
                     </div>
-
-                </div>
-                <div className="button-group d-inline-flex align-items-center mt-30">
-                    <button type="submit" className="dash-btn-two tran3s me-3">
-                        Lưu
-                    </button>
-                    <button className="dash-cancel-btn tran3s" type="submit">
-                        Thoát
-                    </button>
                 </div>
 
                 <div className="button-group d-inline-flex align-items-center mt-30">
                     <button type="submit" className="dash-btn-two tran3s me-3">
                         Cập nhật
                     </button>
-                    <button className="dash-cancel-btn tran3s" type="button">
-                        Thoát
+                    <button
+                        className="dash-cancel-btn tran3s"
+                        type="button"
+                        onClick={handleCancel}
+                    >
+                        Hủy
                     </button>
                 </div>
             </div>

@@ -62,6 +62,7 @@ const PropertyTableBody = () => {
         if (userId) {
             setLandlordId(userId);
         }
+        console.log(userId)
     }, [getUserIdFromToken]);
 
     const fetchHostels = useCallback(async () => {
@@ -79,8 +80,8 @@ const PropertyTableBody = () => {
             }
 
             const response = await apiInstance.get(`hostels/GetHostelsByLandlordId/${landlordId}`);
-            if (Array.isArray(response.data)) {
-                setHostels(response.data);
+            if (Array.isArray(response.data.data)) {
+                setHostels(response.data.data);
             }
         } catch (error: any) {
             console.error("Error fetching hostels:", error);
