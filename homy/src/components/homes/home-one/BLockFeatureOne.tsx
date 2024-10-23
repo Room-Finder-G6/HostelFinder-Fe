@@ -9,9 +9,9 @@ const BLockFeatureOne = () => {
          <div className="container">
             <div className="title-one text-center mb-50 xl-mb-30 lg-mb-20 wow fadeInUp">
                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '50px', color: '#333' }}>
-                  CÁC DỊCH VỤ  
+                  CÁC DỊCH VỤ&nbsp;  
                   <span style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', color: '#ff5733' }}>
-                      CHÍNH <Image src={titleShape} alt="" className="lazy-img" />
+                      CHÍNH<Image src={titleShape} alt="" className="lazy-img" />
                   </span>
                </h3>
 

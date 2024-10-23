@@ -21,10 +21,12 @@ import dashboardIcon_7 from "@/assets/images/dashboard/icon/icon_7.svg";
 import dashboardIconActive_8 from "@/assets/images/dashboard/icon/icon_8_active.svg";
 import dashboardIcon_8 from "@/assets/images/dashboard/icon/icon_8.svg";
 import dashboardIconActive_9 from "@/assets/images/dashboard/icon/icon_9_active.svg";
-import dashboardIcon_9 from "@/assets/images/dashboard/icon/icon_9.svg";
+import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
 import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_active.svg";
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
-import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_41.svg";
+import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
+
+
 
 const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
    const pathname = usePathname();
@@ -68,18 +70,18 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                      <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
                      <span>List Room</span>
                   </Link></li>
-                  <li className="plr"><Link href="/dashboard/manager-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manager-hostel' ? 'active' : ''}`}>
-                     <Image src={pathname === '/dashboard/add-hostel' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
-                     <span>Manager Hotel</span>
+                  <li className="plr"><Link href="/dashboard/manage-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostel' ? 'active' : ''}`}>
+                     <Image src={pathname === '/dashboard/add-manager' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <span>Manage Hostel</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
-                     <Image src={pathname === '/dashboard/create-post' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
-                     <span>Manager Post</span>
+                     <Image src={pathname === '/dashboard/create-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
+                     <span>Manage Post</span>
                   </Link></li>
-                  {/* <li className="plr"><Link href="/dashboard/create-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/create-post' ? 'active' : ''}`}>
+                  <li className="plr"><Link href="/dashboard/create-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/create-post' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/create-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
                      <span>Create post</span>
-                  </Link></li> */}
+                  </Link></li>
                   <li className="plr"><Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/favourites' ? dashboardIconActive_8 : dashboardIcon_8} alt="" />
                      <span>Favourites</span>
