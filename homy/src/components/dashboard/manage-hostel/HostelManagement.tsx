@@ -16,8 +16,8 @@ const HostelManagement = () => {
             <DashboardHeaderTwo title="My Properties" />
             <h2 className="main-title d-block d-lg-none">My Properties</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               <div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
-                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>
+               {/*<div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
+                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>*/}
                <div className="d-flex ms-auto xs-mt-30">
                   <div className="short-filter d-flex align-items-center ms-sm-auto">
                      <div className="fs-16 me-2">Sort by:</div>
@@ -36,7 +36,7 @@ const HostelManagement = () => {
                   </div>
                   {/* Add Hostel Button */}
                   <li className="d-none d-md-inline-block ms-3">
-                     <Link href="/dashboard/add-hostel" className="btn-two" target="_blank"><span>Add Hostel</span>
+                     <Link href="/dashboard/add-hostel" className="btn-two" target="_blank"><span>Thêm nhà trọ</span>
                      </Link>
                   </li>
                </div>
@@ -48,11 +48,10 @@ const HostelManagement = () => {
                   <table className="table property-list-table">
                      <thead>
                         <tr>
-                           <th scope="col">Title</th>
-                           <th scope="col">Date</th>
-                           <th scope="col">Rating</th>
-                       
-                           <th scope="col">Action</th>
+                           <th scope="col">Nhà trọ</th>
+                           <th scope="col">Ngày tạo</th>
+                           <th scope="col">Đánh giá</th>
+                           <th scope="col"></th>
                         </tr>
                      </thead>
                      <PropertyTableBody />

@@ -126,7 +126,7 @@ const AddPropertyBody: React.FC = () => {
 
         try {
             console.log('Sending data:', formData);
-            const response = await apiInstance.post("rooms", formData);
+            const response = await apiInstance.post("post", formData);
             console.log("Response:", response);
             toast.success("Tạo bài đăng thành công", { position: "top-center" });
         } catch (error: any) {
