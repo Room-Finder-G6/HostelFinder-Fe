@@ -234,7 +234,9 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
             const response = await apiInstance.put(`/hostels/updateHostel/${hostelId}`, updatedFormData);
             if (response.status === 200 && response.data.succeeded) {
                 toast.success("Cập nhật nhà trọ thành công", { position: "top-center" });
-                router.push('/dashboard/hostels'); // Redirect to hostel list
+                setTimeout(() => {
+                    router.push('/dashboard/manage-hostels');
+                }, 3000); 
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
@@ -246,7 +248,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
     };
 
     const handleCancel = () => {
-        router.push('/dashboard/hostels');
+        router.push('/dashboard/manage-hostel');
     };
 
     if (isLoading) {

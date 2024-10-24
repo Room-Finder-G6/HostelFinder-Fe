@@ -70,13 +70,13 @@ const DashboardHeaderOne = ({ isActive, setIsActive }: any) => {
                      <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="" />
                      <span>List Room</span>
                   </Link></li>
-                  <li className="plr"><Link href="/dashboard/manage-hostel" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostel' ? 'active' : ''}`}>
+                  <li className="plr"><Link href="/dashboard/manage-hostels" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/add-manager' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
-                     <span>Manage Hostel</span>
+                     <span>Quản Lý Nhà Trọ</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="" />
-                     <span>Manage post</span>
+                     <span>Quản Lý Bài Đăng</span>
                   </Link></li>
                   <li className="plr"><Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
                      <Image src={pathname === '/dashboard/favourites' ? dashboardIconActive_8 : dashboardIcon_8} alt="" />

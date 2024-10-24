@@ -16,8 +16,8 @@ const HostelManagement = () => {
             <DashboardHeaderTwo title="My Properties" />
             <h2 className="main-title d-block d-lg-none">My Properties</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               <div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
-                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>
+               {/*<div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
+                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>*/}
                <div className="d-flex ms-auto xs-mt-30">
                   <div className="short-filter d-flex align-items-center ms-sm-auto">
                      <div className="fs-16 me-2">Sort by:</div>
