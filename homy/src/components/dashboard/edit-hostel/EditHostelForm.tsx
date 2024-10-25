@@ -88,7 +88,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching hostel data:", error);
-                toast.error("Không thể tải thông tin nhà trọ", { position: "top-center" });
+                toast.error("Có lỗi khi tải thông tin nhà trọ", { position: "top-center" });
                 setIsLoading(false);
             }
         };
