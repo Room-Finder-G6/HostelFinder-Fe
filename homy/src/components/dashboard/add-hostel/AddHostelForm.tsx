@@ -135,7 +135,7 @@ const AddHostelForm: React.FC = () => {
       setSelectedProvince(provinceCode);
       setFormData({
         ...formData,
-        address: { ...formData.address, province: province?.text || "" },
+        address: { ...formData.address, province: province?.text ?? "" },
       });
       setSelectedDistrict(null);
       setCommunes([]);
@@ -147,7 +147,7 @@ const AddHostelForm: React.FC = () => {
       setSelectedDistrict(districtCode);
       setFormData({
         ...formData,
-        address: { ...formData.address, district: district?.text || "" },
+        address: { ...formData.address, district: district?.text ?? "" },
       });
     };
   
@@ -156,7 +156,7 @@ const AddHostelForm: React.FC = () => {
       const commune = communes.find((c) => c.value === communeCode);
       setFormData({
         ...formData,
-        address: { ...formData.address, commune: commune?.text || "" },
+        address: { ...formData.address, commune: commune?.text ?? "" },
       });
     };
 
@@ -189,7 +189,7 @@ const AddHostelForm: React.FC = () => {
 
         try {
             const response = await apiInstance.post("/hostels", updatedFormData);
-            if (response.status === 200 && response.data.succeeded) {
+            if (response.status === 200 || response.data.succeeded) {
                 const {message} = response.data;
                 toast.success(message, {position: "top-center"});
             }
@@ -223,7 +223,7 @@ const AddHostelForm: React.FC = () => {
                         className="size-lg"
                         placeholder="Hãy viết miêu tả chi tiết về phòng trọ..."
                         name="description"
-                        value={formData.description}
+                        value={formData.description.toString()}
                         onChange={handleInputChange}
                         required
                     />
@@ -237,8 +237,9 @@ const AddHostelForm: React.FC = () => {
                                 type="number"
                                 placeholder="Diện tích phòng trọ"
                                 name="size"
-                                value={formData.size}
+                                value={formData.size.toString()}
                                 onChange={handleInputChange}
+                                min = "0"
                                 required
                             />
                         </div>
@@ -253,6 +254,7 @@ const AddHostelForm: React.FC = () => {
                                 name="numberOfRooms"
                                 value={formData.numberOfRooms}
                                 onChange={handleInputChange}
+                                min = "0"
                                 required
                             />
                         </div>
