@@ -5,6 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
 import {jwtDecode} from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
+import { useRouter } from "next/navigation";
 
 interface CustomJwtPayload {
     landlordId: string;
@@ -33,12 +34,12 @@ const AddHostelForm: React.FC = () => {
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
+    const router = useRouter();
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
         const newCoords: [number, number] = [lng, lat];
 
-        // Chỉ cập nhật nếu tọa độ thực sự thay đổi
         if (
             coordinates[0] !== newCoords[0] ||
             coordinates[1] !== newCoords[1]
@@ -211,6 +212,10 @@ const AddHostelForm: React.FC = () => {
         }
     };
 
+    const handleCancel = () => {
+        router.push('/dashboard/manage-hostels');
+    };
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="bg-white card-box border-20">
@@ -246,7 +251,7 @@ const AddHostelForm: React.FC = () => {
                                 type="number"
                                 placeholder="Diện tích phòng trọ"
                                 name="size"
-                                value={formData.size.toString()}
+                                value={formData.size}
                                 onChange={handleInputChange}
                                 min = "0"
                                 required
@@ -349,7 +354,7 @@ const AddHostelForm: React.FC = () => {
                     <button type="submit" className="dash-btn-two tran3s me-3">
                         Lưu
                     </button>
-                    <button className="dash-cancel-btn tran3s" type="submit">
+                    <button className="dash-cancel-btn tran3s" type="button" onClick={handleCancel}>
                         Thoát
                     </button>
                 </div>
