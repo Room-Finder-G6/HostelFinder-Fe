@@ -36,8 +36,17 @@ const AddHostelForm: React.FC = () => {
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
-        setCoordinates([lng, lat]);
+        const newCoords: [number, number] = [lng, lat];
+
+        // Chỉ cập nhật nếu tọa độ thực sự thay đổi
+        if (
+            coordinates[0] !== newCoords[0] ||
+            coordinates[1] !== newCoords[1]
+        ) {
+            setCoordinates(newCoords);
+        }
     };
+
 
     const [formData, setFormData] = useState<FormData>({
         landlordId: "",
