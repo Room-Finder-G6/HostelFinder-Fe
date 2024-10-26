@@ -330,7 +330,7 @@ const AddHostelForm: React.FC = () => {
                     </div>
 
                     <div className="map-frame mb-10">
-                        <div className="dash-input-wrapper mb-10">
+                        <div className="dash-input-wrapper mb-30">
                             <label htmlFor="">Tọa độ</label>
                             <input
                                 className={'w-25'}
