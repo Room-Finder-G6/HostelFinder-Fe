@@ -1,9 +1,9 @@
 ﻿"use client";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import {toast} from "react-toastify";
+import {useRouter} from "next/navigation";
 import GoongMap from "@/components/map/GoongMap";
 import Loading from "@/components/Loading";
 
@@ -28,7 +28,7 @@ interface EditHostelFormProps {
     hostelId: string;
 }
 
-const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
+const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     const router = useRouter();
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
@@ -61,7 +61,6 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
                 const response = await apiInstance.get(`/hostels/${hostelId}`);
                 const hostelData = response.data.data;
 
-                // Parse coordinates from string to array
                 const coordArray = hostelData.coordinates.split(',').map(Number) as [number, number];
                 setCoordinates(coordArray);
 
@@ -88,7 +87,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
                 setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching hostel data:", error);
-                toast.error("Có lỗi khi tải thông tin nhà trọ", { position: "top-center" });
+                toast.error("Có lỗi khi tải thông tin nhà trọ", {position: "top-center"});
                 setIsLoading(false);
             }
         };
@@ -178,7 +177,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
         setSelectedProvince(provinceCode);
         setFormData({
             ...formData,
-            address: { ...formData.address, province: province?.text || "" },
+            address: {...formData.address, province: province?.text || ""},
         });
         setSelectedDistrict(null);
         setCommunes([]);
@@ -190,7 +189,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
         setSelectedDistrict(districtCode);
         setFormData({
             ...formData,
-            address: { ...formData.address, district: district?.text || "" },
+            address: {...formData.address, district: district?.text || ""},
         });
     };
 
@@ -199,21 +198,21 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
         const commune = communes.find((c) => c.value === communeCode);
         setFormData({
             ...formData,
-            address: { ...formData.address, commune: commune?.text || "" },
+            address: {...formData.address, commune: commune?.text || ""},
         });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         if (name === "size" || name === "numberOfRooms") {
-            setFormData({ ...formData, [name]: parseInt(value) });
+            setFormData({...formData, [name]: parseInt(value)});
         } else if (name === "detailAddress") {
             setFormData({
                 ...formData,
-                address: { ...formData.address, detailAddress: value },
+                address: {...formData.address, detailAddress: value},
             });
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData({...formData, [name]: value});
         }
     };
 
@@ -221,7 +220,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
         e.preventDefault();
 
         if (!formData.address.province || !formData.address.district || !formData.address.commune) {
-            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", { position: "top-center" });
+            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", {position: "top-center"});
             return;
         }
 
@@ -233,16 +232,16 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
         try {
             const response = await apiInstance.put(`/hostels/updateHostel/${hostelId}`, updatedFormData);
             if (response.status === 200 && response.data.succeeded) {
-                toast.success("Cập nhật nhà trọ thành công", { position: "top-center" });
+                toast.success("Cập nhật nhà trọ thành công", {position: "top-center"});
                 setTimeout(() => {
                     router.push('/dashboard/manage-hostels');
-                }, 3000); 
+                }, 3000);
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
-                toast.error(error.response.data.message, { position: "top-center" });
+                toast.error(error.response.data.message, {position: "top-center"});
             } else {
-                toast.error("Đã xảy ra lỗi khi cập nhật", { position: "top-center" });
+                toast.error("Đã xảy ra lỗi khi cập nhật", {position: "top-center"});
             }
         }
     };
@@ -292,6 +291,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
                                 name="size"
                                 value={formData.size}
                                 onChange={handleInputChange}
+                                min="0"
                                 required
                             />
                         </div>
@@ -306,6 +306,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({ hostelId }) => {
                                 name="numberOfRooms"
                                 value={formData.numberOfRooms}
                                 onChange={handleInputChange}
+                                min="0"
                                 required
                             />
                         </div>
