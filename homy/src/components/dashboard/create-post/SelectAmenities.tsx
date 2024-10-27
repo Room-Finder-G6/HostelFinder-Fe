@@ -18,9 +18,16 @@ const SelectAmenities: React.FC<SelectAmenitiesProps> = ({ onDataChange }) => {
         const fetchAmenities = async () => {
             try {
                 const response = await apiInstance.get("amenity/amenities");
-                setAmenities(response.data);
+                // Ensure response data is an array
+                if (Array.isArray(response.data)) {
+                    setAmenities(response.data);
+                } else {
+                    console.error("Unexpected response format: data is not an array", response.data);
+                    setAmenities([]);
+                }
             } catch (error) {
                 console.error("Error fetching amenities:", error);
+                setAmenities([]); // Fallback to an empty array in case of an error
             }
         };
 
@@ -28,10 +35,15 @@ const SelectAmenities: React.FC<SelectAmenitiesProps> = ({ onDataChange }) => {
     }, []);
 
     useEffect(() => {
-        onDataChange(amenities.map((amenity) => ({
-            id: amenity.id,
-            isSelected: amenity.isSelected,
-        })));
+        // Only call onDataChange when amenities is an array
+        if (Array.isArray(amenities)) {
+            onDataChange(
+                amenities.map((amenity) => ({
+                    id: amenity.id,
+                    isSelected: amenity.isSelected,
+                }))
+            );
+        }
     }, [amenities]);
 
     const handleSelect = (id: string) => {
@@ -46,19 +58,24 @@ const SelectAmenities: React.FC<SelectAmenitiesProps> = ({ onDataChange }) => {
         <div className="bg-white card-box border-20 mt-40">
             <h4 className="dash-title-three m0 pb-5">Select Amenities</h4>
             <ul className="style-none d-flex flex-wrap filter-input">
-                {amenities.map((amenity) => (
-                    <li key={amenity.id}>
-                        <input
-                            type="checkbox"
-                            id={`amenity-${amenity.id}`}
-                            name="Amenities"
-                            value={amenity.id}
-                            checked={amenity.isSelected}
-                            onChange={() => handleSelect(amenity.id)}
-                        />
-                        <label htmlFor={`amenity-${amenity.id}`}>{amenity.amenityName}</label>
-                    </li>
-                ))}
+                {/* Ensure amenities is an array before mapping */}
+                {Array.isArray(amenities) && amenities.length > 0 ? (
+                    amenities.map((amenity) => (
+                        <li key={amenity.id}>
+                            <input
+                                type="checkbox"
+                                id={`amenity-${amenity.id}`}
+                                name="Amenities"
+                                value={amenity.id}
+                                checked={amenity.isSelected}
+                                onChange={() => handleSelect(amenity.id)}
+                            />
+                            <label htmlFor={`amenity-${amenity.id}`}>{amenity.amenityName}</label>
+                        </li>
+                    ))
+                ) : (
+                    <li>No amenities available</li> // Handle empty or loading state
+                )}
             </ul>
         </div>
     );

@@ -1,16 +1,11 @@
-"use client";
+﻿"use client";
 import React, {useState, useEffect} from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
-import {jwtDecode} from "jwt-decode";
+import {useRouter} from "next/navigation";
 import GoongMap from "@/components/map/GoongMap";
-import { useRouter } from "next/navigation";
-
-interface CustomJwtPayload {
-    landlordId: string;
-    UserId: string;
-}
+import Loading from "@/components/Loading";
 
 interface Address {
     province: string;
@@ -26,28 +21,20 @@ interface FormData {
     address: Address;
     size: number | string;
     numberOfRooms: number | string;
-    coordinates : string
+    coordinates: string;
 }
 
-const AddHostelForm: React.FC = () => {
+interface EditHostelFormProps {
+    hostelId: string;
+}
+
+const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
+    const router = useRouter();
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
-    const router = useRouter();
-
-    const handleCoordinatesChange = (newCoordinates: string) => {
-        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
-        const newCoords: [number, number] = [lng, lat];
-
-        if (
-            coordinates[0] !== newCoords[0] ||
-            coordinates[1] !== newCoords[1]
-        ) {
-            setCoordinates(newCoords);
-        }
-    };
-
+    const [isLoading, setIsLoading] = useState(true);
 
     const [formData, setFormData] = useState<FormData>({
         landlordId: "",
@@ -67,22 +54,69 @@ const AddHostelForm: React.FC = () => {
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
     const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
 
+    // Fetch hostel data
     useEffect(() => {
-        const token = localStorage.getItem("token"); // Adjust key based on how you store the token
-        if (token) {
+        const fetchHostelData = async () => {
             try {
-                const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                if (decodedToken.UserId) {
-                    setFormData((prevData) => ({
-                        ...prevData,
-                        landlordId: decodedToken.UserId,
-                    }));
+                const response = await apiInstance.get(`/hostels/${hostelId}`);
+                const hostelData = response.data.data;
+
+                const coordArray = hostelData.coordinates.split(',').map(Number) as [number, number];
+                setCoordinates(coordArray);
+
+                setFormData({
+                    ...hostelData,
+                    size: Number(hostelData.size),
+                    numberOfRooms: Number(hostelData.numberOfRooms)
+                });
+
+                // Set initial location selections
+                await fetchProvinces();
+                const provinceId = await findProvinceIdByName(hostelData.address.province);
+                if (provinceId) {
+                    setSelectedProvince(provinceId);
+                    await fetchDistricts(provinceId);
+
+                    const districtId = await findDistrictIdByName(hostelData.address.district, provinceId);
+                    if (districtId) {
+                        setSelectedDistrict(districtId);
+                        await fetchCommunes(districtId);
+                    }
                 }
+
+                setIsLoading(false);
             } catch (error) {
-                console.error("Error decoding token:", error);
+                console.error("Error fetching hostel data:", error);
+                toast.error("Có lỗi khi tải thông tin nhà trọ", {position: "top-center"});
+                setIsLoading(false);
             }
+        };
+
+        if (hostelId) {
+            fetchHostelData();
         }
-    }, []);
+    }, [hostelId]);
+
+    const handleCoordinatesChange = (newCoordinates: string) => {
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
+        setCoordinates([lng, lat]);
+    };
+
+    const findProvinceIdByName = async (provinceName: string) => {
+        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
+        const data = await response.json();
+        const province = data.data.find((p: any) => p.name === provinceName);
+        return province?.id || null;
+    };
+
+    const findDistrictIdByName = async (districtName: string, provinceId: string) => {
+        const response = await fetch(
+            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceId}`
+        );
+        const data = await response.json();
+        const district = data.data.find((d: any) => d.name === districtName);
+        return district?.id || null;
+    };
 
     useEffect(() => {
         fetchProvinces();
@@ -100,74 +134,72 @@ const AddHostelForm: React.FC = () => {
         }
     }, [selectedDistrict]);
 
-  const fetchProvinces = async () => {
-    const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
-    const data = await response.json();
-    setProvinces(
-      data.data.map((province: any) => ({
-        value: province.id,
-        text: province.name,
-      }))
-    );
-  };
+    const fetchProvinces = async () => {
+        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
+        const data = await response.json();
+        setProvinces(
+            data.data.map((province: any) => ({
+                value: province.id,
+                text: province.name,
+            }))
+        );
+    };
 
     const fetchDistricts = async (provinceCode: string) => {
-      const response = await fetch(
-        `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
-      );
-      const data = await response.json();
-      setDistricts(
-        data.data.map((district: any) => ({
-          value: district.id,
-          text: district.name,
-        }))
-      );
+        const response = await fetch(
+            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
+        );
+        const data = await response.json();
+        setDistricts(
+            data.data.map((district: any) => ({
+                value: district.id,
+                text: district.name,
+            }))
+        );
     };
-    
 
     const fetchCommunes = async (districtCode: string) => {
-      const response = await fetch(
-        `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
-      );
-      const data = await response.json();
-      setCommunes(
-        data.data.map((ward: any) => ({
-          value: ward.id,
-          text: ward.name,
-        }))
-      );
+        const response = await fetch(
+            `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
+        );
+        const data = await response.json();
+        setCommunes(
+            data.data.map((ward: any) => ({
+                value: ward.id,
+                text: ward.name,
+            }))
+        );
     };
-
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const provinceCode = e.target.value;
-      const province = provinces.find((p) => p.value === provinceCode);
-      setSelectedProvince(provinceCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, province: province?.text ?? "" },
-      });
-      setSelectedDistrict(null);
-      setCommunes([]);
+        const provinceCode = e.target.value;
+        const province = provinces.find((p) => p.value === provinceCode);
+        setSelectedProvince(provinceCode);
+        setFormData({
+            ...formData,
+            address: {...formData.address, province: province?.text || ""},
+        });
+        setSelectedDistrict(null);
+        setCommunes([]);
     };
-  
+
     const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const districtCode = e.target.value;
-      const district = districts.find((d) => d.value === districtCode);
-      setSelectedDistrict(districtCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, district: district?.text ?? "" },
-      });
+        const districtCode = e.target.value;
+        const district = districts.find((d) => d.value === districtCode);
+        setSelectedDistrict(districtCode);
+        setFormData({
+            ...formData,
+            address: {...formData.address, district: district?.text || ""},
+        });
     };
-  
+
     const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const communeCode = e.target.value;
-      const commune = communes.find((c) => c.value === communeCode);
-      setFormData({
-        ...formData,
-        address: { ...formData.address, commune: commune?.text ?? "" },
-      });
+        const communeCode = e.target.value;
+        const commune = communes.find((c) => c.value === communeCode);
+        setFormData({
+            ...formData,
+            address: {...formData.address, commune: commune?.text || ""},
+        });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -194,27 +226,33 @@ const AddHostelForm: React.FC = () => {
 
         const updatedFormData: FormData = {
             ...formData,
-            coordinates: coordinates.join(', '), // Chuyển đổi tọa độ thành chuỗi
+            coordinates: coordinates.join(', '),
         };
 
         try {
-            const response = await apiInstance.post("/hostels", updatedFormData);
-            if (response.status === 200 || response.data.succeeded) {
-                const {message} = response.data;
-                toast.success(message, {position: "top-center"});
+            const response = await apiInstance.put(`/hostels/updateHostel/${hostelId}`, updatedFormData);
+            if (response.status === 200 && response.data.succeeded) {
+                toast.success("Cập nhật nhà trọ thành công", {position: "top-center"});
+                setTimeout(() => {
+                    router.push('/dashboard/manage-hostels');
+                }, 3000);
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
                 toast.error(error.response.data.message, {position: "top-center"});
             } else {
-                toast.error("Something went wrong", {position: "top-center"});
+                toast.error("Đã xảy ra lỗi khi cập nhật", {position: "top-center"});
             }
         }
     };
 
     const handleCancel = () => {
-        router.push('/dashboard/manage-hostels');
+        router.push('/dashboard/manage-hostel');
     };
+
+    if (isLoading) {
+        return <Loading/>;
+    }
 
     return (
         <form onSubmit={handleSubmit}>
@@ -237,7 +275,7 @@ const AddHostelForm: React.FC = () => {
                         className="size-lg"
                         placeholder="Hãy viết miêu tả chi tiết về phòng trọ..."
                         name="description"
-                        value={formData.description.toString()}
+                        value={formData.description}
                         onChange={handleInputChange}
                         required
                     />
@@ -253,7 +291,7 @@ const AddHostelForm: React.FC = () => {
                                 name="size"
                                 value={formData.size}
                                 onChange={handleInputChange}
-                                min = "0"
+                                min="0"
                                 required
                             />
                         </div>
@@ -268,7 +306,7 @@ const AddHostelForm: React.FC = () => {
                                 name="numberOfRooms"
                                 value={formData.numberOfRooms}
                                 onChange={handleInputChange}
-                                min = "0"
+                                min="0"
                                 required
                             />
                         </div>
@@ -283,7 +321,8 @@ const AddHostelForm: React.FC = () => {
                                 onChange={selectProvinceHandler}
                                 placeholder="Chọn Tỉnh/Thành phố"
                                 name={"province"}
-                                defaultCurrent= {0}
+                                defaultCurrent={0}
+                                value={selectedProvince || undefined}
                                 required
                             />
                         </div>
@@ -300,6 +339,7 @@ const AddHostelForm: React.FC = () => {
                                 disabled={!selectedProvince}
                                 name={"district"}
                                 defaultCurrent={0}
+                                value={selectedDistrict || undefined}
                                 required
                             />
                         </div>
@@ -316,6 +356,7 @@ const AddHostelForm: React.FC = () => {
                                 disabled={!selectedDistrict}
                                 name={"commune"}
                                 defaultCurrent={0}
+                                value={communes.find(c => c.text === formData.address.commune)?.value}
                             />
                         </div>
                     </div>
@@ -335,7 +376,7 @@ const AddHostelForm: React.FC = () => {
                     </div>
 
                     <div className="map-frame mb-10">
-                        <div className="dash-input-wrapper mb-30">
+                        <div className="dash-input-wrapper mb-10">
                             <label htmlFor="">Tọa độ</label>
                             <input
                                 className={'w-25'}
@@ -348,14 +389,18 @@ const AddHostelForm: React.FC = () => {
                         </div>
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
                     </div>
-
                 </div>
+
                 <div className="button-group d-inline-flex align-items-center mt-30">
                     <button type="submit" className="dash-btn-two tran3s me-3">
-                        Lưu
+                        Cập nhật
                     </button>
-                    <button className="dash-cancel-btn tran3s" type="button" onClick={handleCancel}>
-                        Thoát
+                    <button
+                        className="dash-cancel-btn tran3s"
+                        type="button"
+                        onClick={handleCancel}
+                    >
+                        Hủy
                     </button>
                 </div>
             </div>
@@ -363,4 +408,4 @@ const AddHostelForm: React.FC = () => {
     );
 };
 
-export default AddHostelForm;
+export default EditHostelForm;

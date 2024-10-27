@@ -1,4 +1,5 @@
-﻿import React, { useEffect, useRef, useState } from 'react';
+﻿import React, {useEffect, useRef, useState, useCallback} from 'react';
+import debounce from 'lodash/debounce';
 
 interface GoongMapProps {
     selectedLocation: [number, number];
@@ -8,98 +9,182 @@ interface GoongMapProps {
 declare global {
     interface Window {
         goongjs: any;
-        initMap: () => void;
     }
 }
 
-const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChange }) => {
+const GOONG_MAP_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js';
+const GOONG_CSS_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css';
+
+const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChange}) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
-    const [map, setMap] = useState<any>(null);
-    const [marker, setMarker] = useState<any>(null);
-    const [coordinates, setCoordinates] = useState<string>('105.83991,21.02800');
+    const mapRef = useRef<any>(null);
+    const markerRef = useRef<any>(null);
+    const isProgrammaticMoveRef = useRef<boolean>(false);
+    const [coordinates, setCoordinates] = useState<string>(`${selectedLocation[0]},${selectedLocation[1]}`);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestionSelected, setSuggestionSelected] = useState<boolean>(false); // Flag to prevent fetching after selection
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && !window.goongjs) {
-            const script = document.createElement('script');
-            script.src = `https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js`;
-            document.body.appendChild(script);
-
-            script.onload = () => {
-                const link = document.createElement('link');
-                link.href = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css';
-                link.rel = 'stylesheet';
-                document.head.appendChild(link);
-
-                window.initMap = initMap;
-                if (window.goongjs) {
-                    initMap();
-                }
-            };
-        } else if (window.goongjs) {
+        if (!window.goongjs) {
+            loadGoongJS();
+        } else {
             initMap();
         }
 
         return () => {
-            if (map) map.remove();
+            if (mapRef.current) {
+                mapRef.current.remove();
+                mapRef.current = null;
+            }
         };
     }, []);
 
-    useEffect(() => {
-        if (map && marker) {
-            const [lng, lat] = selectedLocation;
-            if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
-                // Kiểm tra xem tọa độ có thay đổi không trước khi cập nhật
-                if (coordinates !== `${lng},${lat}`) {
-                    marker.setLngLat(selectedLocation);
-                    map.flyTo({ center: selectedLocation });
+    const loadGoongJS = () => {
+        const script = document.createElement('script');
+        script.src = GOONG_MAP_URL;
+        script.async = true;
+        document.head.appendChild(script);
 
-                    const newCoordinates = `${lng},${lat}`;
-                    setCoordinates(newCoordinates);
-                    onCoordinatesChange(newCoordinates);
-                }
-            } else {
-                console.error('Invalid LngLat values:', selectedLocation);
-            }
-        }
-    }, [map, marker, selectedLocation]); // Chỉ phụ thuộc vào map, marker và selectedLocation
+        const link = document.createElement('link');
+        link.href = GOONG_CSS_URL;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+
+        script.onload = initMap;
+    };
 
     const initMap = () => {
-        if (mapContainerRef.current && window.goongjs) {
-            window.goongjs.accessToken = process.env.NEXT_PUBLIC_GOONG_MAPTILES_KEY;
-            const initialCenter = selectedLocation;
-            const newMap = new window.goongjs.Map({
-                container: mapContainerRef.current,
-                style: 'https://tiles.goong.io/assets/goong_map_web.json',
-                center: initialCenter,
-                zoom: 12
-            });
+        if (mapRef.current || !mapContainerRef.current || !window.goongjs) return;
 
-            const newMarker = new window.goongjs.Marker()
-                .setLngLat(initialCenter)
-                .addTo(newMap);
+        window.goongjs.accessToken = process.env.NEXT_PUBLIC_GOONG_MAPTILES_KEY;
+        mapRef.current = new window.goongjs.Map({
+            container: mapContainerRef.current,
+            style: 'https://tiles.goong.io/assets/goong_map_web.json',
+            center: selectedLocation,
+            zoom: 12,
+        });
 
-            setMarker(newMarker);
-            setMap(newMap);
+        markerRef.current = new window.goongjs.Marker().setLngLat(selectedLocation).addTo(mapRef.current);
 
-            newMap.on('moveend', () => {
-                const center = newMap.getCenter();
-                const newCoordinates = `${center.lng},${center.lat}`;
-                newMarker.setLngLat([center.lng, center.lat]);
+        mapRef.current.on('move', handleMapMoveEnd);
+    };
 
-                // Chỉ cập nhật nếu tọa độ thay đổi
-                if (coordinates !== newCoordinates) {
-                    setCoordinates(newCoordinates);
-                    onCoordinatesChange(newCoordinates);
-                }
-            });
+    const handleMapMoveEnd = () => {
+        const center = mapRef.current.getCenter();
+        if (isProgrammaticMoveRef.current) {
+            isProgrammaticMoveRef.current = false;
+        } else {
+            markerRef.current.setLngLat(center);
+            const newCoordinates = `${center.lng},${center.lat}`;
+            if (coordinates !== newCoordinates) {
+                setCoordinates(newCoordinates);
+                onCoordinatesChange(newCoordinates);
+            }
         }
+    };
+
+    const fetchSuggestions = useCallback(
+        debounce(async (query: string) => {
+            if (query.length <= 2 || suggestionSelected) return setSuggestions([]);
+
+            try {
+                const response = await fetch(
+                    `https://rsapi.goong.io/Place/AutoComplete?api_key=${process.env.NEXT_PUBLIC_GOONG_API_KEY}&input=${encodeURIComponent(query)}`
+                );
+                const data = await response.json();
+                setSuggestions(data.predictions || []);
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+            }
+        }, 500),
+        [suggestionSelected] // Dependency to re-run fetch when flag changes
+    );
+
+    useEffect(() => {
+        fetchSuggestions(searchQuery);
+        return () => fetchSuggestions.cancel();
+    }, [searchQuery, fetchSuggestions]);
+
+    const handleSuggestionSelect = async (suggestion: any) => {
+        setSearchQuery(suggestion.description); // Keep selected location in input
+        setSuggestions([]); // Clear suggestions immediately
+        setSuggestionSelected(true); // Set flag to prevent further suggestions
+
+        try {
+            const response = await fetch(
+                `https://rsapi.goong.io/Place/Detail?place_id=${suggestion.place_id}&api_key=${process.env.NEXT_PUBLIC_GOONG_API_KEY}`
+            );
+            const data = await response.json();
+            const location = data?.result?.geometry?.location;
+
+            if (location) {
+                updateMap([location.lng, location.lat]);
+            } else {
+                console.error('Invalid data from Place Detail API:', data);
+            }
+        } catch (error) {
+            console.error('Error fetching place details:', error);
+        }
+    };
+
+    const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value);
+        setSuggestionSelected(false); // Reset flag so suggestions can appear again
+    };
+
+    const updateMap = (newCoordinates: [number, number]) => {
+        if (!mapRef.current || !markerRef.current) return console.error('Map or marker is not initialized');
+
+        isProgrammaticMoveRef.current = true;
+        mapRef.current.flyTo({center: newCoordinates, zoom: 15});
+        markerRef.current.setLngLat(newCoordinates);
+
+        const coordinatesStr = `${newCoordinates[0]},${newCoordinates[1]}`;
+        setCoordinates(coordinatesStr);
+        onCoordinatesChange(coordinatesStr);
     };
 
     return (
         <div>
-            <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }} />
+            <div className="dash-input-wrapper" style={{position: 'relative', marginBottom: '15px'}}>
+                <label style={{display: 'block', marginBottom: '5px'}}>Tìm kiếm địa điểm</label>
+                <input
+                    className="w-50 p-2 border rounded"
+                    type="text"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                    placeholder="Search for a location..."
+                    style={{width: '100%', padding: '8px', boxSizing: 'border-box'}}
+                />
+                {suggestions.length > 0 && (
+                    <ul style={{
+                        listStyleType: 'none',
+                        padding: 0,
+                        margin: 0,
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        right: 0,
+                        backgroundColor: 'white',
+                        maxHeight: '200px',
+                        overflowY: 'auto',
+                        border: '1px solid #ccc',
+                        zIndex: 1000
+                    }}>
+                        {suggestions.map((suggestion) => (
+                            <li key={suggestion.place_id} onClick={() => handleSuggestionSelect(suggestion)}
+                                style={{padding: '8px', cursor: 'pointer'}}>
+                                {suggestion.description}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
+            <div ref={mapContainerRef} style={{width: '100%', height: '400px'}}/>
         </div>
     );
 };
 
 export default GoongMap;
+

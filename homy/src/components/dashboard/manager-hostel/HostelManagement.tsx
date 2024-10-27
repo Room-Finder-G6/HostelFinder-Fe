@@ -1,60 +1,58 @@
 "use client";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import NiceSelect from "@/ui/NiceSelect";
-import PropertyTableBody from "./PropertyTableBody";
+import PropertyTableBody from "./PropertyTableBody"; // Điều chỉnh lại tên thành PostTableBody nếu bạn sử dụng bảng cho Post
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
-import useHostels from "./useHostels";
 
-const HostelManagement = () => {
+const PostManagement = () => {
    const selectHandler = (e: any) => { };
-   const {hostels,totalPages, pageIndex, setPageIndex, totalRecords, loading} = useHostels();
+
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="My Properties" />
-            <h2 className="main-title d-block d-lg-none">My Properties</h2>
+            <DashboardHeaderTwo title="Manage Posts" />
+            <h2 className="main-title d-block d-lg-none">Manage Posts</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               {/*<div className="fs-16">Hiển thị <span className="color-dark fw-500">{(pageIndex - 1) * 10 + 1}</span>  to{" "} <span
-                  className="color-dark fw-500">{totalRecords}</span> kết quả</div>*/}
+               <div className="fs-16">Showing <span className="color-dark fw-500">1–5</span> of <span
+                  className="color-dark fw-500">40</span> results</div>
                <div className="d-flex ms-auto xs-mt-30">
                   <div className="short-filter d-flex align-items-center ms-sm-auto">
                      <div className="fs-16 me-2">Sort by:</div>
                      <NiceSelect className="nice-select"
                         options={[
                            { value: "1", text: "Newest" },
-                           { value: "2", text: "Best Seller" },
-                           { value: "3", text: "Best Match" },
-                           { value: "4", text: "Price Low" },
-                           { value: "5", text: "Price High" },
+                           { value: "2", text: "Most Viewed" },
+                           { value: "3", text: "Top Rated" },
+                           { value: "4", text: "Oldest" },
                         ]}
                         defaultCurrent={0}
                         onChange={selectHandler}
                         name=""
                         placeholder="" />
                   </div>
-                  {/* Add Hostel Button */}
+                  {/* Add Post Button */}
                   <li className="d-none d-md-inline-block ms-3">
-                     <Link href="/dashboard/add-hostel" className="btn-two" target="_blank"><span>Thêm nhà trọ</span>
+                     <Link href="/dashboard/create-post" className="btn-two" target="_blank"><span>Add Post</span>
                      </Link>
                   </li>
                </div>
             </div>
 
-
             <div className="bg-white card-box p0 border-20">
                <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
-                  <table className="table property-list-table">
+                  <table className="table property-list-table"> {/* Đổi thành post-list-table */}
                      <thead>
                         <tr>
-                           <th scope="col">Nhà trọ</th>
-                           <th scope="col">Ngày tạo</th>
-                           <th scope="col">Đánh giá</th>
-                           <th scope="col"></th>
+                           <th scope="col">Title</th>
+                           <th scope="col">Date</th>
+                           <th scope="col">Views</th>
+                           <th scope="col">Status</th>
+                           <th scope="col">Action</th>
                         </tr>
                      </thead>
-                     <PropertyTableBody />
+                     <PropertyTableBody /> {/* Đổi thành PostTableBody */}
                   </table>
                </div>
             </div>
@@ -73,4 +71,4 @@ const HostelManagement = () => {
    )
 }
 
-export default HostelManagement;
+export default PostManagement;
