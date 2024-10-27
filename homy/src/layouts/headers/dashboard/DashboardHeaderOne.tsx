@@ -2,6 +2,7 @@
 import Image from "next/image"
 import Link from "next/link";
 import {usePathname} from 'next/navigation'
+import {usePathname} from 'next/navigation'
 
 import dashboardLogo from "@/assets/images/logo/logo_01.svg";
 import dashboardIconActive_1 from "@/assets/images/dashboard/icon/icon_1_active.svg";
@@ -22,11 +23,16 @@ import dashboardIconActive_8 from "@/assets/images/dashboard/icon/icon_8_active.
 import dashboardIcon_8 from "@/assets/images/dashboard/icon/icon_8.svg";
 import dashboardIconActive_9 from "@/assets/images/dashboard/icon/icon_9_active.svg";
 import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
+import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
 import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_active.svg";
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 
+import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 
+
+const DashboardHeaderOne = ({isActive, setIsActive}: any) => {
+    const pathname = usePathname();
 const DashboardHeaderOne = ({isActive, setIsActive}: any) => {
     const pathname = usePathname();
 
@@ -136,6 +142,16 @@ const DashboardHeaderOne = ({isActive, setIsActive}: any) => {
                     <p>Profile Complete</p>
                 </div>
 
+                <div className="plr">
+                    <Link href="#" className="d-flex w-100 align-items-center logout-btn">
+                        <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
+                            <Image src={dashboardIcon_11} alt=""/></div>
+                        <span>Logout</span>
+                    </Link>
+                </div>
+            </div>
+        </aside>
+    )
                 <div className="plr">
                     <Link href="#" className="d-flex w-100 align-items-center logout-btn">
                         <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
