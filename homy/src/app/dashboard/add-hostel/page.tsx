@@ -1,4 +1,4 @@
-import DashboardAddHostel from "@/components/dashboard/add-hostel";
+import DashboardAddHostel from "@/components/dashboard/account-settings/add-hostel";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {

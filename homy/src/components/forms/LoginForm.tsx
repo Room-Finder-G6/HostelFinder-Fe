@@ -43,29 +43,31 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const res = await apiInstance.post("auth/login", data);
-      if (res.status === 200 && res.data.succeeded) {
-        const { message, data } = res.data;
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        toast.success(message, { position: "top-center" });
-        //redirec to / 
-        console.log(res.data.data); 
-        if(res.data.data.role === "User"){
-          window.location.href = "/";
+        const res = await apiInstance.post("auth/login", data);
+        if (res.status === 200 && res.data.succeeded) {
+            const { message, data } = res.data;
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            toast.success(message, { position: "top-center" });
+            
+            console.log("Token:", data.token);  // Kiểm tra token
+            console.log("User Data:", data.user);  // Kiểm tra dữ liệu người dùng
+
+            if (data.role === "User") {
+                window.location.href = "/";
+            } else if (data.role === "Admin") {
+                window.location.href = "/dashboard/dashboard-index";
+            }
         }
-        if(res.data.data.role === "Admin"){
-          window.location.href= "/dashboard/dashboard-index";
-        }
-      }
     } catch (error: any) {
-      if (error.response && error.response.status === 400) {
-        toast.error(error.response.data.message, { position: "top-center" });
-      } else {
-        toast.error("Something went wrong!", { position: "top-center" });
-      }
+        if (error.response && error.response.status === 400) {
+            toast.error(error.response.data.message, { position: "top-center" });
+        } else {
+            toast.error("Something went wrong!", { position: "top-center" });
+        }
     }
-  };
+};
+
 
   return (
     <div>
