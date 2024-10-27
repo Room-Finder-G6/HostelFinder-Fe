@@ -8,7 +8,7 @@ interface OverviewProps {
 }
 
 const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
-    const [primaryImage, setPrimaryImage] = useState<string>("");
+    // const [primaryImage, setPrimaryImage] = useState<string>("");
 
     const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -28,33 +28,44 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
         onDataChange({ [name]: convertedValue });
     };
 
-    const handleImageUpload = (files: File[]) => {
-        if (files.length > 0) {
-            const imageUrl = URL.createObjectURL(files[0]);
-            setPrimaryImage(imageUrl);
-            onDataChange({ primaryImage: files[0] }); // Send File object to parent component
-        }
-    };
+    // const handleImageUpload = (files: File[]) => {
+    //     if (files.length > 0) {
+    //         const imageUrl = URL.createObjectURL(files[0]);
+    //         setPrimaryImage(imageUrl);
+    //         onDataChange({ primaryImage: files[0] }); // Send File object to parent component
+    //     }
+    // };
 
     return (
         <div className="bg-white card-box border-20">
             <h4 className="dash-title-three">Overview</h4>
-
-            <div className="col-md-6">
-                <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="hostelId">HostelId*</label>
-                    <input
-                        type="string"
-                        name="hostelId"
-                        placeholder="Hostel"
-                        onChange={handleInputChange}
-                    />
+            <div className="row align-items-end">
+                <div className="col-md-6">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="hostelId">Mã trọ*</label>
+                        <input
+                            type="string"
+                            name="hostelId"
+                            placeholder="Hostel"
+                            onChange={handleInputChange}
+                        />
+                    </div>
+                </div>  <div className="col-md-6">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="roomId">Mã phòng*</label>
+                        <input
+                            type="string"
+                            name="roomId"
+                            placeholder="Nhập Id Phòng"
+                            onChange={handleInputChange}
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Title */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="title">Title*</label>
+                <label htmlFor="title">Tiêu dề bài đăng*</label>
                 <input
                     type="text"
                     name="title"
@@ -65,26 +76,25 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
 
             {/* Description */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="description">Description*</label>
+                <label htmlFor="description">Chi tiết*</label>
                 <textarea
                     className="size-lg"
                     name="description"
-                    placeholder="Write about property..."
+                    placeholder="WNhập chi tiết bài đăng..."
                     onChange={handleInputChange}
                 ></textarea>
             </div>
 
             <div className="row align-items-end">
                 {/* Room Type */}
-                <div className="col-md-6">
+                {/* <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="roomType">Room Type*</label>
+                        <label htmlFor="roomType">Trạng thái*</label>
                         <NiceSelect
                             className="nice-select"
                             options={[
-                                { value: "1", text: "Phòng Trọ" },
-                                { value: "2", text: "Chung Cư" },
-                                { value: "3", text: "Chung Cư Mini" },
+                                { value: "0", text: "Đang trống" },
+                                { value: "1", text: "Hết phòng" },
                             ]}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange('roomType', e)}
@@ -92,23 +102,23 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                             placeholder="Select Room Type"
                         />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Monthly Rent Cost */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="monthlyRentCost">Monthly Rent Cost (VND)*</label>
+                        <label htmlFor="membershipServiceId">Mã dịch vụ*</label>
                         <input
-                            type="number"
-                            name="monthlyRentCost"
-                            placeholder="Monthly Rent Cost"
+                            type="string"
+                            name="membershipServiceId"
+                            placeholder="Mã dịch vụ member"
                             onChange={handleInputChange}
                         />
                     </div>
                 </div>
 
                 {/* Size */}
-                <div className="col-md-6">
+                {/* <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="size">Size*</label>
                         <input
@@ -118,17 +128,17 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                             onChange={handleInputChange}
                         />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Availability */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="isAvailable">Is Available*</label>
+                        <label htmlFor="isAvailable">Trạng thái*</label>
                         <NiceSelect
                             className="nice-select"
                             options={[
-                                { value: "true", text: "Available" },
-                                { value: "false", text: "Not Available" },
+                                { value: "true", text: "Còn trống" },
+                                { value: "false", text: "Hết phòng" },
                             ]}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange('isAvailable', e)}
@@ -141,7 +151,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                 {/* Date Available */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="dateAvailable">Date Available*</label>
+                        <label htmlFor="dateAvailable">Ngày trống phòng*</label>
                         <input
                             type="date"
                             name="dateAvailable"
@@ -151,13 +161,13 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                 </div>
 
                 {/* Primary Image */}
-                <div className="col-md-6">
+                {/* <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="primaryImageUrl">Primary Image*</label>
                         <UploadImage onImageUpload={handleImageUpload} multiple={true} />
                         {primaryImage && <img src={primaryImage} alt="Primary" style={{ marginTop: '10px', maxWidth: '100%' }} />}
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );

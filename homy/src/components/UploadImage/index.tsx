@@ -2,22 +2,28 @@
 
 interface UploadImageProps {
     onImageUpload: (files: File[]) => void;
-    multiple?: boolean; // Prop xác định upload 1 file hoặc nhiều file
+    multiple?: boolean;
 }
 
 const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = false }) => {
     const [fileNames, setFileNames] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(event.target.files || []);
         if (files.length) {
-            setFileNames(files.map(file => file.name));
-            onImageUpload(files); // Gửi danh sách file lên component cha
+            const newFileNames = files.map(file => file.name);
+            setFileNames(prevFileNames => [...prevFileNames, ...newFileNames]);
+            setSelectedFiles(prevFiles => [...prevFiles, ...files]);
+            onImageUpload([...selectedFiles, ...files]); // Gửi danh sách file đầy đủ lên component cha
         }
     };
 
     const handleRemoveFile = (fileName: string) => {
         setFileNames(prevFileNames => prevFileNames.filter(name => name !== fileName));
+        const updatedFiles = selectedFiles.filter(file => file.name !== fileName);
+        setSelectedFiles(updatedFiles);
+        onImageUpload(updatedFiles); 
     };
 
     return (
@@ -34,8 +40,9 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = fal
                 <i className="bi bi-plus"></i>
                 Upload Files
                 <input
+                    key={fileNames.join(",")} 
                     type="file"
-                    multiple={multiple} // Cho phép upload nhiều file nếu prop multiple là true
+                    multiple={multiple}
                     onChange={handleFileChange}
                 />
             </div>
