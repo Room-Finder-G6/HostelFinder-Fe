@@ -1,6 +1,5 @@
 ﻿import React from 'react';
 import Link from "next/link";
-
 const Guess = () => {
     return (
         <div className="right-widget ms-auto ms-lg-0 me-3 me-lg-0 order-lg-3">
