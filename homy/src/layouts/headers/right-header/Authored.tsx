@@ -24,10 +24,10 @@ const Authored = () => {
                     height={40}
                 />
             </button>
-            <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">
+            {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">
                 <span>Create Post</span>
                 <i className="fa-thin fa-arrow-up-right"></i>
-            </Link>
+            </Link> */}
             <Profile />
         </div>
     );
