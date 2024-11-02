@@ -29,7 +29,7 @@ import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 
 interface DashboardHeaderOneProps {
     isActive: boolean;
-    setIsActive: (active: boolean) => void;
+    setIsActive: (value: boolean) => void;
 }
 
 const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
@@ -101,6 +101,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             <Link href="/dashboard/manage-hostels" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Nhà Trọ" />
                                 <span>Quản Lý Nhà Trọ</span>
+                            </Link>
+                        </li>
+                        <li className="plr">
+                            <Link href="/dashboard/manage-room" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/manage-room' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Phòng Trọ" />
+                                <span>Quản Lý Phòng Trọ</span>
                             </Link>
                         </li>
                         <li className="plr">
