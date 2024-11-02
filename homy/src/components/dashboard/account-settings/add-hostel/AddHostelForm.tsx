@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
 import { useRouter } from "next/navigation";
+import ServicesList from "../../manage-service/ServiceList";
 
 interface CustomJwtPayload {
     landlordId: string;
@@ -35,6 +36,8 @@ const AddHostelForm: React.FC = () => {
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
     const router = useRouter();
+
+
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
@@ -187,6 +190,9 @@ const AddHostelForm: React.FC = () => {
             setFormData({ ...formData, [name]: value });
         }
     };
+
+
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -351,6 +357,7 @@ const AddHostelForm: React.FC = () => {
                             />
                         </div>
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
+                        <ServicesList />
                     </div>
 
                 </div>

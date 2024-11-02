@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,7 +27,12 @@ import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_activ
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 
-const DashboardHeaderOne = ({ isActive, setIsActive }) => {
+interface DashboardHeaderOneProps {
+    isActive: boolean;
+    setIsActive: (active: boolean) => void;
+}
+
+const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
     const pathname = usePathname();
 
     return (
