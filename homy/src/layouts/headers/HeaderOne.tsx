@@ -2,17 +2,21 @@
 import NavMenu from "./Menu/NavMenu"
 import Link from "next/link"
 import Image from "next/image"
-import {useState} from "react"
+import { useEffect, useState } from "react"
 import UseSticky from "@/hooks/UseSticky"
 import LoginModal from "@/modals/LoginModal"
 import logo_6 from "@/assets/images/logo/logo_06.svg";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Guess from "@/layouts/headers/right-header/Guess";
+import Authored from "./right-header/Authored"
 
-
-const HeaderOne = ({style}: any) => {
-    const {sticky} = UseSticky();
-
+const HeaderOne = ({ style }: any) => {
+    const { sticky } = UseSticky();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        setIsLoggedIn(!!token);
+    }, []);
     return (
         <>
             <header className={`theme-main-menu menu-overlay menu-style-one sticky-menu ${sticky ? "fixed" : ""}`}>
@@ -26,7 +30,7 @@ const HeaderOne = ({style}: any) => {
                             <div className="logo order-lg-0">
                                 <Link href="/" className="d-flex align-items-center">
                                     <Image src="/assets/images/logo/logo_06.svg" alt=" PhongTro24/7" width={50}
-                                           height={50}/>
+                                        height={50} />
                                     <span className="logo-text" style={{
                                         fontSize: '25px',
                                         color: 'black',
@@ -34,24 +38,28 @@ const HeaderOne = ({style}: any) => {
                                     }}><strong>&nbsp;PhongTro24/7</strong></span>
                                 </Link>
                             </div>
+                            {isLoggedIn ? (
+                                <Authored />
+                            ) : (
+                                <Guess />
+                            )}
 
-                            <Guess/>
                             <nav className="navbar navbar-expand-lg p0 order-lg-2">
                                 <button className="navbar-toggler d-block d-lg-none" type="button"
-                                        data-bs-toggle="collapse"
-                                        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-                                        aria-label="Toggle navigation">
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                                    aria-label="Toggle navigation">
                                     <span></span>
                                 </button>
                                 <div className="collapse navbar-collapse" id="navbarNav">
-                                    <NavMenu/>
+                                    <NavMenu />
                                 </div>
                             </nav>
                         </div>
                     </div>
                 </div>
             </header>
-            <LoginModal/>
+            <LoginModal />
         </>
     )
 }
