@@ -33,12 +33,12 @@ const ProfileBody: React.FC = () => {
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        console.log("Token retrieved from localStorage:", token); // Check if the token is retrieved correctly
+        console.log("Token retrieved from localStorage:", token);
 
         if (token) {
             try {
                 const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                console.log("Decoded token:", decodedToken); // Check if the decoded token contains the expected properties            console.log("Decoded token:", decodedToken); // Check if the decoded token contains the expected properties
+                console.log("Decoded token:", decodedToken); console.log("Decoded token:", decodedToken);
 
                 if (decodedToken.UserId) {
                     fetchUserProfile(decodedToken.UserId);
@@ -104,15 +104,31 @@ const ProfileBody: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        // Ensure avatarUrl is a string before submitting
+        const submissionData = {
+            ...profileData,
+            avatarUrl: typeof profileData.avatarUrl === 'object' ? profileData.avatarUrl.src : profileData.avatarUrl,
+        };
+    
+
         try {
-            const response = await apiInstance.put(`/api/users/UpdateUser/${profileData.userId}`, profileData);
+            console.log("Profile data being submitted:", submissionData); // Log data to be submitted
+            const response = await apiInstance.put(`/users/UpdateUser/${profileData.userId}`, submissionData);
             if (response.status === 200) {
                 toast.success("Profile updated successfully", { position: "top-center" });
             }
-        } catch (error) {
-            toast.error("Failed to update profile", { position: "top-center" });
+        } catch (error: any) {
+            if (error.response && error.response.data) {
+                console.error("Error updating profile:", error.response.data);
+                toast.error("Failed to update profile", { position: "top-center" });
+            } else {
+                console.error("Error updating profile:", error);
+                toast.error("Failed to update profile", { position: "top-center" });
+            }
         }
     };
+
+
 
     return (
         <div className="dashboard-body">
@@ -122,7 +138,14 @@ const ProfileBody: React.FC = () => {
 
                 <div className="bg-white card-box border-20">
                     <div className="user-avatar-setting d-flex align-items-center mb-30">
-                        <Image src={profileData.avatarUrl || avatar_1} alt="User Avatar" className="lazy-img user-img" />
+                        <Image
+                            src={profileData.avatarUrl || avatar_1.src}
+                            alt="User Avatar"
+                            className="lazy-img user-img"
+                            width={100}
+                            height={100}
+                        />
+
                         <div className="upload-btn position-relative tran3s ms-4 me-3">
                             Upload new photo
                             <input type="file" id="uploadImg" name="uploadImg" onChange={handleAvatarUpload} />
