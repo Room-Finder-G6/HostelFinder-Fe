@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
@@ -27,7 +27,8 @@ interface FormData {
     address: Address;
     size: number | string;
     numberOfRooms: number | string;
-    coordinates: string
+    coordinates: string;
+    serviceId: string[];
 }
 
 const AddHostelForm: React.FC = () => {
@@ -36,6 +37,7 @@ const AddHostelForm: React.FC = () => {
     const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
     const router = useRouter();
+    const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
 
 
@@ -65,6 +67,7 @@ const AddHostelForm: React.FC = () => {
         size: 0,
         numberOfRooms: 0,
         coordinates: "",
+        serviceId: []
     });
 
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
@@ -191,7 +194,9 @@ const AddHostelForm: React.FC = () => {
         }
     };
 
-
+    const handleServiceSelect = useCallback((services: string[]) => {
+        setSelectedServices(services);
+    }, []);
 
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -204,8 +209,11 @@ const AddHostelForm: React.FC = () => {
 
         const updatedFormData: FormData = {
             ...formData,
-            coordinates: coordinates.join(', '), // Chuyển đổi tọa độ thành chuỗi
+            coordinates: coordinates.join(', '),
+            serviceId: selectedServices,
         };
+
+        console.log("Data to send: ", updatedFormData);
 
         try {
             const response = await apiInstance.post("/hostels", updatedFormData);
@@ -357,7 +365,7 @@ const AddHostelForm: React.FC = () => {
                             />
                         </div>
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
-                        <ServicesList />
+                        <ServicesList onServiceSelect={handleServiceSelect} />
                     </div>
 
                 </div>

@@ -59,6 +59,7 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
 
     return (
         <div>
+            <h5>Tiện ích</h5>
             <div className="row">
                 {services.map((service) => (
                     <div key={service.id} className="col-md-3 mb-3">
@@ -71,7 +72,7 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
                             />
                             <div className="service-label d-flex align-items-center">
                                 {/* <img src={`public/assets/images/service/${service.serviceName.toLowerCase()}.png`} alt={service.serviceName} className="me-2" /> */}
-                                <img src={`/assets/images/service/${service.serviceName.toLowerCase()}.png`} alt={service.serviceName} className="me-2" />
+                                <img style={{ maxWidth: '18px', maxHeight: '18px' }} src={`/assets/images/service/${service.serviceName.toLowerCase()}.svg`} alt={service.serviceName} className="me-2" />
                                 <span>{service.serviceName}</span>
                             </div>
                         </div>
