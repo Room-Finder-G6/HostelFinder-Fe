@@ -8,11 +8,11 @@ const RoomTable: React.FC = () => {
         <table className="table property-list-table">
           <thead>
             <tr>
-              <th scope="col">Title</th>
-              <th scope="col">Date</th>
-              <th scope="col">Views</th>
-              <th scope="col">Status</th>
-              <th scope="col">Action</th>
+              <th scope="col">Phòng</th>
+              <th scope="col">Ngày tạo</th>
+              <th scope="col">Giá phòng/tháng</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <PropertyTableBody />

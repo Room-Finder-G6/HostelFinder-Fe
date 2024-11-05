@@ -14,6 +14,7 @@ import AmenitiesList from "../manage-amentity/AmentityList";
 import HostelSelector from "./HostelSelector";
 import { jwtDecode } from "jwt-decode";
 import RoomForm from "./RoomForm";
+import RoomTableBody from "./RoomTableBody";
 interface JwtPayload {
    UserId: string;
 }
@@ -25,15 +26,17 @@ const RoomManagement = () => {
    const [roomFormData, setRoomFormData] = useState({
       hostelId: "",
       roomName: "",
+      floor: "",
+      maxRenters: "",
       status: true,
       deposit: "",
       monthlyRentCost: "",
       size: "",
-      roomType: "", // Cần xác định các giá trị cho RoomType
+      roomType: "",
       amenityId: [],
+      images: [] as File[],
    });
    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
-   const [roomImages, setRoomImages] = useState<File[]>([]);
    const [error, setError] = useState<string | null>(null);
 
    const toggleUpdateModal = () => {
@@ -55,9 +58,20 @@ const RoomManagement = () => {
 
    const handleRoomImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       if (e.target.files) {
-         setRoomImages(Array.from(e.target.files));
+         const files = Array.from(e.target.files);
+         setRoomFormData({
+            ...roomFormData,
+            images: [...roomFormData.images, ...files],
+         });
       }
    };
+
+   const handleRemoveImage = (index: number) => {
+      const newImages = [...roomFormData.images];
+      newImages.splice(index, 1);
+      setRoomFormData({ ...roomFormData, images: newImages });
+   };
+
 
    const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const hostelId = e.target.value;
@@ -90,6 +104,30 @@ const RoomManagement = () => {
          toast.error("Vui lòng chọn nhà trọ", { position: "top-center" });
          return;
       }
+
+      const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+      const validateFileSize = (file: File): boolean => {
+         if (file.size > MAX_FILE_SIZE) {
+            toast.error(`File ${file.name} vượt quá kích thước cho phép (5MB)`, { position: "top-center" });
+            return false;
+         }
+         return true;
+      };
+
+      for (const image of roomFormData.images) {
+         if (!validateFileSize(image)) {
+            return;
+         }
+      }
+
+      if (!roomFormData.maxRenters) {
+         toast.error("Vui lòng nhập số người tối đa thuê", { position: "top-center" })
+         return;
+      }
+
+      const floor = roomFormData.floor ? parseInt(roomFormData.floor) : null;
+      const maxRenters = parseInt(roomFormData.maxRenters);
+
       const formData = new FormData();
       formData.append("HostelId", roomFormData.hostelId);
       formData.append("RoomName", roomFormData.roomName);
@@ -98,6 +136,10 @@ const RoomManagement = () => {
       formData.append("MonthlyRentCost", roomFormData.monthlyRentCost);
       formData.append("Size", roomFormData.size);
       formData.append("RoomType", roomFormData.roomType);
+      if (floor !== null) {
+         formData.append("Floor", floor.toString());
+      }
+      formData.append("MaxRenters", maxRenters.toString());
 
       // Thêm danh sách AmenityId
       selectedAmenities.forEach((amenityId) => {
@@ -105,7 +147,7 @@ const RoomManagement = () => {
       });
 
       // Thêm các hình ảnh phòng
-      roomImages.forEach((image) => {
+      roomFormData.images.forEach((image) => {
          formData.append("roomImages", image);
       });
 
@@ -161,14 +203,14 @@ const RoomManagement = () => {
                   <table className="table property-list-table">
                      <thead>
                         <tr>
-                           <th scope="col">Title</th>
-                           <th scope="col">Date</th>
-                           <th scope="col">Views</th>
-                           <th scope="col">Status</th>
-                           <th scope="col">Action</th>
+                           <th scope="col">Phòng</th>
+                           <th scope="col">Ngày tạo</th>
+                           <th scope="col">Giá phòng</th>
+                           <th scope="col">Trạng thái</th>
+                           <th scope="col"></th>
                         </tr>
                      </thead>
-                     <PropertyTableBody />
+                     <RoomTableBody selectedHostel={selectedHostel} />
                   </table>
                </div>
             </div>
@@ -249,6 +291,7 @@ const RoomManagement = () => {
                            handleRoomInputChange={handleRoomInputChange}
                            handleAmenitySelect={handleAmenitySelect}
                            handleRoomImageChange={handleRoomImageChange}
+                           handleRemoveImage={handleRemoveImage}
                            selectedAmenities={selectedAmenities}
                         />
 
