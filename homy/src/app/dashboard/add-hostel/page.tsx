@@ -1,5 +1,5 @@
 import UploadImage from "@/components/UploadImage";
-import DashboardAddHostel from "@/components/dashboard/account-settings/add-hostel";
+import DashboardAddHostel from "@/components/dashboard/manage-hostel/add-hostel";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {

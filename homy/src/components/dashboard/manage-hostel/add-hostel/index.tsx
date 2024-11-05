@@ -1,10 +1,12 @@
+"use client";
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne"
 import AddHostelBody from "./AddHostelBody"
-import UploadImage from "@/components/UploadImage"
+import { useState } from "react";
 const DashboardAddHostel = () => {
+   const [isActive, setIsActive] = useState(false);
    return (
       <>
-         <DashboardHeaderOne />
+         <DashboardHeaderOne isActive={isActive} setIsActive={setIsActive} />
          <AddHostelBody />
       </>
    )

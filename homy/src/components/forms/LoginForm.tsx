@@ -20,9 +20,9 @@ interface FormData {
 
 const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
-  
 
-  
+
+
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility(!isPasswordVisible);
@@ -43,30 +43,28 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
 
   const onSubmit = async (data: FormData) => {
     try {
-        const res = await apiInstance.post("auth/login", data);
-        if (res.status === 200 && res.data.succeeded) {
-            const { message, data } = res.data;
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            toast.success(message, { position: "top-center" });
-            
-            console.log("Token:", data.token);  // Kiểm tra token
-            console.log("User Data:", data.user);  // Kiểm tra dữ liệu người dùng
+      const res = await apiInstance.post("auth/login", data);
+      if (res.status === 200 && res.data.succeeded) {
+        const { message, data } = res.data;
+        console.log(res.data);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userName", data.userName);
+        toast.success(message, { position: "top-center" });
 
-            if (data.role === "User") {
-                window.location.href = "/";
-            } else if (data.role === "Admin") {
-                window.location.href = "/dashboard/dashboard-index";
-            }
+        if (data.role === "User") {
+          window.location.href = "/";
+        } else if (data.role === "Admin") {
+          window.location.href = "/dashboard/dashboard-index";
         }
+      }
     } catch (error: any) {
-        if (error.response && error.response.status === 400) {
-            toast.error(error.response.data.message, { position: "top-center" });
-        } else {
-            toast.error("Something went wrong!", { position: "top-center" });
-        }
+      if (error.response && error.response.status === 400) {
+        toast.error(error.response.data.message, { position: "top-center" });
+      } else {
+        toast.error("Something went wrong!", { position: "top-center" });
+      }
     }
-};
+  };
 
 
   return (
@@ -95,9 +93,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
               />
               <span className="placeholder_icon">
                 <span
-                  className={`passVicon ${
-                    isPasswordVisible ? "eye-slash" : ""
-                  }`}
+                  className={`passVicon ${isPasswordVisible ? "eye-slash" : ""
+                    }`}
                 >
                   <Image
                     onClick={togglePasswordVisibility}

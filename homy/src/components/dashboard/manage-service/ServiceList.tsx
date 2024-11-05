@@ -59,7 +59,7 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
 
     return (
         <div>
-            <h5>Tiện ích</h5>
+            <h5>Dịch vụ</h5>
             <div className="row">
                 {services.map((service) => (
                     <div key={service.id} className="col-md-3 mb-3">
