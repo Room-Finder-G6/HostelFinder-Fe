@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import NiceSelect from "@/ui/NiceSelect";
 import PropertyTableBody from "../manage-hostel/PropertyTableBody";
@@ -9,87 +9,124 @@ import icon_1 from "@/assets/images/icon/icon_46.svg";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import './room.css';
-
+import apiInstance from "@/utils/apiInstance";
+import AmenitiesList from "../manage-amentity/AmentityList";
+import HostelSelector from "./HostelSelector";
+import { jwtDecode } from "jwt-decode";
+import RoomForm from "./RoomForm";
+interface JwtPayload {
+   UserId: string;
+}
 const RoomManagement = () => {
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-   const [isAddModalOpen, setIsAddModalOpen] = useState(false); // New state for Add Hostel modal
+   const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
    const [selectedHostel, setSelectedHostel] = useState("");
    const [hostels, setHostels] = useState([]);
-   const [formData, setFormData] = useState({
-      houseName: "",
-      address: "",
-      houseType: "",
-      rentalType: "",
-      province: "",
-      district: "",
-      commune: "",
-      electricityBillingDate: "",
-      billingEndDate: "",
-      amenities: {
-         balcony: false,
-         security: false,
-         camera: false,
-         airConditioner: false,
-         mezzanine: false,
-         bed: false,
-         kitchen: false,
-         parking: false,
-         elevator: false,
-         tv: false,
-         fridge: false,
-         internet: false,
-         heater: false,
-         wifi: false,
-         washingMachine: false,
-         wc: false,
-         wardrobe: false,
-      },
+   const [roomFormData, setRoomFormData] = useState({
+      hostelId: "",
+      roomName: "",
+      status: true,
+      deposit: "",
+      monthlyRentCost: "",
+      size: "",
+      roomType: "", // Cần xác định các giá trị cho RoomType
+      amenityId: [],
    });
+   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+   const [roomImages, setRoomImages] = useState<File[]>([]);
+   const [error, setError] = useState<string | null>(null);
 
    const toggleUpdateModal = () => {
       setIsUpdateModalOpen(!isUpdateModalOpen);
    };
 
-   const toggleAddModal = () => {
-      setIsAddModalOpen(!isAddModalOpen);
+   const toggleAddRoomModal = () => {
+      setIsAddRoomModalOpen(!isAddRoomModalOpen);
    };
 
-   const handleInputChange = (e) => {
+   const handleRoomInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      setFormData({ ...formData, [name]: value });
+      setRoomFormData({ ...roomFormData, [name]: value });
    };
 
-   const handleAmenityChange = (e) => {
-      const { name, checked } = e.target;
-      setFormData((prevData) => ({
-         ...prevData,
-         amenities: { ...prevData.amenities, [name]: checked }
-      }));
+   const handleAmenitySelect = (selectedAmenities: string[]) => {
+      setSelectedAmenities(selectedAmenities);
    };
 
-   useEffect(() => {
-      // Fetch hostels from API or predefined data
-      const fetchHostels = async () => {
+   const handleRoomImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+         setRoomImages(Array.from(e.target.files));
+      }
+   };
+
+   const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const hostelId = e.target.value;
+      setSelectedHostel(hostelId);
+      setRoomFormData({ ...roomFormData, hostelId });
+   };
+   // Hàm lấy landlordId từ token
+   const getUserIdFromToken = useCallback(() => {
+      const token = window.localStorage.getItem("token");
+      if (token) {
          try {
-            const response = await fetch("/api/hostels"); // Adjust the API endpoint as needed
-            const data = await response.json();
-            setHostels(data);
+            const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+            return decodedToken.UserId;
          } catch (error) {
-            console.error("Error fetching hostels:", error);
+            console.error("Error decoding token:", error);
+            setError("Error decoding user token");
+            return null;
          }
-      };
-      fetchHostels();
+      }
+      setError("No token found");
+      return null;
    }, []);
 
-   const handleHostelChange = (e) => {
-      setSelectedHostel(e.target.value);
-      // Optionally, fetch rooms based on the selected hostel
-   };
 
-   const handleSubmit = (e) => {
+
+
+   const handleAddRoomSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
-      toast.success("Information updated successfully", { position: "top-center" });
-      setIsUpdateModalOpen(false);
+      if (!roomFormData.hostelId) {
+         toast.error("Vui lòng chọn nhà trọ", { position: "top-center" });
+         return;
+      }
+      const formData = new FormData();
+      formData.append("HostelId", roomFormData.hostelId);
+      formData.append("RoomName", roomFormData.roomName);
+      formData.append("Status", String(roomFormData.status));
+      formData.append("Deposit", roomFormData.deposit);
+      formData.append("MonthlyRentCost", roomFormData.monthlyRentCost);
+      formData.append("Size", roomFormData.size);
+      formData.append("RoomType", roomFormData.roomType);
+
+      // Thêm danh sách AmenityId
+      selectedAmenities.forEach((amenityId) => {
+         formData.append("AmenityId", amenityId);
+      });
+
+      // Thêm các hình ảnh phòng
+      roomImages.forEach((image) => {
+         formData.append("roomImages", image);
+      });
+
+      try {
+         const response = await apiInstance.post("/rooms", formData, {
+            headers: {
+               "Content-Type": "multipart/form-data",
+            },
+         });
+
+         if (response.status === 200 || response.data.succeeded) {
+            toast.success("Thêm phòng thành công", { position: "top-center" });
+            setIsAddRoomModalOpen(false);
+            // Reset form nếu cần
+         } else {
+            toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
+         }
+      } catch (error: any) {
+         console.error("Error adding room:", error);
+         toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
+      }
    };
 
    return (
@@ -99,22 +136,11 @@ const RoomManagement = () => {
             <h2 className="main-title d-block d-lg-none">Manage Room</h2>
 
             {/* Hostel Selector */}
-            <div className="d-flex align-items-center mb-4">
-               <label htmlFor="hostelSelect" className="me-2">Nhà:</label>
-               <select
-                  id="hostelSelect"
-                  className="form-select"
-                  value={selectedHostel}
-                  onChange={handleHostelChange}
-               >
-                  <option value="">Chọn nhà trọ</option>
-                  {hostels.map((hostel) => (
-                     <option key={hostel.id} value={hostel.id}>
-                        {hostel.name}
-                     </option>
-                  ))}
-               </select>
-            </div>
+            <HostelSelector
+               selectedHostel={selectedHostel}
+               onHostelChange={handleHostelChange}
+
+            />
 
             {/* Utility Buttons */}
             <div className="d-flex align-items-center mb-4">
@@ -122,10 +148,7 @@ const RoomManagement = () => {
                <button className="btn btn-primary me-2">Nhập dữ liệu</button>
                <button className="btn btn-warning me-2">In tất cả hóa đơn</button>
                <button className="btn btn-info me-2">Gửi hóa đơn</button>
-               {/* Updated to open Add Hostel modal */}
-               <Link href="/dashboard/add-hostel" passHref>
-                  <button className="btn btn-secondary me-2">Thêm phòng</button>
-               </Link>
+               <button className="btn btn-secondary me-2" onClick={toggleAddRoomModal}>Thêm phòng</button>
                <button className="btn btn-danger me-2">Cấu hình bảng giá</button>
                <button onClick={toggleUpdateModal} className="btn btn-success">
                   Cập nhật thông tin
@@ -162,7 +185,7 @@ const RoomManagement = () => {
             </ul>
 
             {/* Update Information Modal */}
-            {isUpdateModalOpen && (
+            {/* {isUpdateModalOpen && (
                <div className="modal-overlay">
                   <div className="modal-content">
                      <h3 className="modal-title">Cập nhật nhà</h3>
@@ -212,29 +235,26 @@ const RoomManagement = () => {
                      </form>
                   </div>
                </div>
-            )}
+            )} */}
 
-            {/* Add Hostel Modal */}
-            {isAddModalOpen && (
+            {/* Modal thêm phòng */}
+            {isAddRoomModalOpen && (
                <div className="modal-overlay">
                   <div className="modal-content">
                      <h3 className="modal-title">Thêm phòng</h3>
-                     <form onSubmit={handleSubmit}>
-                        <div className="modal-form-group">
-                           <label>Tên phòng *</label>
-                           <input
-                              type="text"
-                              name="houseName"
-                              value={formData.houseName}
-                              onChange={handleInputChange}
-                              required
-                              className="form-control"
-                           />
-                        </div>
-                        {/* Các trường thông tin khác của "Thêm phòng" */}
+                     <form onSubmit={handleAddRoomSubmit}>
+                        {/* Sử dụng RoomForm */}
+                        <RoomForm
+                           roomFormData={roomFormData}
+                           handleRoomInputChange={handleRoomInputChange}
+                           handleAmenitySelect={handleAmenitySelect}
+                           handleRoomImageChange={handleRoomImageChange}
+                           selectedAmenities={selectedAmenities}
+                        />
+
                         <div className="modal-footer">
                            <button type="submit" className="btn btn-primary">Lưu</button>
-                           <button type="button" className="btn btn-secondary" onClick={toggleAddModal}>Thoát</button>
+                           <button type="button" className="btn btn-secondary" onClick={toggleAddRoomModal}>Thoát</button>
                         </div>
                      </form>
                   </div>

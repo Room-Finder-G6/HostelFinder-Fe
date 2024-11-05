@@ -7,7 +7,6 @@ import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
 import { useRouter } from "next/navigation";
 import ServicesList from "../../manage-service/ServiceList";
-
 interface CustomJwtPayload {
     landlordId: string;
     UserId: string;
@@ -365,6 +364,7 @@ const AddHostelForm: React.FC = () => {
                             />
                         </div>
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
+                        {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
                         <ServicesList onServiceSelect={handleServiceSelect} />
                     </div>
 
