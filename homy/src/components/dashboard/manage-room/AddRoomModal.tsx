@@ -8,6 +8,7 @@ interface AddRoomModalProps {
   handleRoomInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   handleAmenitySelect: (selectedAmenities: string[]) => void;
   handleRoomImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemoveImage: (index: number) => void;
   handleAddRoomSubmit: (e: React.FormEvent) => void;
   selectedAmenities: string[];
 }
@@ -19,6 +20,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
   handleRoomInputChange,
   handleAmenitySelect,
   handleRoomImageChange,
+  handleRemoveImage,
   handleAddRoomSubmit,
   selectedAmenities,
 }) => {
@@ -34,6 +36,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
             handleRoomInputChange={handleRoomInputChange}
             handleAmenitySelect={handleAmenitySelect}
             handleRoomImageChange={handleRoomImageChange}
+            handleRemoveImage={handleRemoveImage}
             selectedAmenities={selectedAmenities}
           />
           <div className="modal-footer">

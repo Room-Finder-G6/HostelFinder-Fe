@@ -366,6 +366,7 @@ const AddHostelForm: React.FC = () => {
                         <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
                         {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
                         <ServicesList onServiceSelect={handleServiceSelect} />
+                        
                     </div>
 
                 </div>
