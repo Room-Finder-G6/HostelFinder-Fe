@@ -20,12 +20,9 @@ interface Address {
 interface DataType {
     id: string;
     hostelName: string;
-    description: string;
     address: Address;
     numberOfRooms: number;
-    rating: number;
-    image: string | null;
-    coordinates: string;
+    imageUrl: string | null;
     createdOn: string;
 }
 
@@ -171,7 +168,7 @@ const PropertyTableBody = () => {
                 <tr key={item.id}>
                     <td>
                         <div className="d-lg-flex align-items-center position-relative">
-                            {item.image && <Image src={item.image} alt="" className="p-img" />}
+                            {item.imageUrl && <Image src={item.imageUrl} alt="" width={100} height={100} className="p-img" />}
                             <div className="ps-lg-4 md-pt-10">
                                 <Link href="#" className="property-name tran3s color-dark fw-500 fs-20 stretched-link">
                                     {item.hostelName}
@@ -184,7 +181,6 @@ const PropertyTableBody = () => {
                         </div>
                     </td>
                     <td>{new Date(item.createdOn).toLocaleDateString()}</td>
-                    <td>{item.rating}</td>
                     <td>
                         <div className="action-dots float-end">
                             <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

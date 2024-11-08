@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
 import { useRouter } from "next/navigation";
 import ServicesList from "../../manage-service/ServiceList";
+import Link from "next/link";
 interface CustomJwtPayload {
     landlordId: string;
     UserId: string;
@@ -19,6 +20,11 @@ interface Address {
     detailAddress: string;
 }
 
+interface SelectedFile {
+    file: File;
+    previewUrl: string;
+}
+
 interface FormData {
     landlordId: string;
     hostelName: string;
@@ -28,6 +34,7 @@ interface FormData {
     numberOfRooms: number | string;
     coordinates: string;
     serviceId: string[];
+    images: string[];
 }
 
 const AddHostelForm: React.FC = () => {
@@ -37,8 +44,7 @@ const AddHostelForm: React.FC = () => {
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
     const router = useRouter();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
-
-
+    const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
@@ -66,7 +72,8 @@ const AddHostelForm: React.FC = () => {
         size: 0,
         numberOfRooms: 0,
         coordinates: "",
-        serviceId: []
+        serviceId: [],
+        images: [],
     });
 
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
@@ -198,27 +205,104 @@ const AddHostelForm: React.FC = () => {
     }, []);
 
 
+    const handleCancel = () => {
+        router.push('/dashboard/manage-hostels');
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files);
+
+            const filesWithPreviews = filesArray.map((file) => ({
+                file,
+                previewUrl: URL.createObjectURL(file),
+            }));
+
+            setSelectedFiles((prevFiles) => {
+                const existingFileNames = prevFiles.map((item) => item.file.name);
+                const newFiles = filesWithPreviews.filter(
+                    (item) => !existingFileNames.includes(item.file.name)
+                );
+                return [...prevFiles, ...newFiles];
+            });
+        }
+    };
+
+    const handleRemoveFile = (index: number) => {
+        setSelectedFiles((prevFiles) => {
+            const newFiles = [...prevFiles];
+            const [removed] = newFiles.splice(index, 1);
+            // Revoke the data URL to avoid memory leaks
+            URL.revokeObjectURL(removed.previewUrl);
+            return newFiles;
+        });
+    };
+
+    useEffect(() => {
+        return () => {
+            selectedFiles.forEach((item) => {
+                URL.revokeObjectURL(item.previewUrl);
+            });
+        };
+    }, [selectedFiles]);
+
+    useEffect(() => {
+        return () => {
+            selectedFiles.forEach((item) => {
+                URL.revokeObjectURL(item.previewUrl);
+            });
+        };
+    }, [selectedFiles]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.address.province || !formData.address.district || !formData.address.commune) {
-            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", { position: "top-center" });
+        if (
+            !formData.address.province ||
+            !formData.address.district ||
+            !formData.address.commune
+        ) {
+            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", {
+                position: "top-center",
+            });
             return;
         }
 
-        const updatedFormData: FormData = {
-            ...formData,
-            coordinates: coordinates.join(', '),
-            serviceId: selectedServices,
-        };
+        // Create a FormData instance to handle multipart/form-data
+        const submissionData = new FormData();
 
-        console.log("Data to send: ", updatedFormData);
+        // Append form fields
+        submissionData.append("landlordId", formData.landlordId);
+        submissionData.append("hostelName", formData.hostelName);
+        submissionData.append("description", formData.description);
+        submissionData.append("size", formData.size.toString());
+        submissionData.append("numberOfRooms", formData.numberOfRooms.toString());
+        submissionData.append("coordinates", coordinates.join(", "));
+        submissionData.append("address.province", formData.address.province);
+        submissionData.append("address.district", formData.address.district);
+        submissionData.append("address.commune", formData.address.commune);
+        submissionData.append("address.detailAddress", formData.address.detailAddress);
+
+        // Append services
+        selectedServices.forEach((serviceId) => {
+            submissionData.append("serviceId", serviceId);
+        });
+
+        // Append selected image files
+        selectedFiles.forEach((item) => {
+            submissionData.append("images", item.file);
+        });
 
         try {
-            const response = await apiInstance.post("/hostels", updatedFormData);
+            const response = await apiInstance.post("/hostels", submissionData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             if (response.status === 200 || response.data.succeeded) {
                 const { message } = response.data;
                 toast.success(message, { position: "top-center" });
+                // Optionally, redirect or reset the form here
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
@@ -229,9 +313,6 @@ const AddHostelForm: React.FC = () => {
         }
     };
 
-    const handleCancel = () => {
-        router.push('/dashboard/manage-hostels');
-    };
 
     return (
         <form onSubmit={handleSubmit}>
@@ -263,7 +344,7 @@ const AddHostelForm: React.FC = () => {
                 <div className="row align-items-end">
                     <div className="col-md-6">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Diện tích*</label>
+                            <label htmlFor="">Diện tích (m²)*</label>
                             <input
                                 type="number"
                                 placeholder="Diện tích phòng trọ"
@@ -351,7 +432,59 @@ const AddHostelForm: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="map-frame mb-10">
+                    {/* Photo Attachment Section */}
+                    <div className="bg-white border-20 col-md-12 mb-10">
+                        <h4 className="dash-title-three">Photo Attachment</h4>
+                        <div className="dash-input-wrapper mb-20">
+                            <label htmlFor="">File Attachment*</label>
+
+                            <div className="d-flex align-items-center mb-15">
+                                {selectedFiles.map((item, index) => (
+                                    <div
+                                        key={index}
+                                        className="image-preview-wrapper position-relative me-3 mb-1"
+                                        style={{width: '15%'}} // Set fixed dimensions
+                                    >
+                                        <img
+                                            src={item.previewUrl}
+                                            alt={item.file.name}
+                                            className="image-preview"
+                                            style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover'
+                                            }} // Image fills container
+                                        />
+                                        <button
+                                            type="button"
+                                            className="remove-btn position-absolute top-0 end-0"
+                                            onClick={() => handleRemoveFile(index)}
+                                        >
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="dash-btn-one d-inline-block position-relative me-3">
+                            <i className="bi bi-plus"></i>
+                            Upload Image
+                            <input
+                                type="file"
+                                id="uploadCV"
+                                name="uploadCV"
+                                placeholder=""
+                                multiple
+                                onChange={handleFileChange}
+                                accept="image/*"
+                            />
+                        </div>
+                        <small>Upload file .jpg, .png</small>
+                    </div>
+
+
+                    <div className="map-frame my-4">
                         <div className="dash-input-wrapper mb-30">
                             <label htmlFor="">Tọa độ</label>
                             <input
@@ -363,10 +496,9 @@ const AddHostelForm: React.FC = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
+                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
                         {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
-                        <ServicesList onServiceSelect={handleServiceSelect} />
-                        
+                        <ServicesList onServiceSelect={handleServiceSelect}/>
                     </div>
 
                 </div>
