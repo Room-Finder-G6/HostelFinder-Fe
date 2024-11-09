@@ -86,12 +86,12 @@ const AddPropertyBody: React.FC = () => {
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Add New Post" />
-                <h2 className="main-title d-block d-lg-none">Add New Property</h2>
+                <DashboardHeaderTwo title="Tạo bài cho thuê" />
+                <h2 className="main-title d-block d-lg-none">Thêm bài cho thuê</h2>
                 <Overview onDataChange={handleData} />
 
                 <div className="bg-white card-box border-20 mt-40">
-                    <h4 className="dash-title-three">Photo</h4>
+                    <h4 className="dash-title-three">Hình ảnh</h4>
                     <UploadImage onImageUpload={handleImageUpload} multiple={true} />
                 </div>
 
