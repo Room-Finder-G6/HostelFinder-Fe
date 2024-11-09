@@ -1,60 +1,97 @@
+import React, {useEffect, useState} from "react";
+import {RoomData} from "@/components/dashboard/create-post/AddPropertyBody";
 import NiceSelect from "@/ui/NiceSelect";
-import React, { useState } from "react";
-import { RoomData } from "@/components/dashboard/create-post/AddPropertyBody";
-import UploadImage from "@/components/UploadImage";
+import apiInstance from "@/utils/apiInstance";
+import {jwtDecode} from "jwt-decode";
+import {toast} from "react-toastify";
 
 interface OverviewProps {
     onDataChange: (data: Partial<RoomData>) => void;
 }
 
-const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
-    // const [primaryImage, setPrimaryImage] = useState<string>("");
+interface Hostel {
+    id: string;
+    hostelName: string;
+}
+
+interface DecodedToken {
+    UserId: string;
+}
+
+const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
+    const [hostels, setHostels] = useState<Hostel[]>([]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token"); // Giả sử token được lưu trong localStorage với key là 'token'
+        if (token) {
+            try {
+                const decodedToken: DecodedToken = jwtDecode(token);
+                const userId = decodedToken.UserId;
+                console.log(userId);
+
+                if (userId) {
+                    const fetchHostels = async () => {
+                        try {
+                            const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
+                            if (response.status === 200) {
+                                setHostels(response.data.data); // Giả sử response.data là danh sách các nhà trọ
+                            }
+                        } catch (error: any) {
+                            toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
+                        }
+                    };
+
+                    fetchHostels();
+                } else {
+                    toast.error("User ID not found in token", {position: "top-center"});
+                }
+            } catch (error) {
+                toast.error("Invalid token", {position: "top-center"});
+            }
+        } else {
+            toast.error("Token not found in localStorage", {position: "top-center"});
+        }
+    }, []);
 
     const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        const convertedValue = name === 'roomType'
-            ? parseInt(value)
-            : name === 'isAvailable'
-                ? JSON.parse(value)  // Convert from string to boolean
-                : value;
-        onDataChange({ [name]: convertedValue });
+        onDataChange({[name]: value});
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        const convertedValue = name === 'imagesUrls'
-            ? value.split(',').map(url => url.trim())
-            : value;
-        onDataChange({ [name]: convertedValue });
+        const {name, value} = e.target;
+        onDataChange({[name]: value});
     };
-
-    // const handleImageUpload = (files: File[]) => {
-    //     if (files.length > 0) {
-    //         const imageUrl = URL.createObjectURL(files[0]);
-    //         setPrimaryImage(imageUrl);
-    //         onDataChange({ primaryImage: files[0] }); // Send File object to parent component
-    //     }
-    // };
 
     return (
         <div className="bg-white card-box border-20">
-            <h4 className="dash-title-three">Overview</h4>
+            {/*<h4 className="dash-title-three">Overview</h4>*/}
             <div className="row align-items-end">
+                {/* Hostel Selection */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="hostelId">Mã trọ*</label>
-                        <input
-                            type="string"
+                        <label htmlFor="hostelId">Chọn nhà trọ*</label>
+                        <select
                             name="hostelId"
-                            placeholder="Hostel"
-                            onChange={handleInputChange}
-                        />
+                            onChange={(e) => handleSelectChange("hostelId", e)}
+                            className="form-control"
+                        >
+                            <option value="">Chọn nhà trọ</option>
+                            {Array.isArray(hostels) && hostels.map((hostel) => (
+                                <option key={hostel.id} value={hostel.id}>
+                                    {hostel.hostelName}
+                                </option>
+                            ))}
+                        </select>
                     </div>
-                </div>  <div className="col-md-6">
+                </div>
+
+                {/* Room ID */}
+                <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="roomId">Mã phòng*</label>
                         <input
-                            type="string"
+                            type="text"
                             name="roomId"
                             placeholder="Nhập Id Phòng"
                             onChange={handleInputChange}
@@ -65,7 +102,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
 
             {/* Title */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="title">Tiêu dề bài đăng*</label>
+                <label htmlFor="title">Tiêu đề bài đăng*</label>
                 <input
                     type="text"
                     name="title"
@@ -80,55 +117,24 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                 <textarea
                     className="size-lg"
                     name="description"
-                    placeholder="WNhập chi tiết bài đăng..."
+                    placeholder="Nhập chi tiết bài đăng..."
                     onChange={handleInputChange}
                 ></textarea>
             </div>
 
             <div className="row align-items-end">
-                {/* Room Type */}
-                {/* <div className="col-md-6">
-                    <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="roomType">Trạng thái*</label>
-                        <NiceSelect
-                            className="nice-select"
-                            options={[
-                                { value: "0", text: "Đang trống" },
-                                { value: "1", text: "Hết phòng" },
-                            ]}
-                            defaultCurrent={0}
-                            onChange={(e) => handleSelectChange('roomType', e)}
-                            name="roomType"
-                            placeholder="Select Room Type"
-                        />
-                    </div>
-                </div> */}
-
-                {/* Monthly Rent Cost */}
+                {/* Membership Service ID */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="membershipServiceId">Mã dịch vụ*</label>
                         <input
-                            type="string"
+                            type="text"
                             name="membershipServiceId"
                             placeholder="Mã dịch vụ member"
                             onChange={handleInputChange}
                         />
                     </div>
                 </div>
-
-                {/* Size */}
-                {/* <div className="col-md-6">
-                    <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="size">Size*</label>
-                        <input
-                            type="number"
-                            name="size"
-                            placeholder="Size (m²)"
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </div> */}
 
                 {/* Availability */}
                 <div className="col-md-6">
@@ -137,11 +143,11 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                         <NiceSelect
                             className="nice-select"
                             options={[
-                                { value: "true", text: "Còn trống" },
-                                { value: "false", text: "Hết phòng" },
+                                {value: "true", text: "Còn trống"},
+                                {value: "false", text: "Hết phòng"},
                             ]}
                             defaultCurrent={0}
-                            onChange={(e) => handleSelectChange('isAvailable', e)}
+                            onChange={(e) => handleSelectChange("isAvailable", e)}
                             name="isAvailable"
                             placeholder="Select Availability"
                         />
@@ -159,15 +165,6 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                         />
                     </div>
                 </div>
-
-                {/* Primary Image */}
-                {/* <div className="col-md-6">
-                    <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="primaryImageUrl">Primary Image*</label>
-                        <UploadImage onImageUpload={handleImageUpload} multiple={true} />
-                        {primaryImage && <img src={primaryImage} alt="Primary" style={{ marginTop: '10px', maxWidth: '100%' }} />}
-                    </div>
-                </div> */}
             </div>
         </div>
     );

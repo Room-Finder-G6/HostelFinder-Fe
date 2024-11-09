@@ -38,7 +38,7 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = fal
             ))}
             <div className="dash-btn-one d-inline-block position-relative me-3">
                 <i className="bi bi-plus"></i>
-                Upload Files
+                Tải ảnh lên
                 <input
                     key={fileNames.join(",")} 
                     type="file"
@@ -46,7 +46,6 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = fal
                     onChange={handleFileChange}
                 />
             </div>
-            <small>Upload files .jpg, .png, .mp4</small>
         </div>
     );
 };
