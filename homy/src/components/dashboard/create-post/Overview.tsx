@@ -1,17 +1,22 @@
 import React, {useEffect, useState} from "react";
-import {RoomData} from "@/components/dashboard/create-post/AddPropertyBody";
+import {PostData} from "@/components/dashboard/create-post/AddPropertyBody";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {jwtDecode} from "jwt-decode";
+import {jwtDecode} from "jwt-decode"; // Fixed import statement
 import {toast} from "react-toastify";
 
 interface OverviewProps {
-    onDataChange: (data: Partial<RoomData>) => void;
+    onDataChange: (data: Partial<PostData>) => void;
 }
 
 interface Hostel {
     id: string;
     hostelName: string;
+}
+
+interface Room {
+    id: string;
+    roomName: string;
 }
 
 interface DecodedToken {
@@ -20,21 +25,22 @@ interface DecodedToken {
 
 const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
     const [hostels, setHostels] = useState<Hostel[]>([]);
+    const [rooms, setRooms] = useState<Room[]>([]);
+    const [hostelId, setHostelId] = useState<string>("");
 
     useEffect(() => {
-        const token = localStorage.getItem("token"); // Giả sử token được lưu trong localStorage với key là 'token'
+        const token = localStorage.getItem("token");
         if (token) {
             try {
                 const decodedToken: DecodedToken = jwtDecode(token);
                 const userId = decodedToken.UserId;
-                console.log(userId);
 
                 if (userId) {
                     const fetchHostels = async () => {
                         try {
                             const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
                             if (response.status === 200) {
-                                setHostels(response.data.data); // Giả sử response.data là danh sách các nhà trọ
+                                setHostels(response.data.data);
                             }
                         } catch (error: any) {
                             toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
@@ -53,9 +59,30 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
         }
     }, []);
 
+    // Fetch rooms when hostelId changes
+    useEffect(() => {
+        if (hostelId) {
+            const fetchRooms = async () => {
+                try {
+                    const response = await apiInstance.get(`rooms/hostels/${hostelId}`);
+                    if (response.status === 200) {
+                        setRooms(response.data.data);
+                    }
+                } catch (error: any) {
+                    toast.error(`Chưa thêm phòng cho nhà trọ này`, {position: "top-center"});
+                }
+            };
+            fetchRooms();
+        }
+    }, [hostelId]);
+
     const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
         onDataChange({[name]: value});
+
+        if (name === 'hostelId') {
+            setHostelId(value); // Update hostelId state when hostel selection changes
+        }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -65,7 +92,6 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
 
     return (
         <div className="bg-white card-box border-20">
-            {/*<h4 className="dash-title-three">Overview</h4>*/}
             <div className="row align-items-end">
                 {/* Hostel Selection */}
                 <div className="col-md-6">
@@ -86,16 +112,22 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                     </div>
                 </div>
 
-                {/* Room ID */}
+                {/* Room Selection */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="roomId">Mã phòng*</label>
-                        <input
-                            type="text"
+                        <label htmlFor="roomId">Chọn phòng*</label>
+                        <select
                             name="roomId"
-                            placeholder="Nhập Id Phòng"
-                            onChange={handleInputChange}
-                        />
+                            onChange={(e) => handleSelectChange("roomId", e)}
+                            className="form-control"
+                        >
+                            <option value="">Chọn phòng</option>
+                            {Array.isArray(rooms) && rooms.map((room) => (
+                                <option key={room.id} value={room.id}>
+                                    {room.roomName}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </div>
@@ -106,7 +138,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 <input
                     type="text"
                     name="title"
-                    placeholder="Your Title"
+                    placeholder="Nhập tiêu đề bài đăng..."
                     onChange={handleInputChange}
                 />
             </div>
