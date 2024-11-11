@@ -1,12 +1,13 @@
 "use client";
-import React, { useState } from "react";
+import React, {useState} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Overview from "./Overview";
 import apiInstance from "@/utils/apiInstance";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import UploadImage from "@/components/UploadImage";
+import {jwtDecode} from "jwt-decode";
 
-export interface RoomData {
+export interface PostData {
     hostelId: string;
     roomId: string;
     title: string;
@@ -17,8 +18,13 @@ export interface RoomData {
     membershipServiceId: string;
 }
 
+interface DecodedToken {
+    UserId: string;
+}
+
+
 const AddPropertyBody: React.FC = () => {
-    const [roomData, setRoomData] = useState<RoomData>({
+    const [postData, setPostData] = useState<PostData>({
         hostelId: '',
         roomId: '',
         title: '',
@@ -29,15 +35,15 @@ const AddPropertyBody: React.FC = () => {
         membershipServiceId: ''
     });
 
-    const handleData = (data: Partial<RoomData>) => {
-        setRoomData((prevData) => ({
+    const handleData = (data: Partial<PostData>) => {
+        setPostData((prevData) => ({
             ...prevData,
             ...data,
         }));
     };
 
     const handleImageUpload = (files: File[]) => {
-        handleData({ images: files });
+        handleData({images: files});
     };
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -53,55 +59,72 @@ const AddPropertyBody: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        // Lấy userId từ token (giả định token lưu trong localStorage)
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Token không tìm thấy", {position: "top-center"});
+            return;
+        }
 
-        for (const image of roomData.images) {
+        let userId = "";
+        try {
+            const decodedToken: DecodedToken = jwtDecode(token);
+            userId = decodedToken.UserId;
+            if (!userId) {
+                toast.error("Không tìm thấy User ID trong token", {position: "top-center"});
+                return;
+            }
+        } catch (error) {
+            toast.error("Token không hợp lệ", {position: "top-center"});
+            return;
+        }
+
+        for (const image of postData.images) {
             if (!validateFileSize(image)) {
                 return;
             }
         }
 
         const formData = new FormData();
-        formData.append("hostelId", roomData.hostelId);
-        formData.append("roomId", roomData.roomId);
-        formData.append("title", roomData.title);
-        formData.append("status", roomData.status.toString());
-        formData.append("description", roomData.description);
-        formData.append("dateAvailable", roomData.dateAvailable);
-        formData.append("membershipServiceId", roomData.membershipServiceId);
+        formData.append("hostelId", postData.hostelId);
+        formData.append("roomId", postData.roomId);
+        formData.append("title", postData.title);
+        formData.append("status", postData.status ? "true" : "false");
+        formData.append("description", postData.description);
+        formData.append("dateAvailable", postData.dateAvailable);
+        formData.append("membershipServiceId", postData.membershipServiceId);
 
-
-
-        roomData.images.forEach((image) => {
+        postData.images.forEach((image) => {
             formData.append("images", image);
         });
 
         try {
-            const response = await apiInstance.post("posts", formData);
-            toast.success("Tạo bài đăng thành công", { position: "top-center" });
+            const response = await apiInstance.post(`posts?userId=${userId}`, formData);
+            toast.success("Tạo bài đăng thành công", {position: "top-center"});
         } catch (error: any) {
-            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, { position: "top-center" });
+            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, {position: "top-center"});
         }
     };
 
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Add New Post" />
-                <h2 className="main-title d-block d-lg-none">Add New Property</h2>
-                <Overview onDataChange={handleData} />
+                <DashboardHeaderTwo title="Tạo bài cho thuê"/>
+                <h2 className="main-title d-block d-lg-none">Thêm bài cho thuê</h2>
+                <Overview onDataChange={handleData}/>
 
                 <div className="bg-white card-box border-20 mt-40">
-                    <h4 className="dash-title-three">Photo</h4>
-                    <UploadImage onImageUpload={handleImageUpload} multiple={true} />
+                    <h4 className="dash-title-three">Hình ảnh</h4>
+                    <UploadImage onImageUpload={handleImageUpload} multiple={true}/>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="button-group d-inline-flex align-items-center mt-30">
                         <button type="submit" className="dash-btn-two tran3s me-3">
-                            Submit Property
+                            Đăng bài
                         </button>
                         <button type="button" className="dash-cancel-btn tran3s">
-                            Cancel
+                            Hủy
                         </button>
                     </div>
                 </form>
