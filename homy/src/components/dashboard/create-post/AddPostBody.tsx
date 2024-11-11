@@ -23,7 +23,7 @@ interface DecodedToken {
 }
 
 
-const AddPropertyBody: React.FC = () => {
+const AddPostBody: React.FC = () => {
     const [postData, setPostData] = useState<PostData>({
         hostelId: '',
         roomId: '',
@@ -99,7 +99,7 @@ const AddPropertyBody: React.FC = () => {
         });
 
         try {
-            const response = await apiInstance.post(`posts?userId=${userId}`, formData);
+            await apiInstance.post(`posts?userId=${userId}`, formData);
             toast.success("Tạo bài đăng thành công", {position: "top-center"});
         } catch (error: any) {
             toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, {position: "top-center"});
@@ -133,4 +133,4 @@ const AddPropertyBody: React.FC = () => {
     );
 };
 
-export default AddPropertyBody;
+export default AddPostBody;
