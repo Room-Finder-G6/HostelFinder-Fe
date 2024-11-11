@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {PostData} from "@/components/dashboard/create-post/AddPostBody";
+import {PostData} from "@/components/dashboard/edit-post/EditPostForm";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {jwtDecode} from "jwt-decode"; // Fixed import statement
+import {jwtDecode} from "jwt-decode";
 import {toast} from "react-toastify";
 
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
+    postData: PostData;
 }
 
 interface Hostel {
@@ -23,10 +24,10 @@ interface DecodedToken {
     UserId: string;
 }
 
-const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
+const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
     const [hostels, setHostels] = useState<Hostel[]>([]);
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [hostelId, setHostelId] = useState<string>("");
+    const [hostelId, setHostelId] = useState<string>(postData.hostelId);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -59,7 +60,6 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
         }
     }, []);
 
-    // Fetch rooms when hostelId changes
     useEffect(() => {
         if (hostelId) {
             const fetchRooms = async () => {
@@ -81,7 +81,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
         onDataChange({[name]: value});
 
         if (name === 'hostelId') {
-            setHostelId(value); // Update hostelId state when hostel selection changes
+            setHostelId(value);
         }
     };
 
@@ -99,6 +99,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                         <label htmlFor="hostelId">Chọn nhà trọ*</label>
                         <select
                             name="hostelId"
+                            value={postData.hostelId || ''}
                             onChange={(e) => handleSelectChange("hostelId", e)}
                             className="form-control"
                         >
@@ -118,6 +119,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                         <label htmlFor="roomId">Chọn phòng*</label>
                         <select
                             name="roomId"
+                            value={postData.roomId || ''}
                             onChange={(e) => handleSelectChange("roomId", e)}
                             className="form-control"
                         >
@@ -138,6 +140,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 <input
                     type="text"
                     name="title"
+                    value={postData.title || ''}
                     placeholder="Nhập tiêu đề bài đăng..."
                     onChange={handleInputChange}
                 />
@@ -149,6 +152,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 <textarea
                     className="size-lg"
                     name="description"
+                    value={postData.description || ''}
                     placeholder="Nhập chi tiết bài đăng..."
                     onChange={handleInputChange}
                 ></textarea>
@@ -162,6 +166,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                         <input
                             type="text"
                             name="membershipServiceId"
+                            value={postData.membershipServiceId || ''}
                             placeholder="Mã dịch vụ member"
                             onChange={handleInputChange}
                         />
@@ -171,16 +176,16 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 {/* Availability */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="isAvailable">Trạng thái*</label>
+                        <label htmlFor="status">Trạng thái*</label>
                         <NiceSelect
                             className="nice-select"
                             options={[
                                 {value: "true", text: "Còn trống"},
                                 {value: "false", text: "Hết phòng"},
                             ]}
-                            defaultCurrent={0}
-                            onChange={(e) => handleSelectChange("isAvailable", e)}
-                            name="isAvailable"
+                            defaultCurrent={postData.status ? 0 : 1}
+                            onChange={(e) => handleSelectChange("status", e)}
+                            name="status"
                             placeholder="Select Availability"
                         />
                     </div>
@@ -193,6 +198,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                         <input
                             type="date"
                             name="dateAvailable"
+                            value={postData.dateAvailable ? new Date(postData.dateAvailable).toISOString().slice(0, 10) : ''}
                             onChange={handleInputChange}
                         />
                     </div>
