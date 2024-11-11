@@ -28,9 +28,11 @@ interface CommonPropertyOverviewProps {
     size: number;
     roomType: RoomType;
     bedRooms: number;
+    bathRooms: number;
+    kitchen: number;
 }
 
-const CommonPropertyOverview = ({ size, roomType, bedRooms }: CommonPropertyOverviewProps) => {
+const CommonPropertyOverview = ({ size, roomType, bedRooms,bathRooms,kitchen }: CommonPropertyOverviewProps) => {
     const property_overview_data: DataType[] = [
         {
             id: 1,
@@ -42,16 +44,16 @@ const CommonPropertyOverview = ({ size, roomType, bedRooms }: CommonPropertyOver
             icon: icon_2,
             title: `Phòng ngủ: ${bedRooms}`,
         },
-        /*{
+        {
             id: 3,
             icon: icon_3,
-            title: "Bath . 2",
+            title: `Phòng tắm: ${bathRooms}`,
         },
         {
             id: 4,
             icon: icon_4,
-            title: "Kitchen . 01",
-        },*/
+            title: `Phòng bếp: ${kitchen}`,
+        },
         {
             id: 3,
             icon: icon_5,

@@ -1,12 +1,13 @@
-"use client"
+"use client";
 import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import UseShortedProperty from "@/hooks/useShortedProperty";
 import NiceSelect from "@/ui/NiceSelect";
-import Link from "next/link";
+import { useRouter } from "next/navigation"; // Import useRouter từ next/navigation
 import ReactPaginate from "react-paginate";
 import Fancybox from "@/components/common/Fancybox";
 
 const ListingFourArea = () => {
+   const router = useRouter(); // Khởi tạo router
 
    const itemsPerPage = 6;
    const page = "listing_6";
@@ -36,6 +37,10 @@ const ListingFourArea = () => {
       resetFilters();
    };
 
+   const navigateToDetails = () => {
+      router.push("/listing_details_01"); // Điều hướng đến trang chi tiết
+   };
+
    return (
       <div className="property-listing-six bg-pink-two pt-110 md-pt-80 pb-170 xl-pb-120 mt-150 xl-mt-120">
          <div className="container">
@@ -60,7 +65,7 @@ const ListingFourArea = () => {
 
             <div className="listing-header-filter d-sm-flex justify-content-between align-items-center mb-40 lg-mb-30">
                <div>Showing <span className="color-dark fw-500">{itemOffset + 1}–{itemOffset + currentItems.length}</span> of <span
-                  className="color-dark fw-500">{sortedProperties.length}</span> results aa</div>
+                  className="color-dark fw-500">{sortedProperties.length}</span> results</div>
                <div className="d-flex align-items-center xs-mt-20">
                   <div className="short-filter d-flex align-items-center">
                      <div className="fs-16 me-2">Short by:</div>
@@ -78,7 +83,6 @@ const ListingFourArea = () => {
                         name=""
                         placeholder="" />
                   </div>
-                  <Link href="/listing_03" className="tran3s layout-change rounded-circle ms-auto ms-sm-3" data-bs-toggle="tooltip" title="Switch To Grid View"><i className="fa-regular fa-grid-2"></i></Link>
                </div>
             </div>
 
@@ -103,7 +107,9 @@ const ListingFourArea = () => {
                         </div>
                      </div>
                      <div className="property-info">
-                        <Link href="/listing_details_04" className="title tran3s mb-15">{item.title}</Link>
+                        <span onClick={navigateToDetails} className="title tran3s mb-15" style={{ cursor: "pointer" }}>
+                           {item.title}
+                        </span>
                         <div className="address">{item.address}</div>
                         <div className="feature mt-30 mb-30 pt-30 pb-5">
                            <ul className="style-none d-flex flex-wrap align-items-center justify-content-between">
@@ -118,11 +124,11 @@ const ListingFourArea = () => {
                         <div className="pl-footer d-flex flex-wrap align-items-center justify-content-between">
                            <strong className="price fw-500 color-dark me-auto">${item.price.toLocaleString({ minimumFractionDigits: 2, maximumFractionDigits: 2 })}{item.price_text && <>/<sub>m</sub></>}</strong>
                            <ul className="style-none d-flex action-icons on-top">
-                              <li><Link href="#"><i className="fa-light fa-heart"></i></Link></li>
-                              <li><Link href="#"><i className="fa-light fa-bookmark"></i></Link></li>
-                              <li><Link href="#"><i className="fa-light fa-circle-plus"></i></Link></li>
+                              <li><span><i className="fa-light fa-heart"></i></span></li>
+                              <li><span><i className="fa-light fa-bookmark"></i></span></li>
+                              <li><span><i className="fa-light fa-circle-plus"></i></span></li>
                            </ul>
-                           <Link href="/listing_details_04" className="btn-four rounded-circle"><i className="bi bi-arrow-up-right"></i></Link>
+                           <span className="btn-four rounded-circle"><i className="bi bi-arrow-up-right"></i></span>
                         </div>
                      </div>
                   </div>
@@ -143,7 +149,7 @@ const ListingFourArea = () => {
             </div>
          </div>
       </div>
-   )
-}
+   );
+};
 
-export default ListingFourArea
+export default ListingFourArea;
