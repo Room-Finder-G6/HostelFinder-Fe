@@ -1,4 +1,4 @@
-import DashboardAddProperty from "@/components/dashboard/create-post";
+import DashboardAddPost from "@/components/dashboard/create-post";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
@@ -7,7 +7,7 @@ export const metadata = {
 const index = () => {
    return (
       <Wrapper>
-         <DashboardAddProperty />
+         <DashboardAddPost />
       </Wrapper>
    )
 }

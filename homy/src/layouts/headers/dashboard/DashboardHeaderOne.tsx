@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import dashboardLogo from "@/assets/images/logo/logo_01.svg";
+// Importing dashboard assets
 import dashboardIconActive_1 from "@/assets/images/dashboard/icon/icon_1_active.svg";
 import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_1.svg";
 import dashboardIconActive_2 from "@/assets/images/dashboard/icon/icon_2_active.svg";
@@ -34,25 +34,163 @@ interface DashboardHeaderOneProps {
     setIsActive: (value: boolean) => void;
 }
 
+interface NavLinkProps {
+    href: string;
+    activeIcon: any;
+    inactiveIcon: any;
+    label: string;
+    currentPath: string;
+}
+
+// Tạo component NavLink riêng để tối ưu việc render
+const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactiveIcon, label, currentPath }) => {
+    const isActive = currentPath === href;
+
+    return (
+        <Link
+            href={href}
+            className={`d-flex w-100 align-items-center ${isActive ? 'active' : ''}`}
+            prefetch={true}
+        >
+            <Image
+                src={isActive ? activeIcon : inactiveIcon}
+                alt={label}
+                priority={isActive}
+            />
+            <span>{label}</span>
+        </Link>
+    );
+});
+
+NavLink.displayName = 'NavLink';
+
 const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
     const pathname = usePathname();
+
+    // Định nghĩa navigation items để dễ quản lý và maintain
+    const navigationItems = [
+        {
+            section: "main",
+            items: [
+                {
+                    href: "/dashboard/dashboard-index",
+                    activeIcon: dashboardIconActive_1,
+                    inactiveIcon: dashboardIcon_1,
+                    label: "Dashboard"
+                },
+                {
+                    href: "/dashboard/message",
+                    activeIcon: dashboardIconActive_2,
+                    inactiveIcon: dashboardIcon_2,
+                    label: "Message"
+                }
+            ]
+        },
+        {
+            section: "profile",
+            title: "Profile",
+            items: [
+                {
+                    href: "/dashboard/profile",
+                    activeIcon: dashboardIconActive_3,
+                    inactiveIcon: dashboardIcon_3,
+                    label: "Profile"
+                },
+                {
+                    href: "/dashboard/account-settings",
+                    activeIcon: dashboardIconActive_4,
+                    inactiveIcon: dashboardIcon_4,
+                    label: "Account Settings"
+                },
+                {
+                    href: "/dashboard/membership",
+                    activeIcon: dashboardIconActive_5,
+                    inactiveIcon: dashboardIcon_5,
+                    label: "Membership"
+                }
+            ]
+        },
+        {
+            section: "listing",
+            title: "Listing",
+            items: [
+                {
+                    href: "/dashboard/properties-list",
+                    activeIcon: dashboardIconActive_6,
+                    inactiveIcon: dashboardIcon_6,
+                    label: "List Room"
+                },
+                {
+                    href: "/dashboard/manage-hostels",
+                    activeIcon: dashboardIconActive_7,
+                    inactiveIcon: dashboardIcon_7,
+                    label: "Quản Lý Nhà Trọ"
+                },
+                {
+                    href: "/dashboard/manage-room",
+                    activeIcon: dashboardIconActive_7,
+                    inactiveIcon: dashboardIcon_7,
+                    label: "Quản Lý Phòng Trọ"
+                },
+                {
+                    href: "/dashboard/manage-post",
+                    activeIcon: dashboardIconActive_7,
+                    inactiveIcon: dashboardIcon_7,
+                    label: "Quản Lý Bài Đăng"
+                },
+                {
+                    href: "/dashboard/favourites",
+                    activeIcon: dashboardIconActive_8,
+                    inactiveIcon: dashboardIcon_8,
+                    label: "Favourites"
+                },
+                {
+                    href: "/dashboard/saved-search",
+                    activeIcon: dashboardIconActive_9,
+                    inactiveIcon: dashboardIcon_9,
+                    label: "Saved Search"
+                },
+                {
+                    href: "/dashboard/review",
+                    activeIcon: dashboardIconActive_10,
+                    inactiveIcon: dashboardIcon_10,
+                    label: "Reviews"
+                }
+            ]
+        }
+    ];
 
     return (
         <aside className={`dash-aside-navbar ${isActive ? "show" : ""}`}>
             <div className="position-relative">
+                {/* Logo Section */}
                 <div className="logo d-md-block d-flex align-items-center justify-content-between plr bottom-line pb-30">
-                    <Link href="/">
-                        <div className="logo-container" style={{ display: "flex", alignItems: "center" }}>
-                            <Image src="/assets/images/logo/logo_06.svg" alt=" PhongTro24/7" width={50} height={50} />
-                            <span className="logo-text" style={{ fontSize: "25px", color: "black", marginRight: "10px" }}>
-                                <strong>&nbsp;PhongTro24/7</strong>
-                            </span>
-                        </div>
+                    <Link
+                        href="/"
+                        prefetch={true}
+                        className="logo-container"
+                        style={{ display: "flex", alignItems: "center" }}
+                    >
+                        <Image
+                            src="/assets/images/logo/logo_06.svg"
+                            alt="PhongTro24/7"
+                            width={50}
+                            height={50}
+                            priority={true}
+                        />
+                        <span className="logo-text" style={{ fontSize: "25px", color: "black", marginRight: "10px" }}>
+                            <strong>&nbsp;PhongTro24/7</strong>
+                        </span>
                     </Link>
-                    <button onClick={() => setIsActive(false)} className="close-btn d-block d-md-none">
+                    <button
+                        onClick={() => setIsActive(false)}
+                        className="close-btn d-block d-md-none"
+                    >
                         <i className="fa-light fa-circle-xmark"></i>
                     </button>
                 </div>
+
+                {/* Navigation Section */}
                 <nav className="dasboard-main-nav pt-30 pb-30 bottom-line">
                     <ul className="style-none">
                         <li className="plr">
@@ -137,6 +275,8 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         </li>
                     </ul>
                 </nav>
+
+                {/* Profile Completion Section */}
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-value fw-500">82%</div>
                     <div className="progress-line position-relative">
@@ -144,10 +284,16 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                     </div>
                     <p>Profile Complete</p>
                 </div>
+
+                {/* Logout Button */}
                 <div className="plr">
-                    <Link href="#" className="d-flex w-100 align-items-center logout-btn">
+                    <Link
+                        href="#"
+                        className="d-flex w-100 align-items-center logout-btn"
+                        prefetch={false}
+                    >
                         <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
-                            <Image src={dashboardIcon_11} alt="Logout" />
+                            <Image src={dashboardIcon_11} alt="Logout" priority={false} />
                         </div>
                         <span>Logout</span>
                     </Link>
@@ -157,4 +303,4 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
     );
 };
 
-export default DashboardHeaderOne;
+export default React.memo(DashboardHeaderOne);

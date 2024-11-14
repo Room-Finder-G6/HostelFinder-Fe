@@ -4,9 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
 import icon_4 from "@/assets/images/dashboard/icon/icon_21.svg";
-import { useEffect, useState, useCallback } from "react";
+import {useEffect, useState, useCallback} from "react";
 import apiInstance from "@/utils/apiInstance";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import DeleteModal from "@/modals/DeleteModal";
 import {toast} from "react-toastify";
 
@@ -20,12 +20,9 @@ interface Address {
 interface DataType {
     id: string;
     hostelName: string;
-    description: string;
     address: Address;
     numberOfRooms: number;
-    rating: number;
-    image: string | null;
-    coordinates: string;
+    imageUrl: string | null;
     createdOn: string;
 }
 
@@ -171,7 +168,13 @@ const PropertyTableBody = () => {
                 <tr key={item.id}>
                     <td>
                         <div className="d-lg-flex align-items-center position-relative">
-                            {item.image && <Image src={item.image} alt="" className="p-img" />}
+                            {item.imageUrl && <Image
+                                src={item.imageUrl}
+                                alt=""
+                                width={200}
+                                height={200}
+                                style={{ objectFit: 'cover', borderRadius:'15px' }}
+                            />}
                             <div className="ps-lg-4 md-pt-10">
                                 <Link href="#" className="property-name tran3s color-dark fw-500 fs-20 stretched-link">
                                     {item.hostelName}
@@ -184,21 +187,21 @@ const PropertyTableBody = () => {
                         </div>
                     </td>
                     <td>{new Date(item.createdOn).toLocaleDateString()}</td>
-                    <td>{item.rating}</td>
                     <td>
                         <div className="action-dots float-end">
-                            <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
                                 <span></span>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <Link className="dropdown-item" href={`/dashboard/edit-hostel/${item.id}`}>
-                                        <Image src={icon_3} alt="" className="lazy-img" /> Edit
+                                        <Image src={icon_3} alt="" className="lazy-img"/> Edit
                                     </Link>
                                 </li>
                                 <li>
                                     <Link className="dropdown-item" href="#" onClick={() => openDeleteModal(item.id)}>
-                                        <Image src={icon_4} alt="" className="lazy-img" /> Delete
+                                        <Image src={icon_4} alt="" className="lazy-img"/> Delete
                                     </Link>
                                 </li>
                             </ul>
