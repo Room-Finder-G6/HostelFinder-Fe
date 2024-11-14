@@ -5,9 +5,10 @@ import { Room } from './Room';
 
 interface RoomTableBodyProps {
     selectedHostel: string;
+    selectedFloor: string | null;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -18,7 +19,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         const fetchRooms = async () => {
             setLoading(true);
             try {
-                const response = await apiInstance.get(`/rooms/hostels/${selectedHostel}`);
+                let url = `/rooms/hostels/${selectedHostel}`;
+                if (selectedFloor) {
+                    url += `?floor=${selectedFloor}`;
+                }
+                const response = await apiInstance.get(url);
                 if (response.data.succeeded) {
                     setRooms(response.data.data);
                 } else {
@@ -32,7 +37,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         };
 
         fetchRooms();
-    }, [selectedHostel]);
+    }, [selectedHostel, selectedFloor]);
 
     if (loading) {
         return (
@@ -84,7 +89,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
                         </div>
                     </td>
                     <td>{new Date(room.createdOn).toLocaleDateString()}</td>
-                    <td>{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)}VNĐ</td>
+                    <td>{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} VNĐ</td>
                     <td>
                         {room.status ? (
                             <span className="badge bg-success">Còn trống</span>

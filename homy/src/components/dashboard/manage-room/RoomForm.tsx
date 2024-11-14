@@ -21,6 +21,7 @@ interface RoomFormProps {
   handleRoomImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveImage: (index: number) => void;
   selectedAmenities: string[];
+  onClose: () => void;
 }
 
 
@@ -32,9 +33,30 @@ const RoomForm: React.FC<RoomFormProps> = ({
   handleRoomImageChange,
   handleRemoveImage,
   selectedAmenities,
+  onClose,
 }) => {
   return (
     <>
+      <button
+        type="button"
+        onClick={onClose}
+        style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          background: 'red',
+          color: 'white',
+          border: 'none',
+          borderRadius: '50%',
+          width: '24px',
+          height: '24px',
+          lineHeight: '24px',
+          textAlign: 'center',
+          cursor: 'pointer',
+        }}
+      >
+        &times;
+      </button>
       <div className="modal-form-group">
         <label>Tên phòng*</label>
         <input

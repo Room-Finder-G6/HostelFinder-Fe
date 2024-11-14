@@ -18,11 +18,25 @@ import RoomTableBody from "./RoomTableBody";
 interface JwtPayload {
    UserId: string;
 }
+interface Room {
+   id: string;
+   hostelName: string;
+   roomName: string;
+   floor: number | null;
+   maxRenters: number;
+   size: number;
+   status: boolean;
+   monthlyRentCost: number;
+   roomType: number;
+   createdOn: string;
+   imageRoom: string;
+}
 const RoomManagement = () => {
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
    const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
    const [selectedHostel, setSelectedHostel] = useState("");
    const [hostels, setHostels] = useState([]);
+   const [floors, setFloors] = useState<number[]>([]);
    const [roomFormData, setRoomFormData] = useState({
       hostelId: "",
       roomName: "",
@@ -38,12 +52,17 @@ const RoomManagement = () => {
    });
    const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
    const [error, setError] = useState<string | null>(null);
-
+   const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
+   const [roomsUpdate, setRoomsUpdate] = useState<number>(0);
    const toggleUpdateModal = () => {
       setIsUpdateModalOpen(!isUpdateModalOpen);
    };
 
    const toggleAddRoomModal = () => {
+      if (!roomFormData.hostelId) {
+         toast.error("Vui lòng chọn nhà trọ trước khi thêm phòng trọ", { position: "top-center" });
+         return;
+      }
       setIsAddRoomModalOpen(!isAddRoomModalOpen);
    };
 
@@ -77,7 +96,37 @@ const RoomManagement = () => {
       const hostelId = e.target.value;
       setSelectedHostel(hostelId);
       setRoomFormData({ ...roomFormData, hostelId });
+      setSelectedFloor(null);
    };
+
+
+   useEffect(() => {
+      if (!selectedHostel) {
+         setFloors([]);
+         return;
+      }
+
+      const fetchFloors = async () => {
+         try {
+            const response = await apiInstance.get(`/rooms/hostels/${selectedHostel}`);
+            if (response.data.succeeded) {
+               const rooms = response.data.data as Room[];
+               const uniqueFloors = Array.from(new Set(rooms.map((room) => room.floor).filter((floor) => floor !== null))) as number[];
+               setFloors(uniqueFloors.sort((a, b) => a - b));
+            } else {
+               toast.error("Không thể tải danh sách phòng");
+               setFloors([]);
+            }
+         }
+         catch (error) {
+            toast.error("Lỗi xảy ra khi lấy danh sách phòng");
+            setFloors([]);
+         }
+      };
+
+      fetchFloors();
+   }, [selectedHostel])
+
    // Hàm lấy landlordId từ token
    const getUserIdFromToken = useCallback(() => {
       const token = window.localStorage.getItem("token");
@@ -183,6 +232,26 @@ const RoomManagement = () => {
                onHostelChange={handleHostelChange}
 
             />
+            {/* Floor Buttons */}
+            {floors.length > 0 && (
+               <div className="floor-buttons mb-3">
+                  <button
+                     className={`btn ${selectedFloor === null ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
+                     onClick={() => setSelectedFloor(null)}
+                  >
+                     Tất cả tầng
+                  </button>
+                  {floors.map((floor) => (
+                     <button
+                        key={floor}
+                        className={`btn ${selectedFloor === floor.toString() ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
+                        onClick={() => setSelectedFloor(floor.toString())}
+                     >
+                        Tầng {floor}
+                     </button>
+                  ))}
+               </div>
+            )}
 
             {/* Utility Buttons */}
             <div className="d-flex align-items-center mb-4">
@@ -191,7 +260,7 @@ const RoomManagement = () => {
                <button className="btn btn-warning me-2">In tất cả hóa đơn</button>
                <button className="btn btn-info me-2">Gửi hóa đơn</button>
                <button className="btn btn-secondary me-2" onClick={toggleAddRoomModal}>Thêm phòng</button>
-               <button className="btn btn-danger me-2">Cấu hình bảng giá</button>
+               <button className="btn btn-danger me-2">Bảng giá dịch vụ</button>
                <button onClick={toggleUpdateModal} className="btn btn-success">
                   Cập nhật thông tin
                </button>
@@ -210,7 +279,7 @@ const RoomManagement = () => {
                            <th scope="col"></th>
                         </tr>
                      </thead>
-                     <RoomTableBody selectedHostel={selectedHostel} />
+                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} />
                   </table>
                </div>
             </div>
@@ -293,6 +362,7 @@ const RoomManagement = () => {
                            handleRoomImageChange={handleRoomImageChange}
                            handleRemoveImage={handleRemoveImage}
                            selectedAmenities={selectedAmenities}
+                           onClose={toggleAddRoomModal}
                         />
 
                         <div className="modal-footer">
