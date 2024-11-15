@@ -27,20 +27,15 @@ interface DataType {
 interface CommonPropertyOverviewProps {
     size: number;
     roomType: RoomType;
-    bedRooms: number;
+    /*bedRooms: number;*/
 }
 
-const CommonPropertyOverview = ({ size, roomType, bedRooms }: CommonPropertyOverviewProps) => {
+const CommonPropertyOverview = ({ size, roomType }: CommonPropertyOverviewProps) => {
     const property_overview_data: DataType[] = [
         {
             id: 1,
             icon: icon_1,
             title: `Diện tích: ${size} m²`,
-        },
-        {
-            id: 2,
-            icon: icon_2,
-            title: `Phòng ngủ: ${bedRooms}`,
         },
         /*{
             id: 3,

@@ -9,6 +9,7 @@ import apiInstance from "@/utils/apiInstance";
 import {jwtDecode} from "jwt-decode";
 import DeleteModal from "@/modals/DeleteModal";
 import {toast} from "react-toastify";
+import Loading from "@/components/Loading";
 
 interface Address {
     province: string;
@@ -129,9 +130,7 @@ const PropertyTableBody = () => {
 
     if (isLoading) {
         return <tbody>
-        <tr>
-            <td colSpan={4}>Loading...</td>
-        </tr>
+        <Loading/>
         </tbody>;
     }
 
@@ -173,7 +172,7 @@ const PropertyTableBody = () => {
                                 alt=""
                                 width={200}
                                 height={200}
-                                style={{ objectFit: 'cover', borderRadius:'15px' }}
+                                style={{objectFit: 'cover', borderRadius: '15px'}}
                             />}
                             <div className="ps-lg-4 md-pt-10">
                                 <Link href="#" className="property-name tran3s color-dark fw-500 fs-20 stretched-link">
@@ -182,7 +181,7 @@ const PropertyTableBody = () => {
                                 <div className="address">
                                     {`${item.address.commune}, ${item.address.district}, ${item.address.province}`}
                                 </div>
-                                <strong className="price color-dark">{item.numberOfRooms} rooms</strong>
+                                <strong className="color-dark">{item.numberOfRooms} phòng</strong>
                             </div>
                         </div>
                     </td>
