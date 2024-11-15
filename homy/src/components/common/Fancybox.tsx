@@ -1,4 +1,3 @@
-"use client"
 import React, { useRef, useEffect, PropsWithChildren } from 'react';
 
 import { Fancybox as NativeFancybox } from '@fancyapps/ui';
@@ -12,23 +11,27 @@ interface Props {
 }
 
 const Fancybox = (props: PropsWithChildren<Props>) => {
-   const containerRef = useRef(null);
+   const containerRef = useRef<HTMLDivElement | null>(null);
 
    useEffect(() => {
       const container = containerRef.current;
 
-      const delegate = props.delegate || '[data-fancybox]';
-      const options = props.options || {};
+      if (container) {
+         const delegate = props.delegate || '[data-fancybox]';
+         const options = props.options || {};
 
-      NativeFancybox.bind(container, delegate, options);
+         NativeFancybox.bind(container, delegate, options);
+      }
 
       return () => {
-         NativeFancybox.unbind(container);
-         NativeFancybox.close();
+         if (container) {
+            NativeFancybox.unbind(container);
+            NativeFancybox.close();
+         }
       };
-   });
+   }, [props.delegate, props.options, props.children]);
 
    return <div ref={containerRef}>{props.children}</div>;
 }
 
-export default Fancybox
+export default Fancybox;
