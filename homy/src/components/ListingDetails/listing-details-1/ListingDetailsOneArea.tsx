@@ -45,7 +45,7 @@ const ListingDetailsOneArea = () => {
                 const postResponse = await apiInstance.get(`posts/${postId}`);
                 const fetchedPost = postResponse.data.data;
                 setPost(fetchedPost);
-
+console.log(fetchedPost.hostelId)
                 let fetchedRoom
                 const roomResponse = await apiInstance.get(`rooms/${fetchedPost.roomId}`);
                 fetchedRoom = roomResponse.data.data;
