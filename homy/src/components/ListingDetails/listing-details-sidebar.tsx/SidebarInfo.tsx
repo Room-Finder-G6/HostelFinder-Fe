@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import infoAvatar from "@/assets/images/agent/img_06.jpg";
 import { UserContext } from "@/components/ListingDetails/listing-details-1/ListingDetailsOneArea";
 import { useContext } from "react";
 
@@ -18,7 +17,8 @@ const SidebarInfo = () => {
 
     return (
         <>
-            <Image src={infoAvatar} alt="User Avatar" className="lazy-img rounded-circle ms-auto me-auto mt-3 avatar" />
+            <Image src={user.avatarUrl} alt="User Avatar" className="lazy-img rounded-circle ms-auto me-auto mt-3 avatar"
+                   width={100} height={100}  style={{ objectFit: "cover"}}/>
             <div className="text-center mt-25">
                 <h6 className="name">{user.fullName}</h6>
                 <p className="fs-16">Chủ bất động sản</p>
