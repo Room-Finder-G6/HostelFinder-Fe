@@ -21,7 +21,7 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
         // Fetching data from API
         const fetchServices = async () => {
             try {
-                const response = await apiInstance.get('/services/GetAllServices');
+                const response = await apiInstance.get('/services');
                 console.log(response);
                 if (response.data.succeeded) {
                     setServices(response.data.data);
