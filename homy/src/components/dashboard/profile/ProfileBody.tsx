@@ -1,4 +1,3 @@
-"use client";
 import React, { useState, useEffect } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Image from "next/image";
@@ -7,46 +6,44 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import apiInstance from "@/utils/apiInstance";
-import avatar_1 from "@/assets/images/dashboard/avatar_02.jpg";
+import { User } from "@/models/user";
+import {auto} from "@popperjs/core";
+
 interface CustomJwtPayload {
     UserId: string;
 }
 
-interface UserProfileData {
-    userId: string;
+interface UpdateUser {
     username: string;
+    fullName: string;
     email: string;
     phone: string;
-    avatarUrl: string;
-
 }
 
 const ProfileBody: React.FC = () => {
-    const [profileData, setProfileData] = useState<UserProfileData>({
-        userId: "",
+    const [profileData, setProfileData] = useState<User>({
+        id: "",
         username: "",
+        fullName: "",
         email: "",
         phone: "",
         avatarUrl: "",
-
     });
+
+    const [avatarFile, setAvatarFile] = useState<File | null>(null); // Lưu trữ file ảnh
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        console.log("Token retrieved from localStorage:", token);
 
         if (token) {
             try {
                 const decodedToken = jwtDecode<CustomJwtPayload>(token);
-                console.log("Decoded token:", decodedToken); console.log("Decoded token:", decodedToken);
-
                 if (decodedToken.UserId) {
                     fetchUserProfile(decodedToken.UserId);
                 } else {
                     toast.error("User ID not found in token", { position: "top-center" });
                 }
             } catch (error) {
-                console.error("Error decoding token:", error);
                 toast.error("Invalid token", { position: "top-center" });
             }
         } else {
@@ -56,30 +53,19 @@ const ProfileBody: React.FC = () => {
 
     const fetchUserProfile = async (userId: string) => {
         try {
-
             const response = await apiInstance.get(`users/${userId}`);
-
             if (response.status === 200 && response.data.succeeded) {
                 const data = response.data.data;
-                setProfileData({
-                    userId: data.id,
-                    username: data.username,
-                    email: data.email,
-                    phone: data.phone,
-                    avatarUrl: data.avatarUrl || avatar_1,
-
-                });
+                setProfileData(data);
             } else {
                 toast.error("Failed to load user profile", { position: "top-center" });
             }
         } catch (error) {
-            console.error("Error fetching user profile:", error);
             toast.error("Error fetching user profile", { position: "top-center" });
         }
     };
-    const handleInputChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setProfileData((prevData) => ({
             ...prevData,
@@ -100,35 +86,38 @@ const ProfileBody: React.FC = () => {
                 }
             };
             reader.readAsDataURL(file);
+            setAvatarFile(file); // Lưu file ảnh để gửi lên server
         }
     };
 
     const handleSubmit = async () => {
-        // Ensure avatarUrl is a string before submitting
-        const submissionData = {
-            ...profileData,
-            avatarUrl: typeof profileData.avatarUrl === 'object' ? profileData.avatarUrl.src : profileData.avatarUrl,
-        };
-    
+        const submissionData = new FormData();
+        submissionData.append("username", profileData.username);
+        submissionData.append("fullName", profileData.fullName);
+        submissionData.append("email", profileData.email);
+        submissionData.append("phone", profileData.phone);
+
+        if (avatarFile) {
+            submissionData.append("image", avatarFile); // Thêm file ảnh vào FormData
+        }
 
         try {
-            console.log("Profile data being submitted:", submissionData); // Log data to be submitted
-            const response = await apiInstance.put(`/users/UpdateUser/${profileData.userId}`, submissionData);
+            const response = await apiInstance.put(`/users/UpdateUser/${profileData.id}`, submissionData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Đặt header cho multipart
+                },
+            });
             if (response.status === 200) {
                 toast.success("Profile updated successfully", { position: "top-center" });
             }
         } catch (error: any) {
             if (error.response && error.response.data) {
-                console.error("Error updating profile:", error.response.data);
                 toast.error("Failed to update profile", { position: "top-center" });
             } else {
-                console.error("Error updating profile:", error);
                 toast.error("Failed to update profile", { position: "top-center" });
             }
         }
     };
-
-
 
     return (
         <div className="dashboard-body">
@@ -138,24 +127,27 @@ const ProfileBody: React.FC = () => {
 
                 <div className="bg-white card-box border-20">
                     <div className="user-avatar-setting d-flex align-items-center mb-30">
-                        <Image
-                            src={profileData.avatarUrl || avatar_1.src}
-                            alt="User Avatar"
-                            className="lazy-img user-img"
-                            width={100}
-                            height={100}
-                        />
-
+                        <div className="avatar-wrapper"
+                             style={{width: "100px", height: "100px", borderRadius: "50%", overflow: "hidden"}}>
+                            <Image
+                                src={profileData.avatarUrl}
+                                alt="User Avatar"
+                                className="lazy-img"
+                                width={100}
+                                height={100}
+                                objectFit={"cover"}
+                                style={{width: "100%", height: "100%", objectFit: "cover"}}
+                            />
+                        </div>
                         <div className="upload-btn position-relative tran3s ms-4 me-3">
                             Upload new photo
-                            <input type="file" id="uploadImg" name="uploadImg" onChange={handleAvatarUpload} />
+                            <input type="file" id="uploadImg" name="uploadImg" onChange={handleAvatarUpload}
+                                   accept="image/*"/>
                         </div>
-                        <button className="delete-btn tran3s" onClick={() => setProfileData({ ...profileData, avatarUrl: "" })}>
-                            Delete
-                        </button>
                     </div>
 
                     <UserAvatarSetting
+                        fullName={profileData.fullName}
                         username={profileData.username}
                         email={profileData.email}
                         phone={profileData.phone}

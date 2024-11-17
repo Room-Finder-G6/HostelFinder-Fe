@@ -11,6 +11,12 @@ const nextConfig = {
                 port: '', // Leave empty unless you use a specific port
                 pathname: '**', // Match all paths
             },
+            {
+                protocol: 'https',
+                hostname: 'hostel-finder-images.s3.ap-southeast-1.amazonaws.com',
+                port: '', // Leave empty unless you use a specific port
+                pathname: '**', // Match all paths
+            },
         ],
     },
 };
