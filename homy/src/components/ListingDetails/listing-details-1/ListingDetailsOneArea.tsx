@@ -66,7 +66,7 @@ const ListingDetailsOneArea = () => {
                 const userResponse = await apiInstance.get(`users/getUserByHostelId/${fetchedPost.hostelId}`);
                 setUser(userResponse.data.data);
 
-                const servicesResponse = await apiInstance.get(`services/GetServicesByHostelId/${fetchedPost.hostelId}`);
+                const servicesResponse = await apiInstance.get(`services/hostels/${fetchedPost.hostelId}`);
                 setServices(servicesResponse.data.data);
 
                 setLoading(false);
@@ -85,8 +85,6 @@ const ListingDetailsOneArea = () => {
         setCoordinateHostel([lng, lat]);
     };
 
-    const selectHandler = (e: any) => {
-    };
     if (loading) {
         return <Loading/>;
     }
