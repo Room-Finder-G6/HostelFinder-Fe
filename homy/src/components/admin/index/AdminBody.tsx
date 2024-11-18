@@ -2,12 +2,12 @@
 import Image, { StaticImageData } from "next/image"
 import NiceSelect from "@/ui/NiceSelect"
 import RecentMessage from "./RecentMessage"
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo"
 import icon_1 from "@/assets/images/dashboard/icon/icon_12.svg"
 import icon_2 from "@/assets/images/dashboard/icon/icon_13.svg"
 import icon_3 from "@/assets/images/dashboard/icon/icon_14.svg"
 import icon_4 from "@/assets/images/dashboard/icon/icon_15.svg"
 import DashboardChart from "./DashboardChart"
+import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo"
 
 interface DataType {
    id: number;
@@ -45,16 +45,16 @@ const dashboard_card_data: DataType[] = [
    },
 ]
 
-const DashboardBody = () => {
+const AdminBody = () => {
 
    const selectHandler = (e: any) => { };
 
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Dashboard" />
+            <AdminHeaderTwo title="Admin" />
 
-            <h2 className="main-title d-block d-lg-none">Dashboard</h2>
+            <h2 className="main-title d-block d-lg-none">Admin</h2>
             <div className="bg-white border-20">
                <div className="row">
                   {dashboard_card_data.map((item) => (
@@ -112,4 +112,4 @@ const DashboardBody = () => {
    )
 }
 
-export default DashboardBody
+export default AdminBody

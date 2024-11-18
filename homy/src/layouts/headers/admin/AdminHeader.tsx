@@ -27,7 +27,7 @@ import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_activ
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 
-interface DashboardHeaderOneProps {
+interface AdminHeaderProps {
     isActive: boolean;
     setIsActive: (value: boolean) => void;
 }
@@ -62,7 +62,7 @@ const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactive
 
 NavLink.displayName = 'NavLink';
 
-const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
+const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
     const pathname = usePathname();
 
     // Định nghĩa navigation items để dễ quản lý và maintain
@@ -71,10 +71,10 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
             section: "main",
             items: [
                 {
-                    href: "/dashboard/dashboard-index",
+                    href: "/admin/admin-index",
                     activeIcon: dashboardIconActive_1,
                     inactiveIcon: dashboardIcon_1,
-                    label: "Dashboard"
+                    label: "Admin"
                 },
                 {
                     href: "/dashboard/message",
@@ -84,64 +84,35 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 }
             ]
         },
-        {
-            section: "profile",
-            title: "Profile",
-            items: [
-                {
-                    href: "/dashboard/profile",
-                    activeIcon: dashboardIconActive_3,
-                    inactiveIcon: dashboardIcon_3,
-                    label: "Profile"
-                },
-                {
-                    href: "/dashboard/account-settings",
-                    activeIcon: dashboardIconActive_4,
-                    inactiveIcon: dashboardIcon_4,
-                    label: "Account Settings"
-                },
-                {
-                    href: "/dashboard/membership",
-                    activeIcon: dashboardIconActive_5,
-                    inactiveIcon: dashboardIcon_5,
-                    label: "Membership"
-                }
-            ]
-        },
+   
         {
             section: "listing",
             title: "Listing",
             items: [
                 {
-                    href: "/dashboard/properties-list",
-                    activeIcon: dashboardIconActive_6,
-                    inactiveIcon: dashboardIcon_6,
-                    label: "List Room"
+                    href: "/admin/manager-services",
+                    activeIcon: dashboardIconActive_4,
+                    inactiveIcon: dashboardIcon_4,
+                    label: "Quản Lý Services"
                 },
                 {
-                    href: "/dashboard/manage-hostels",
-                    activeIcon: dashboardIconActive_7,
-                    inactiveIcon: dashboardIcon_7,
-                    label: "Quản Lý Nhà Trọ"
-                },
-                {
-                    href: "/dashboard/manage-room",
-                    activeIcon: dashboardIconActive_7,
-                    inactiveIcon: dashboardIcon_7,
-                    label: "Quản Lý Phòng Trọ"
-                },
-                {
-                    href: "/dashboard/manage-post",
-                    activeIcon: dashboardIconActive_7,
-                    inactiveIcon: dashboardIcon_7,
-                    label: "Quản Lý Bài Đăng"
+                    href: "/admin/manager-membership",
+                    activeIcon: dashboardIconActive_8,
+                    inactiveIcon: dashboardIcon_8,
+                    label: "Quản Lý MemberShip"
                 },
                 
                 {
-                    href: "/dashboard/saved-search",
-                    activeIcon: dashboardIconActive_9,
-                    inactiveIcon: dashboardIcon_9,
-                    label: "Saved Search"
+                    href: "/admin/manager-post",
+                    activeIcon: dashboardIconActive_6,
+                    inactiveIcon: dashboardIcon_6,
+                    label: "Quản Lý Bài Đăng"
+                },
+                {
+                    href: "/admin/manager-users",
+                    activeIcon: dashboardIconActive_3,
+                    inactiveIcon: dashboardIcon_3,
+                    label: "Quản Lý Người Dùng"
                 },
                 {
                     href: "/dashboard/review",
@@ -239,4 +210,4 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
     );
 };
 
-export default React.memo(DashboardHeaderOne);
+export default React.memo( AdminHeader);

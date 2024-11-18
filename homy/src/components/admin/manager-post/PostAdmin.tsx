@@ -1,20 +1,21 @@
 "use client";
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import NiceSelect from "@/ui/NiceSelect";
-import PropertyTableBodyPost from "./PropertyTableBodyPost";
+import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
+import PostAdminBody from "./PostAdminBody";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
-import usePostsByUser from "./usePost";
+import useAllPosts from "./useAllPost";
+import PostAdminBodyProps from "./PostAdminBody";
+import NiceSelect from "@/ui/NiceSelect";
 
-const PostManagement = () => {
-    const { posts, totalPages, pageIndex, setPageIndex, loading } = usePostsByUser();
+const PostAdmin = () => {
+    const { posts, totalPages, pageIndex, setPageIndex, loading } = useAllPosts(); // Sử dụng useAllPosts
 
     const selectHandler = (e: any) => { };
 
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="My Posts" />
+            <AdminHeaderTwo title="All Posts" /> {/* Đổi title */}
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                 <div className="short-filter d-flex align-items-center ms-sm-auto">
                     <NiceSelect
@@ -50,7 +51,7 @@ const PostManagement = () => {
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <PropertyTableBodyPost posts={posts} loading={loading} />
+                        <PostAdminBodyProps posts={posts} loading={loading} />
                     </table>
                 </div>
             </div>
@@ -75,4 +76,4 @@ const PostManagement = () => {
     );
 };
 
-export default PostManagement;
+export default PostAdmin;
