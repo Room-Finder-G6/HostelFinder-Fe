@@ -1,40 +1,44 @@
 "use client";
+import React from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import NiceSelect from "@/ui/NiceSelect";
-import PropertyTableBodyPost from "./PropertyTableBodyPost";
+import UserTableBody from "./UserTableBody";
+import useUsers from "./useUsers";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
-import usePostsByUser from "./usePost";
+import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
 
-const PostManagement = () => {
-    const { posts, totalPages, pageIndex, setPageIndex, loading } = usePostsByUser();
-
-    const selectHandler = (e: any) => { };
+const UserManagement = () => {
+    const { users, loading, totalPages, pageIndex, setPageIndex } = useUsers();
+    const selectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedOption = event.target.value;
+      console.log("Selected sort option:", selectedOption);
+  };
+  
+    
 
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="My Posts" />
+            <AdminHeaderTwo title="User Management" />
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                 <div className="short-filter d-flex align-items-center ms-sm-auto">
                     <NiceSelect
                         className="nice-select"
                         options={[
                             { value: "1", text: "Newest" },
-                            { value: "2", text: "Best Seller" },
-                            { value: "3", text: "Best Match" },
-                            { value: "4", text: "Price Low" },
-                            { value: "5", text: "Price High" },
+                            { value: "2", text: "Active Users" },
+                            { value: "3", text: "Inactive Users" },
                         ]}
                         defaultCurrent={0}
                         onChange={selectHandler}
                         name="sortOptions"
-                        placeholder="Select Option"
+                        placeholder="Sort Users"
                     />
                 </div>
                 <li className="d-none d-md-inline-block ms-3">
-                    <Link href="/dashboard/create-post" className="btn-two" target="_blank">
-                        <span>Add Post</span>
+                    <Link href="/dashboard/create-user" className="btn-two" target="_blank">
+                        <span>Thêm người dùng</span>
                     </Link>
                 </li>
             </div>
@@ -44,13 +48,15 @@ const PostManagement = () => {
                     <table className="table property-list-table">
                         <thead>
                             <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Date Created</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Avatar</th>
+                                <th scope="col">Tên người dùng</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Số điện thoại</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
-                        <PropertyTableBodyPost posts={posts} loading={loading} />
+                        <UserTableBody users={users} loading={loading} />
                     </table>
                 </div>
             </div>
@@ -75,4 +81,4 @@ const PostManagement = () => {
     );
 };
 
-export default PostManagement;
+export default UserManagement;

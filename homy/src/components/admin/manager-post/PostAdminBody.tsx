@@ -3,7 +3,7 @@ import Link from "next/link";
 import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
 import icon_4 from "@/assets/images/dashboard/icon/icon_21.svg";
 
-interface PropertyTableBodyPostProps {
+interface PostAdminBodyProps {
     posts: {
         id: string;
         title: string;
@@ -14,7 +14,7 @@ interface PropertyTableBodyPostProps {
     loading: boolean;
 }
 
-function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
+function PostAdminBodyProps({ posts, loading }: PostAdminBodyProps) {
     if (loading) {
         return (
             <tbody>
@@ -79,4 +79,4 @@ function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
     );
 }
 
-export default PropertyTableBodyPost;
+export default PostAdminBodyProps;

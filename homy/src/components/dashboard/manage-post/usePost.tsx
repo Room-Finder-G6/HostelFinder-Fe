@@ -1,49 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import apiInstance from "@/utils/apiInstance";
+import { jwtDecode } from "jwt-decode";
 
-// Định nghĩa kiểu `Post`
-export interface Post {
-    hostelId: string;
-    roomId: string;
+interface Post {
+    id: string;
     title: string;
-    description: string;
     status: boolean;
-    images: File[];
-    dateAvailable: string;
-    membershipServiceId: string;
-    imageUrls?: string[];
+    image: string | null;
+    createdOn: string;
 }
 
+interface JwtPayload {
+    UserId: string;
+}
 
-
-const usePost = (): {
-    posts: Post[];
-    totalPages: number;
-    pageIndex: number;
-    setPageIndex: React.Dispatch<React.SetStateAction<number>>;
-    loading: boolean;
-} => {
+const usePostsByUser = () => {
     const [posts, setPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [pageIndex, setPageIndex] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(false);
+    const [userId, setUserId] = useState<string | null>(null);
 
-    const fetchPost = async (pageNumber: number) => {
+    // Hàm lấy `userId` từ token
+    const getUserIdFromToken = useCallback(() => {
+        const token = localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+                return decodedToken.UserId;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                return null;
+            }
+        }
+        console.error("No token found");
+        return null;
+    }, []);
+
+    // Gọi API để lấy danh sách bài đăng của người dùng
+    const fetchPostsByUser = async (pageNumber: number) => {
+        if (!userId) return;
+
         setLoading(true);
         try {
-            const response = await apiInstance.post(
-                "/posts/get-all",
-                {
-                    pageNumber,
+            const token = localStorage.getItem("token");
+            const response = await apiInstance.get(`/posts/user/${userId}`, {
+                params: {
+                    pageNumber: pageNumber,
                     pageSize: 10,
                     sortDirection: 0,
                 },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                }
-            );
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
             setPosts(response.data.data || []);
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
@@ -54,10 +64,19 @@ const usePost = (): {
     };
 
     useEffect(() => {
-        fetchPost(pageIndex);
-    }, [pageIndex]);
+        const id = getUserIdFromToken();
+        if (id) {
+            setUserId(id);
+        }
+    }, [getUserIdFromToken]);
 
-    return { posts, totalPages, pageIndex, setPageIndex, loading };
+    useEffect(() => {
+        if (userId) {
+            fetchPostsByUser(pageIndex);
+        }
+    }, [userId, pageIndex]);
+
+    return { posts, loading, totalPages, pageIndex, setPageIndex };
 };
 
-export default usePost;
+export default usePostsByUser;
