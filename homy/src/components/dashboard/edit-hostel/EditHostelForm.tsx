@@ -387,7 +387,10 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
+                        <GoongMap selectedLocation={coordinates}
+                                  onCoordinatesChange={handleCoordinatesChange}
+                                  showSearch={true}
+                        />
                     </div>
                 </div>
 

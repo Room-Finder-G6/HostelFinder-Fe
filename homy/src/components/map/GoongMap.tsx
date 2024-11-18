@@ -1,9 +1,10 @@
-import React, {useEffect, useRef, useState, useCallback} from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import debounce from 'lodash/debounce';
 
 interface GoongMapProps {
     selectedLocation: [number, number];
     onCoordinatesChange: (coordinates: string) => void;
+    showSearch?: boolean; // Thêm prop boolean để điều khiển tìm kiếm
 }
 
 declare global {
@@ -15,7 +16,7 @@ declare global {
 const GOONG_MAP_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js';
 const GOONG_CSS_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css';
 
-const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChange}) => {
+const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChange, showSearch = true }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markerRef = useRef<any>(null);
@@ -23,7 +24,7 @@ const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChang
     const [coordinates, setCoordinates] = useState<string>(`${selectedLocation[0]},${selectedLocation[1]}`);
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState<any[]>([]);
-    const [suggestionSelected, setSuggestionSelected] = useState<boolean>(false); // Flag to prevent fetching after selection
+    const [suggestionSelected, setSuggestionSelected] = useState<boolean>(false);
 
     useEffect(() => {
         if (!window.goongjs) {
@@ -98,7 +99,7 @@ const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChang
                 console.error('Error fetching suggestions:', error);
             }
         }, 500),
-        [suggestionSelected] // Dependency to re-run fetch when flag changes
+        [suggestionSelected]
     );
 
     useEffect(() => {
@@ -107,9 +108,9 @@ const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChang
     }, [searchQuery, fetchSuggestions]);
 
     const handleSuggestionSelect = async (suggestion: any) => {
-        setSearchQuery(suggestion.description); // Keep selected location in input
-        setSuggestions([]); // Clear suggestions immediately
-        setSuggestionSelected(true); // Set flag to prevent further suggestions
+        setSearchQuery(suggestion.description);
+        setSuggestions([]);
+        setSuggestionSelected(true);
 
         try {
             const response = await fetch(
@@ -130,14 +131,14 @@ const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChang
 
     const handleSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        setSuggestionSelected(false); // Reset flag so suggestions can appear again
+        setSuggestionSelected(false);
     };
 
     const updateMap = (newCoordinates: [number, number]) => {
         if (!mapRef.current || !markerRef.current) return console.error('Map or marker is not initialized');
 
         isProgrammaticMoveRef.current = true;
-        mapRef.current.flyTo({center: newCoordinates, zoom: 15});
+        mapRef.current.flyTo({ center: newCoordinates, zoom: 15 });
         markerRef.current.setLngLat(newCoordinates);
 
         const coordinatesStr = `${newCoordinates[0]},${newCoordinates[1]}`;
@@ -147,44 +148,45 @@ const GoongMap: React.FC<GoongMapProps> = ({selectedLocation, onCoordinatesChang
 
     return (
         <div>
-            <div className="dash-input-wrapper" style={{position: 'relative', marginBottom: '15px'}}>
-                <label style={{display: 'block', marginBottom: '5px'}}>Tìm kiếm địa điểm</label>
-                <input
-                    className="w-50 p-2 border rounded"
-                    type="text"
-                    value={searchQuery}
-                    onChange={handleSearchInputChange}
-                    placeholder="Search for a location..."
-                    style={{width: '100%', padding: '8px', boxSizing: 'border-box'}}
-                />
-                {suggestions.length > 0 && (
-                    <ul style={{
-                        listStyleType: 'none',
-                        padding: 0,
-                        margin: 0,
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        right: 0,
-                        backgroundColor: 'white',
-                        maxHeight: '200px',
-                        overflowY: 'auto',
-                        border: '1px solid #ccc',
-                        zIndex: 1000
-                    }}>
-                        {suggestions.map((suggestion) => (
-                            <li key={suggestion.place_id} onClick={() => handleSuggestionSelect(suggestion)}
-                                style={{padding: '8px', cursor: 'pointer'}}>
-                                {suggestion.description}
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
-            <div ref={mapContainerRef} style={{width: '100%', height: '400px'}}/>
+            {showSearch && ( // Hiển thị khối tìm kiếm nếu showSearch là true
+                <div className="dash-input-wrapper" style={{ position: 'relative', marginBottom: '15px' }}>
+                    <label style={{ display: 'block', marginBottom: '5px' }}>Tìm kiếm địa điểm</label>
+                    <input
+                        className="w-50 p-2 border rounded"
+                        type="text"
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
+                        placeholder="Search for a location..."
+                        style={{ width: '100%', padding: '8px', boxSizing: 'border-box' }}
+                    />
+                    {suggestions.length > 0 && (
+                        <ul style={{
+                            listStyleType: 'none',
+                            padding: 0,
+                            margin: 0,
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            backgroundColor: 'white',
+                            maxHeight: '200px',
+                            overflowY: 'auto',
+                            border: '1px solid #ccc',
+                            zIndex: 1000
+                        }}>
+                            {suggestions.map((suggestion) => (
+                                <li key={suggestion.place_id} onClick={() => handleSuggestionSelect(suggestion)}
+                                    style={{ padding: '8px', cursor: 'pointer' }}>
+                                    {suggestion.description}
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            )}
+            <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }} />
         </div>
     );
 };
 
 export default GoongMap;
-
