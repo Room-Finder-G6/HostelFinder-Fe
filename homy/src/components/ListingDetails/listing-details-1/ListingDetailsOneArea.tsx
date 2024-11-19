@@ -12,105 +12,114 @@ import CommonPropertyFloorPlan from "../listing-details-common/CommonPropertyFlo
 import CommonNearbyList from "../listing-details-common/CommonNearbyList"
 import CommonSimilarProperty from "../listing-details-common/CommonSimilarProperty"
 import CommonProPertyScore from "../listing-details-common/CommonProPertyScore"
-import CommonLocation from "../listing-details-common/CommonLocation"
 import CommonReviewForm from "../listing-details-common/CommonReviewForm"
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import apiInstance from "@/utils/apiInstance";
-import {useRouter} from "next/router";
 import {useParams} from "next/navigation";
+import Loading from "@/components/Loading";
+import {Post} from "@/models/post";
+import {Room} from "@/models/room";
+import {Hostel} from "@/models/hostel";
+import {Amenity} from "@/models/amenity";
+import {Service} from "@/models/service";
+import GoongMap from "@/components/map/GoongMap";
+import {User} from "@/models/user";
 
-interface RoomDetails {
-    id: string;
-    hostelId: string;
-    title: string;
-    description: string;
-    roomType: number;
-    size: number;
-    monthlyRentCost: number;
-    isAvailable: boolean;
-    dateAvailable: string;
-    imageUrls: string[];
-    roomDetailsDto: {
-        bedRooms: number;
-        bathRooms: number;
-        kitchen: number;
-        size: number;
-        status: boolean;
-        otherDetails: string;
-    };
-    amenityResponses: {
-        id: string;
-        amenityName: string;
-        isSelected: boolean;
-    }[];
-    serviceCostsDto: {
-        serviceName: string;
-        cost: number;
-    }[];
-}
+export const UserContext = React.createContext<User | null>(null);
 
 const ListingDetailsOneArea = () => {
-    const { roomId } = useParams();
-    
-    const [room, setRoom] = useState<RoomDetails | null>(null);
+    const {postId} = useParams();
+    const [post, setPost] = useState<Post>();
+    const [room, setRoom] = useState<Room>()
+    const [hostel, setHostel] = useState<Hostel>();
+    const [amenities, setAmenities] = useState<Amenity[]>([])
+    const [services, setServices] = useState<Service[]>([])
+    const [coordinateHostel, setCoordinateHostel] = useState<[number, number]>([105.83991, 21.02800]);
+    const [user, setUser] = useState<User | null>(null)
+
     const [loading, setLoading] = useState<boolean>(true);
-    console.log("Current roomId:", roomId);
+
     useEffect(() => {
-        const fetchRoomDetails = async () => {
+        const fetchAllData = async () => {
             try {
-                const response = await apiInstance.get(`rooms/${roomId}`);
-                console.log("Room details:", response.data.data);
-                setRoom(response.data.data);
+                const postResponse = await apiInstance.get(`posts/${postId}`);
+                const fetchedPost = postResponse.data.data;
+                setPost(fetchedPost);
+console.log(fetchedPost.hostelId)
+                let fetchedRoom
+                const roomResponse = await apiInstance.get(`rooms/${fetchedPost.roomId}`);
+                fetchedRoom = roomResponse.data.data;
+                setRoom(fetchedRoom);
+
+                const hostelResponse = await apiInstance.get(`hostels/${fetchedPost.hostelId}`);
+                const fetchedHostel = hostelResponse.data.data;
+                setHostel(fetchedHostel);
+
+                if (fetchedHostel.coordinates) {
+                    const coordArray = fetchedHostel.coordinates.split(',').map(Number) as [number, number];
+                    setCoordinateHostel(coordArray);
+                }
+
+                const amenitiesResponse = await apiInstance.get(`amenities/GetAmenitiesByRoomId/${fetchedRoom.id}`);
+                setAmenities(amenitiesResponse.data.data);
+
+                const userResponse = await apiInstance.get(`users/getUserByHostelId/${fetchedPost.hostelId}`);
+                setUser(userResponse.data.data);
+
+                const servicesResponse = await apiInstance.get(`services/hostels/${fetchedPost.hostelId}`);
+                setServices(servicesResponse.data.data);
+
                 setLoading(false);
             } catch (error) {
-                console.error("Error fetching room details:", error);
+                console.error("Error fetching data:", error);
                 setLoading(false);
             }
         };
 
-        fetchRoomDetails();
-    }, []);
+        fetchAllData();
+    }, [postId]);
 
-    const selectHandler = (e: any) => {
+
+    const handleCoordinatesChange = (newCoordinates: string) => {
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
+        setCoordinateHostel([lng, lat]);
     };
+
     if (loading) {
-        return <p>Loading...</p>;
+        return <Loading/>;
     }
 
     return (
         <div className="listing-details-one theme-details-one bg-pink pt-180 lg-pt-150 pb-150 xl-pb-120">
             <div className="container">
-                <CommonBanner title={room?.title} monthlyRentCost={room?.monthlyRentCost}/>
-                <MediaGallery/>
+                <CommonBanner title={post?.title} monthlyRentCost={room?.monthlyRentCost} address={hostel?.address}/>
+                <MediaGallery imageUrls={post?.imageUrls ?? []}/>
                 <div className="property-feature-list bg-white shadow4 border-20 p-40 mt-50 mb-60">
-                    <h4 className="sub-title-one mb-40 lg-mb-20">Property Overview</h4>
-                    <CommonPropertyOverview size={room?.size ?? 0} 
+                    <h4 className="sub-title-one mb-40 lg-mb-20">Tổng quan</h4>
+                    <CommonPropertyOverview size={room?.size ?? 0}
                                             roomType={room?.roomType ?? 0}
-                    bedRooms={room?.roomDetailsDto.bedRooms ?? 0}
+                        /* bedRooms={post?.roomDetailsDto.bedRooms ?? 0}*/
                     />
                 </div>
+
                 <div className="row">
                     <div className="col-xl-8">
                         <div className="property-overview mb-50 bg-white shadow4 border-20 p-40">
-                            <h4 className="mb-20">Overview</h4>
-                            <p className="fs-20 lh-lg">{room?.description}.</p>
+                            <h4 className="mb-20">Thông tin mô tả</h4>
+                            <p className="fs-20 lh-lg">{post?.description}.</p>
                         </div>
                         <div className="property-feature-accordion bg-white shadow4 border-20 p-40 mb-50">
-                            <h4 className="mb-20">Property Features</h4>
+                            <h4 className="mb-20">Dịch vụ chung</h4>
                             <div className="accordion-style-two mt-45">
                                 <CommonPropertyFeatureList
-                                    bedRooms={room?.roomDetailsDto.bedRooms ?? 0}
-                                    bathRooms={room?.roomDetailsDto.bathRooms ?? 0}
-                                    kitchen={room?.roomDetailsDto.kitchen ?? 0}
-                                    size={room?.roomDetailsDto.size ?? 0}
-                                    status={room?.roomDetailsDto.status ?? false}
+                                    services={services}
                                 />
                             </div>
                         </div>
                         <div className="property-amenities bg-white shadow4 border-20 p-40 mb-50">
-                            <CommonAmenities amenities={room?.amenityResponses ?? []} />
+                            <CommonAmenities amenities={amenities ?? []}/>
                         </div>
-                        <div className="property-video-tour mb-50">
+                        {/*<div className="property-video-tour mb-50">
                             <CommonPropertyVideoTour/>
                         </div>
                         <CommonPropertyFloorPlan style={false}/>
@@ -120,38 +129,46 @@ const ListingDetailsOneArea = () => {
                         <CommonSimilarProperty/>
                         <div className="property-score bg-white shadow4 border-20 p-40 mb-50">
                             <CommonProPertyScore/>
-                        </div>
+                        </div>*/}
                         <div className="property-location mb-50">
-                            <CommonLocation/>
+                            <h4 className="mb-20">Xem trên bản đồ</h4>
+                            <GoongMap selectedLocation={coordinateHostel}
+                                      onCoordinatesChange={handleCoordinatesChange}
+                                      showSearch={false}
+                            />
                         </div>
 
-                        <div className="review-panel-one bg-white shadow4 border-20 p-40 mb-50">
+                       {/* <div className="review-panel-one bg-white shadow4 border-20 p-40 mb-50">
                             <div className="position-relative z-1">
                                 <div className="d-sm-flex justify-content-between align-items-center mb-10">
                                     <h4 className="m0 xs-pb-30">Reviews</h4>
-                                    <NiceSelect className="nice-select"
-                                                options={[
-                                                    {value: "01", text: "Newest"},
-                                                    {value: "02", text: "Best Seller"},
-                                                    {value: "03", text: "Best Match"},
-                                                ]}
-                                                defaultCurrent={0}
-                                                onChange={selectHandler}
-                                                name=""
-                                                placeholder=""/>
+                                    <NiceSelect
+                                        className="nice-select"
+                                        options={[
+                                            { value: "01", text: "Newest" },
+                                            { value: "02", text: "Best Seller" },
+                                            { value: "03", text: "Best Match" },
+                                        ]}
+                                        defaultCurrent={0}
+                                        onChange={() => { }}
+                                        name=""
+                                        placeholder=""
+                                    />
                                 </div>
-                                <Review style={true}/>
+                                <Review style={true} />
                             </div>
                         </div>
                         <div className="review-form bg-white shadow4 border-20 p-40">
                             <CommonReviewForm/>
-                        </div>
+                        </div>*/}
                     </div>
-                    <Sidebar/>
+                    <UserContext.Provider value={user}>
+                        <Sidebar/>
+                    </UserContext.Provider>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ListingDetailsOneArea
+export default ListingDetailsOneArea;

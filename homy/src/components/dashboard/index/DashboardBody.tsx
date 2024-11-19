@@ -3,7 +3,6 @@ import Image, { StaticImageData } from "next/image"
 import NiceSelect from "@/ui/NiceSelect"
 import RecentMessage from "./RecentMessage"
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo"
-
 import icon_1 from "@/assets/images/dashboard/icon/icon_12.svg"
 import icon_2 from "@/assets/images/dashboard/icon/icon_13.svg"
 import icon_3 from "@/assets/images/dashboard/icon/icon_14.svg"

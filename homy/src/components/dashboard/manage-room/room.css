@@ -1,3 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+
+* {
+   font-family: 'Roboto', sans-serif;
+   text-transform: none;
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+ }
+ 
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -10,7 +21,10 @@
     justify-content: center;
     z-index: 1000;
  }
- 
+ .membership-management {
+   font-family: 'Roboto', sans-serif;
+}
+
  .modal-content {
     background: #fff;
     padding: 20px;

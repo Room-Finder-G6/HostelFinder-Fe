@@ -61,7 +61,7 @@ const menu_data: MenuItem[] = [
                 id: 3,
                 mega_title: "Single Listing",
                 mega_menus: [
-                    { link: "/listing_details_01", title: "Listing Details" },
+                    { link: "/listing_details", title: "Listing Details" },
                     
                 ]
             },

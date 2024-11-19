@@ -62,7 +62,7 @@ const Property = () => {
                                             <div id={`carousel${room.id}`} className="carousel slide">
                                                 <div className="carousel-inner">
                                                     <div className="carousel-item active" data-bs-interval="1000000">
-                                                        <Link href={`/listing_details/${room.id}`} className="d-block">
+                                                        <Link href={`/post-details/${room.id}`} className="d-block">
                                                             <Image
                                                                 src={room.primaryImageUrl.startsWith('http') ? room.primaryImageUrl : `/${room.primaryImageUrl}`}
                                                                 className="w-100"
@@ -78,7 +78,7 @@ const Property = () => {
                                     </div>
 
                                     <div className="property-info p-25">
-                                        <Link href={`/listing_details/${room.id}`}
+                                        <Link href={`/post-details/${room.id}`}
                                               className="title tran3s">{room.title}</Link>
                                         <div
                                             className="address">{room.address ? room.address : 'Không có thông tin địa chỉ'}</div>
@@ -98,7 +98,7 @@ const Property = () => {
                                                 maximumFractionDigits: 2
                                             })}
                                             </strong>
-                                            <Link href={`/listing_details/${room.id}`}
+                                            <Link href={`/post-details/${room.id}`}
                                                   className="btn-four rounded-circle">
                                                 <i className="bi bi-arrow-up-right"></i>
                                             </Link>

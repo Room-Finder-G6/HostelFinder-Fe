@@ -102,8 +102,10 @@ const AddPostBody: React.FC = () => {
             await apiInstance.post(`posts?userId=${userId}`, formData);
             toast.success("Tạo bài đăng thành công", {position: "top-center"});
         } catch (error: any) {
-            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, {position: "top-center"});
+            const errorMessage = error.response?.data || error.message || "Đã xảy ra lỗi không xác định";
+            toast.error(`${errorMessage}`, {position: "top-center"});
         }
+
     };
 
     return (

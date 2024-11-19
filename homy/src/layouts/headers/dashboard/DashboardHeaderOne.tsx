@@ -138,12 +138,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                     inactiveIcon: dashboardIcon_7,
                     label: "Quản Lý Bài Đăng"
                 },
-                {
-                    href: "/dashboard/favourites",
-                    activeIcon: dashboardIconActive_8,
-                    inactiveIcon: dashboardIcon_8,
-                    label: "Favourites"
-                },
+                
                 {
                     href: "/dashboard/saved-search",
                     activeIcon: dashboardIconActive_9,
