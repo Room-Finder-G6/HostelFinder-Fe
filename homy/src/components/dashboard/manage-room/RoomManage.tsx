@@ -15,6 +15,7 @@ import HostelSelector from "./HostelSelector";
 import { jwtDecode } from "jwt-decode";
 import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
+import ServicePriceModal from "./ServicePriceModal";
 interface JwtPayload {
    UserId: string;
 }
@@ -34,6 +35,7 @@ interface Room {
 const RoomManagement = () => {
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
    const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
+   const [isServicePriceModalOpen, setIsServicePriceModalOpen] = useState(false);
    const [selectedHostel, setSelectedHostel] = useState("");
    const [hostels, setHostels] = useState([]);
    const [floors, setFloors] = useState<number[]>([]);
@@ -65,6 +67,14 @@ const RoomManagement = () => {
       }
       setIsAddRoomModalOpen(!isAddRoomModalOpen);
    };
+
+   const toggleServicePriceModal = () => {
+      if (!selectedHostel) {
+         toast.error("Vui lòng chọn nhà trọ trước khi muốn quản lí dịch vụ", { position: "top-center" });
+         return;
+      }
+      setIsServicePriceModalOpen(!isServicePriceModalOpen);
+   }
 
    const handleRoomInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
@@ -210,6 +220,7 @@ const RoomManagement = () => {
          if (response.status === 200 || response.data.succeeded) {
             toast.success("Thêm phòng thành công", { position: "top-center" });
             setIsAddRoomModalOpen(false);
+            
             // Reset form nếu cần
          } else {
             toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
@@ -260,7 +271,7 @@ const RoomManagement = () => {
                <button className="btn btn-warning me-2">In tất cả hóa đơn</button>
                <button className="btn btn-info me-2">Gửi hóa đơn</button>
                <button className="btn btn-secondary me-2" onClick={toggleAddRoomModal}>Thêm phòng</button>
-               <button className="btn btn-danger me-2">Bảng giá dịch vụ</button>
+               <button className="btn btn-danger me-2" onClick={toggleServicePriceModal} >Bảng giá dịch vụ</button>
                <button onClick={toggleUpdateModal} className="btn btn-success">
                   Cập nhật thông tin
                </button>
@@ -373,6 +384,15 @@ const RoomManagement = () => {
                   </div>
                </div>
             )}
+            {/* Modal quản lý giá dịch vụ */}
+            {isServicePriceModalOpen && (
+               <ServicePriceModal
+                  isOpen={isServicePriceModalOpen}
+                  onClose={toggleServicePriceModal}
+                  hostelId={selectedHostel}
+               />
+            )}
+
          </div>
       </div>
    );
