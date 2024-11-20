@@ -23,6 +23,8 @@ interface RoomFormProps {
   onClose: () => void;
 }
 
+
+
 const RoomForm: React.FC<RoomFormProps> = ({
   roomFormData,
   handleRoomInputChange,
@@ -126,7 +128,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       <div className="modal-form-group">
-        <label>Tiền đặt cọc (VND) *</label>
+        <label>Tiền đặt cọc(VND) *</label>
         <input
           type="text"
           name="deposit"
@@ -142,7 +144,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       <div className="modal-form-group">
-        <label>Giá thuê hàng tháng (VND) *</label>
+        <label>Giá thuê hàng tháng(VND) *</label>
         <input
           type="text"
           name="monthlyRentCost"
@@ -158,7 +160,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       <div className="modal-form-group">
-        <label>Diện tích (m²) *</label>
+        <label>Diện tích(m2) *</label>
         <input
           type="number"
           name="size"
