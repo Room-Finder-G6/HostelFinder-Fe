@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import apiInstance from '@/utils/apiInstance';
 import { Room } from './Room';
-
+import Loading from "@/components/Loading";
 interface RoomTableBodyProps {
     selectedHostel: string;
     selectedFloor: string | null;
@@ -40,13 +40,9 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     }, [selectedHostel, selectedFloor]);
 
     if (loading) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={5}>Đang tải dữ liệu...</td>
-                </tr>
-            </tbody>
-        );
+        return <tbody>
+            <Loading />
+        </tbody>;
     }
 
     if (error) {
@@ -85,13 +81,14 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                                 <p className="mb-0">Nhà trọ: {room.hostelName}</p>
                                 <p className="mb-0">Tầng: {room.floor ?? 'N/A'}</p>
                                 <p className="mb-0">Diện tích: {room.size} m²</p>
+                                <p className="mb-0">Số người tối đa : {room.maxRenters}</p>
                             </div>
                         </div>
                     </td>
                     <td>{new Date(room.createdOn).toLocaleDateString()}</td>
-                    <td>{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} VNĐ</td>
+                    <td>{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
                     <td>
-                        {room.status ? (
+                        {room.isAvailable ? (
                             <span className="badge bg-success">Còn trống</span>
                         ) : (
                             <span className="badge bg-secondary">Hết phòng</span>

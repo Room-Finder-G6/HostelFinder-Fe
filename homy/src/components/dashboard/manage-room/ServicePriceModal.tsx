@@ -1,8 +1,25 @@
-"use client";
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import ServiceModal from './ServiceModal';
 import apiInstance from '@/utils/apiInstance';
 import { toast } from 'react-toastify';
+
+interface Service {
+    serviceId: string;
+    serviceName: string;
+}
+
+interface ServicePrice {
+    id: string;
+    serviceId: string;
+    serviceName: string;
+    unitCost: number;
+    unit: string;
+    effectiveFrom: string;
+    effectiveTo: string | null;
+}
+
 interface ServicePriceModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -10,15 +27,16 @@ interface ServicePriceModalProps {
 }
 
 const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, hostelId }) => {
-    const [availableServices, setAvailableServices] = useState([]);
-    const [servicePrices, setServicePrices] = useState([]);
+    const [availableServices, setAvailableServices] = useState<Service[]>([]);
+    const [servicePrices, setServicePrices] = useState<ServicePrice[]>([]);
     const [formData, setFormData] = useState({
         serviceId: '',
         unitCost: '',
+        unit: '',
         effectiveFrom: '',
     });
     const [isEditing, setIsEditing] = useState(false);
-    const [editingServicePrice, setEditingServicePrice] = useState<any>(null);
+    const [editingServicePrice, setEditingServicePrice] = useState<ServicePrice | null>(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -29,14 +47,17 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
 
     const fetchAvailableServices = async () => {
         try {
-            const response = await apiInstance.get(`/ServiceCost/hostels?hostelId=${hostelId}`);
-            if (response.data.succeeded) {
+            const response = await apiInstance.get(`/services/hostels/${hostelId}`);
+            if (response.data.succeeded && response.status === 200) {
                 setAvailableServices(response.data.data);
-            } else {
-                toast.error("Không thể tải dịch vụ");
+                console.log(response.data.data);
             }
-        } catch (error) {
-            toast.error("Lỗi xảy ra khi tải bảng giá dịch vụ");
+        } catch (error: any) {
+            if (error.response && error.response.status === 400) {
+                // toast.error(error.response.data.message);
+            } else {
+                // toast.error('An error occurred while fetching available services');
+            }
         }
     };
 
@@ -46,10 +67,10 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             if (response.data.succeeded) {
                 setServicePrices(response.data.data);
             } else {
-                toast.error("Failed to fetch service prices");
+                toast.error('Failed to fetch service prices');
             }
         } catch (error) {
-            toast.error("An error occurred while fetching service prices");
+            toast.error('An error occurred while fetching service prices');
         }
     };
 
@@ -67,12 +88,15 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                 hostelId: hostelId,
                 serviceId: formData.serviceId,
                 unitCost: parseFloat(formData.unitCost),
+                unit: formData.unit,
                 effectiveFrom: formData.effectiveFrom,
             };
 
+            console.log(data);
+
             if (isEditing && editingServicePrice) {
                 // Update existing service price
-                const response = await apiInstance.put(`/ServiceCost`, data);
+                const response = await apiInstance.put(`/ServiceCost/${editingServicePrice.id}`, data);
                 if (response.data.succeeded) {
                     toast.success('Service price updated successfully');
                 } else {
@@ -92,21 +116,23 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             setFormData({
                 serviceId: '',
                 unitCost: '',
+                unit: '',
                 effectiveFrom: '',
             });
             setIsEditing(false);
             setEditingServicePrice(null);
-        } catch (error) {
-            toast.error('An error occurred while submitting service price');
+        } catch (error: any) {
+            toast.error(error.response.data.message);
         }
     };
 
-    const handleEditButtonClick = (servicePrice: any) => {
+    const handleEditButtonClick = (servicePrice: ServicePrice) => {
         setIsEditing(true);
         setEditingServicePrice(servicePrice);
         setFormData({
             serviceId: servicePrice.serviceId,
             unitCost: servicePrice.unitCost.toString(),
+            unit: servicePrice.unit.toString(),
             effectiveFrom: servicePrice.effectiveFrom.split('T')[0],
         });
     };
@@ -115,7 +141,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
         if (!confirm('Bạn có chắc chắn muốn xóa giá dịch vụ này?')) return;
 
         try {
-            const response = await apiInstance.delete(`/api/ServiceCost?hostelId=${hostelId}&serviceId=${servicePriceId}`);
+            const response = await apiInstance.delete(`/ServiceCost/${servicePriceId}`);
             if (response.data.succeeded) {
                 toast.success('Service price deleted successfully');
                 fetchServicePrices(hostelId);
@@ -133,6 +159,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
         setFormData({
             serviceId: '',
             unitCost: '',
+            unit: '',
             effectiveFrom: '',
         });
     };
@@ -145,6 +172,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                     <tr>
                         <th>Dịch vụ</th>
                         <th>Đơn giá</th>
+                        <th>Đơn vị</th>
                         <th>Hiệu lực từ</th>
                         <th>Hiệu lực đến</th>
                         <th>Hành động</th>
@@ -152,17 +180,24 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                 </thead>
                 <tbody>
                     {servicePrices.length > 0 ? (
-                        servicePrices.map((servicePrice: any) => (
-                            <tr key={servicePrice.serviceId}>
+                        servicePrices.map((servicePrice: ServicePrice) => (
+                            <tr key={servicePrice.id}>
                                 <td>{servicePrice.serviceName}</td>
                                 <td>{servicePrice.unitCost}</td>
+                                <td>{servicePrice.unit}</td>
                                 <td>{new Date(servicePrice.effectiveFrom).toLocaleDateString()}</td>
                                 <td>{servicePrice.effectiveTo ? new Date(servicePrice.effectiveTo).toLocaleDateString() : 'N/A'}</td>
                                 <td>
-                                    <button className="btn btn-sm btn-primary me-2" onClick={() => handleEditButtonClick(servicePrice)}>
+                                    <button
+                                        className="btn btn-sm btn-primary me-2"
+                                        onClick={() => handleEditButtonClick(servicePrice)}
+                                    >
                                         Sửa
                                     </button>
-                                    <button className="btn btn-sm btn-danger" onClick={() => handleDeleteServicePrice(servicePrice.serviceId)}>
+                                    <button
+                                        className="btn btn-sm btn-danger"
+                                        onClick={() => handleDeleteServicePrice(servicePrice.id)}
+                                    >
                                         Xóa
                                     </button>
                                 </td>
@@ -170,7 +205,9 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                         ))
                     ) : (
                         <tr>
-                            <td colSpan={5} style={{ textAlign: 'center' }}>Không có dịch vụ nào cho nhà trọ này.</td>
+                            <td colSpan={6} style={{ textAlign: 'center' }}>
+                                Không có dịch vụ nào cho nhà trọ này.
+                            </td>
                         </tr>
                     )}
                 </tbody>
@@ -190,16 +227,14 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                         disabled={isEditing}
                     >
                         <option value="">Chọn dịch vụ</option>
-                        {availableServices.length === 0 ? (
-                            availableServices.map((service: any) => (
-                                <option key={service.id} value={service.id}>
+                        {availableServices.length > 0 ? (
+                            availableServices.map((service: Service) => (
+                                <option key={service.serviceId} value={service.serviceId}>
                                     {service.serviceName}
                                 </option>
                             ))
                         ) : (
-                            <tr>
-                                <td colSpan={5} style={{ textAlign: 'center' }}>Không có dịch vụ nào cho nhà trọ này.</td>
-                            </tr>
+                            <option value="">Không có dịch vụ nào</option>
                         )}
                     </select>
                 </div>
@@ -213,6 +248,17 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                         className="form-control"
                         required
                         min="0"
+                    />
+                </div>
+                <div className="form-group">
+                    <label>Đơn vị</label>
+                    <input
+                        type="string"
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleInputChange}
+                        className="form-control"
+                        required
                     />
                 </div>
                 <div className="form-group">

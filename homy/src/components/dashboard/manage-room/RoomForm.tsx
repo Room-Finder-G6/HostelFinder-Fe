@@ -1,4 +1,3 @@
-// RoomForm.tsx
 import React from 'react';
 import AmenitiesList from '../manage-amentity/AmentityList';
 
@@ -24,8 +23,6 @@ interface RoomFormProps {
   onClose: () => void;
 }
 
-
-
 const RoomForm: React.FC<RoomFormProps> = ({
   roomFormData,
   handleRoomInputChange,
@@ -35,6 +32,39 @@ const RoomForm: React.FC<RoomFormProps> = ({
   selectedAmenities,
   onClose,
 }) => {
+  // Formatter for VND currency
+  const formatter = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  });
+
+  // Handle deposit input change with formatting
+  const handleDepositChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Remove all non-digit characters
+    const rawValue = e.target.value.replace(/\D/g, '');
+    handleRoomInputChange({
+      ...e,
+      target: {
+        ...e.target,
+        name: 'deposit',
+        value: rawValue,
+      },
+    });
+  };
+
+  // Handle monthly rent cost input change with formatting
+  const handleMonthlyRentCostChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '');
+    handleRoomInputChange({
+      ...e,
+      target: {
+        ...e.target,
+        name: 'monthlyRentCost',
+        value: rawValue,
+      },
+    });
+  };
+
   return (
     <>
       <button
@@ -81,7 +111,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       <div className="modal-form-group">
-        <label>Số người thuê tối đa <span style={{ color: 'red' }}>*</span></label>
+        <label>
+          Số người thuê tối đa <span style={{ color: 'red' }}>*</span>
+        </label>
         <input
           type="number"
           name="maxRenters"
@@ -93,33 +125,40 @@ const RoomForm: React.FC<RoomFormProps> = ({
         />
       </div>
 
-
       <div className="modal-form-group">
-        <label>Tiền đặt cọc(VND) *</label>
+        <label>Tiền đặt cọc (VND) *</label>
         <input
-          type="number"
+          type="text"
           name="deposit"
-          value={roomFormData.deposit}
-          onChange={handleRoomInputChange}
+          value={
+            roomFormData.deposit
+              ? formatter.format(Number(roomFormData.deposit))
+              : ''
+          }
+          onChange={handleDepositChange}
           required
           className="form-control"
         />
       </div>
 
       <div className="modal-form-group">
-        <label>Giá thuê hàng tháng(VND) *</label>
+        <label>Giá thuê hàng tháng (VND) *</label>
         <input
-          type="number"
+          type="text"
           name="monthlyRentCost"
-          value={roomFormData.monthlyRentCost}
-          onChange={handleRoomInputChange}
+          value={
+            roomFormData.monthlyRentCost
+              ? formatter.format(Number(roomFormData.monthlyRentCost))
+              : ''
+          }
+          onChange={handleMonthlyRentCostChange}
           required
           className="form-control"
         />
       </div>
 
       <div className="modal-form-group">
-        <label>Diện tích(m2) *</label>
+        <label>Diện tích (m²) *</label>
         <input
           type="number"
           name="size"
@@ -176,7 +215,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
               />
               <button
                 type="button"
-                onClick={() => handleRemoveImage(index)} // Sử dụng handleRemoveImage từ props
+                onClick={() => handleRemoveImage(index)}
                 style={{
                   position: 'absolute',
                   top: 0,

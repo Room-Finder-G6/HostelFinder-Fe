@@ -1,21 +1,15 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import NiceSelect from "@/ui/NiceSelect";
-import PropertyTableBody from "../manage-hostel/PropertyTableBody";
-import Link from "next/link";
-import Image from "next/image";
-import icon_1 from "@/assets/images/icon/icon_46.svg";
-import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import './room.css';
 import apiInstance from "@/utils/apiInstance";
-import AmenitiesList from "../manage-amentity/AmentityList";
 import HostelSelector from "./HostelSelector";
 import { jwtDecode } from "jwt-decode";
 import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
 import ServicePriceModal from "./ServicePriceModal";
+import { useSearchParams } from "next/navigation";
 interface JwtPayload {
    UserId: string;
 }
@@ -33,6 +27,9 @@ interface Room {
    imageRoom: string;
 }
 const RoomManagement = () => {
+   const searchParams = useSearchParams();
+   const hostelId = searchParams.get('hostelId');
+
    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
    const [isAddRoomModalOpen, setIsAddRoomModalOpen] = useState(false);
    const [isServicePriceModalOpen, setIsServicePriceModalOpen] = useState(false);
@@ -108,6 +105,15 @@ const RoomManagement = () => {
       setRoomFormData({ ...roomFormData, hostelId });
       setSelectedFloor(null);
    };
+   useEffect(() => {
+      if (hostelId) {
+         setSelectedHostel(hostelId as string);
+         setRoomFormData((prevData) => ({
+            ...prevData,
+            hostelId: hostelId as string,
+         }));
+      }
+   }, [hostelId])
 
 
    useEffect(() => {
@@ -119,18 +125,21 @@ const RoomManagement = () => {
       const fetchFloors = async () => {
          try {
             const response = await apiInstance.get(`/rooms/hostels/${selectedHostel}`);
-            if (response.data.succeeded) {
+            console.log(response.data);
+            if (response.data.succeeded && response.status === 200) {
                const rooms = response.data.data as Room[];
                const uniqueFloors = Array.from(new Set(rooms.map((room) => room.floor).filter((floor) => floor !== null))) as number[];
                setFloors(uniqueFloors.sort((a, b) => a - b));
-            } else {
-               toast.error("Không thể tải danh sách phòng");
-               setFloors([]);
             }
          }
-         catch (error) {
-            toast.error("Lỗi xảy ra khi lấy danh sách phòng");
-            setFloors([]);
+         catch (error: any) {
+            if (error.response && error.response.status === 400) {
+               toast.error(error.response.data.message, { position: "top-center" });
+               setFloors([]);
+            } else {
+               toast.error("Something went wrong!", { position: "top-center" })
+            }
+
          }
       };
 
@@ -220,7 +229,7 @@ const RoomManagement = () => {
          if (response.status === 200 || response.data.succeeded) {
             toast.success("Thêm phòng thành công", { position: "top-center" });
             setIsAddRoomModalOpen(false);
-            
+
             // Reset form nếu cần
          } else {
             toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
