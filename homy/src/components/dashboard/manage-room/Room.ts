@@ -5,7 +5,7 @@ export interface Room {
     floor: number | null;
     maxRenters: number;
     size: number;
-    status: boolean;
+    isAvailable: boolean;
     monthlyRentCost: number;
     roomType: number;
     createdOn: string;
