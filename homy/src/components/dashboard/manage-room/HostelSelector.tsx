@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
-
 interface Hostel {
   id: string;
   hostelName: string;
