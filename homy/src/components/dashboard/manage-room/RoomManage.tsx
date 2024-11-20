@@ -273,46 +273,62 @@ const RoomManagement = () => {
             <h2 className="main-title d-block d-lg-none">Quản lí phòng trọ </h2>
 
             {/* Hostel Selector */}
-            <HostelSelector
-               selectedHostel={selectedHostel}
-               onHostelChange={handleHostelChange}
+            <div className="flex items-center gap-4 mb-4">
+               <HostelSelector
+                  selectedHostel={selectedHostel}
+                  onHostelChange={handleHostelChange}
+               />
+               {/* Utility Buttons */}
+               <div className="flex items-center gap-2">
+                  <button
+                     className="px-3 py-1 text-sm rounded bg-gray-500 hover:bg-gray-600 text-white"
+                     onClick={toggleAddRoomModal}
+                  >
+                     Thêm phòng
+                  </button>
+                  <button
+                     className="px-3 py-1 text-sm rounded bg-red-500 hover:bg-red-600 text-white"
+                     onClick={toggleServicePriceModal}
+                  >
+                     Bảng giá dịch vụ
+                  </button>
+                  <button
+                     className="px-3 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
+                     onClick={toggleUpdateModal}
+                  >
+                     Cập nhật thông tin
+                  </button>
+               </div>
+            </div>
 
-            />
+
             {/* Floor Buttons */}
             {floors.length > 0 && (
-               <div className="floor-buttons mb-3">
+               <div className="flex flex-wrap items-center gap-2 mb-4">
                   <button
-                     className={`btn ${selectedFloor === null ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
+                     className={`px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white ${selectedFloor === null ? "font-semibold" : "bg-gray-400 hover:bg-gray-500"
+                        }`}
                      onClick={() => setSelectedFloor(null)}
                   >
-                     <FaBuilding className="mr-2" />
+                     <FaBuilding className="inline-block mr-1" />
                      Tất cả tầng
                   </button>
                   {floors.map((floor) => (
                      <button
                         key={floor}
-                        className={`btn ${selectedFloor === floor.toString() ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
+                        className={`px-3 py-1 text-sm rounded ${selectedFloor === floor.toString()
+                              ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                              : "bg-gray-400 hover:bg-gray-500 text-white"
+                           }`}
                         onClick={() => setSelectedFloor(floor.toString())}
                      >
-                        <FaBuilding className="mr-2" />
-                        Tầng {floor}
+                        <FaBuilding className="inline-block mr-1" />
+                        {floor}
                      </button>
                   ))}
                </div>
             )}
 
-            {/* Utility Buttons */}
-            <div className="d-flex align-items-center mb-4">
-               <button className="btn btn-success me-2">Tất cả hóa đơn tiền nhà</button>
-               <button className="btn btn-primary me-2">Nhập dữ liệu</button>
-               <button className="btn btn-warning me-2">In tất cả hóa đơn</button>
-               <button className="btn btn-info me-2">Gửi hóa đơn</button>
-               <button className="btn btn-secondary me-2" onClick={toggleAddRoomModal}>Thêm phòng</button>
-               <button className="btn btn-danger me-2" onClick={toggleServicePriceModal} >Bảng giá dịch vụ</button>
-               <button onClick={toggleUpdateModal} className="btn btn-success">
-                  Cập nhật thông tin
-               </button>
-            </div>
 
             {/* Table Section */}
             <div className="bg-white card-box p0 border-20">
@@ -400,7 +416,7 @@ const RoomManagement = () => {
             {isAddRoomModalOpen && (
                <div className="modal-overlay">
                   <div className="modal-content">
-                     <h3 className="modal-title">Thêm phòng</h3>
+                     <h3 className="modal-title" style={{ color: "red" }}>Thêm phòng</h3>
                      <form onSubmit={handleAddRoomSubmit}>
                         {/* Sử dụng RoomForm */}
                         <RoomForm

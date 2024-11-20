@@ -165,7 +165,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
     };
 
     return (
-        <ServiceModal isOpen={isOpen} onClose={onClose} title="Quản lý giá dịch vụ">
+        <ServiceModal isOpen={isOpen} onClose={onClose} title=" Quản lý giá dịch vụ">
             {/* Display current service prices */}
             <table className="table">
                 <thead>
