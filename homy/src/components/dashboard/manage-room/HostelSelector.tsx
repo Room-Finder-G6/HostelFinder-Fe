@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import apiInstance from '@/utils/apiInstance';
 import { jwtDecode } from "jwt-decode";
-
 interface Hostel {
   id: string;
   hostelName: string;
@@ -61,8 +60,10 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
   }
 
   return (
-    <div className="d-flex align-items-center mb-4">
-      <label htmlFor="hostelSelect" className="me-2">Nhà trọ:</label>
+    <div className="max-w-sm mx-auto mb-4">
+      <label htmlFor="hostelSelect" className="me-4">
+        Nhà trọ:
+      </label>
       <select
         id="hostelSelect"
         className="form-select"
