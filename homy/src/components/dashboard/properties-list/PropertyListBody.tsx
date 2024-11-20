@@ -4,7 +4,6 @@ import NiceSelect from "@/ui/NiceSelect";
 import PropertyTableBody from "./PropertyTableBody";
 import Link from "next/link";
 import Image from "next/image";
-import AddHostelForm from "../add-hostel/AddHostelForm"; // Import your AddHostelForm component
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 
 const PropertyListBody = () => {

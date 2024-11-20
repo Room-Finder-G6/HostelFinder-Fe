@@ -5,7 +5,7 @@ const DropdownOne = ({ style }: any) => {
    const selectHandler = (e: any) => { };
 
    const searchHandler = () => {
-      window.location.href = '/listing_0';
+      window.location.href = '/all-posts';
    };
 
    return (
