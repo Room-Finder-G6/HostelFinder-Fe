@@ -2,6 +2,7 @@
 import "../styles/index.scss";
 import { Provider } from "react-redux";
 import store from "@/redux/store";
+import "../styles/tailwind.css";
 
 export default function RootLayout({
   children,

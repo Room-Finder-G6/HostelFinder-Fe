@@ -2,7 +2,7 @@ import DashboardManagerHostel from "@/components/dashboard/manage-hostel";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
-   title: "Dashboard Add Hostel Homy - Real Estate React Next js Template",
+   title: "Quản lý nhà trọ",
 };
 const index = () => {
    return (

@@ -10,6 +10,16 @@ import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
 import ServicePriceModal from "./ServicePriceModal";
 import { useSearchParams } from "next/navigation";
+import {
+   FaBuilding,
+   FaFileInvoiceDollar,
+   FaUpload,
+   FaPrint,
+   FaPaperPlane,
+   FaPlusCircle,
+   FaTags,
+   FaEdit,
+} from 'react-icons/fa';
 interface JwtPayload {
    UserId: string;
 }
@@ -53,6 +63,7 @@ const RoomManagement = () => {
    const [error, setError] = useState<string | null>(null);
    const [selectedFloor, setSelectedFloor] = useState<string | null>(null);
    const [roomsUpdate, setRoomsUpdate] = useState<number>(0);
+   const [refreshRooms, setRefreshRooms] = useState<number>(0);
    const toggleUpdateModal = () => {
       setIsUpdateModalOpen(!isUpdateModalOpen);
    };
@@ -230,7 +241,22 @@ const RoomManagement = () => {
             toast.success("Thêm phòng thành công", { position: "top-center" });
             setIsAddRoomModalOpen(false);
 
-            // Reset form nếu cần
+            setRefreshRooms(prev => prev + 1);
+            // Reset form 
+            setRoomFormData({
+               hostelId: "",
+               roomName: "",
+               floor: "",
+               maxRenters: "",
+               status: true,
+               deposit: "",
+               monthlyRentCost: "",
+               size: "",
+               roomType: "",
+               amenityId: [],
+               images: [],
+            });
+            setSelectedAmenities([]);
          } else {
             toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
          }
@@ -243,8 +269,8 @@ const RoomManagement = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Manage Room" />
-            <h2 className="main-title d-block d-lg-none">Manage Room</h2>
+            <DashboardHeaderTwo title="Quản lí phòng trọ" />
+            <h2 className="main-title d-block d-lg-none">Quản lí phòng trọ </h2>
 
             {/* Hostel Selector */}
             <HostelSelector
@@ -259,6 +285,7 @@ const RoomManagement = () => {
                      className={`btn ${selectedFloor === null ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
                      onClick={() => setSelectedFloor(null)}
                   >
+                     <FaBuilding className="mr-2" />
                      Tất cả tầng
                   </button>
                   {floors.map((floor) => (
@@ -267,6 +294,7 @@ const RoomManagement = () => {
                         className={`btn ${selectedFloor === floor.toString() ? 'btn-primary' : 'btn-secondary'} me-2 mb-2`}
                         onClick={() => setSelectedFloor(floor.toString())}
                      >
+                        <FaBuilding className="mr-2" />
                         Tầng {floor}
                      </button>
                   ))}
@@ -299,7 +327,7 @@ const RoomManagement = () => {
                            <th scope="col"></th>
                         </tr>
                      </thead>
-                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} />
+                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} refresh={refreshRooms} />
                   </table>
                </div>
             </div>
