@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import apiInstance from '@/utils/apiInstance';
+import React, { useState, useEffect, useCallback } from "react";
+import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
+
 interface Hostel {
   id: string;
   hostelName: string;
@@ -13,7 +14,6 @@ interface HostelSelectorProps {
 interface JwtPayload {
   UserId: string;
 }
-
 
 const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHostelChange }) => {
   const [hostels, setHostels] = useState<Hostel[]>([]);
@@ -42,7 +42,9 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
       if (!landlordId) return;
 
       try {
-        const response = await apiInstance.get(`/hostels/GetHostelsByLandlordId/${landlordId}`);
+        const response = await apiInstance.get(
+          `/hostels/GetHostelsByLandlordId/${landlordId}`
+        );
         if (response.data.succeeded) {
           setHostels(response.data.data);
         } else {
@@ -56,17 +58,20 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
   }, [getUserIdFromToken]);
 
   if (error) {
-    return <p>{error}</p>;
+    return <p className="text-red-500">{error}</p>;
   }
 
   return (
-    <div className="max-w-sm mx-auto mb-4">
-      <label htmlFor="hostelSelect" className="me-4">
+    <div className="mb-4">
+      <label
+        htmlFor="hostelSelect"
+        className="block text-sm font-medium text-gray-700 mb-2 text-left"
+      >
         Nhà trọ:
       </label>
       <select
         id="hostelSelect"
-        className="form-select"
+        className="block px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-left"
         value={selectedHostel}
         onChange={onHostelChange}
       >

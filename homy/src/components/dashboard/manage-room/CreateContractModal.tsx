@@ -179,7 +179,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                     <section className="section mb-5">
                         <h3 className="text-lg font-semibold">Thông tin người thuê</h3>
                         <div className="modal-form-group">
-                            <label>Họ tên *</label>
+                            <label>Họ tên <span className="text-red-500">*</span></label>
                             <input
                                 type="text"
                                 {...register("tenant.fullName")}

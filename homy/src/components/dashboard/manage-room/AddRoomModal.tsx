@@ -1,6 +1,6 @@
 import React from 'react';
 import RoomForm from './RoomForm';
-
+import "./room.css"
 interface AddRoomModalProps {
   isOpen: boolean;
   toggleModal: () => void;

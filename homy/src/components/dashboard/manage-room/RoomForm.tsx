@@ -1,6 +1,6 @@
 import React from 'react';
 import AmenitiesList from '../manage-amentity/AmentityList';
-
+import "./room.css"
 interface RoomFormProps {
   roomFormData: {
     hostelId: string;
