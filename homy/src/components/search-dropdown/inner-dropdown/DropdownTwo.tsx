@@ -144,6 +144,7 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                         <NiceSelect
                             className="nice-select"
                             options={[
+                                {value: "0", text: "Tất cả diện tích"},
                                 {value: "1", text: "20 - 30 m²"},
                                 {value: "2", text: "30 - 50 m²"},
                                 {value: "3", text: "50 - 100 m²"},
