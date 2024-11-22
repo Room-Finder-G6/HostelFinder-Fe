@@ -55,6 +55,7 @@ const UpdateRoomModal: React.FC<UpdateRoomModalProps> = ({
                         handleRoomImageChange={handleRoomImageChange}
                         handleRemoveImage={handleRemoveImage}
                         selectedAmenities={selectedAmenities}
+                        onClose={toggleModal}
                     />
 
                     <div className="modal-footer">

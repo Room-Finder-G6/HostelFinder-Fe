@@ -322,7 +322,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 placeholder="Chọn Tỉnh/Thành phố"
                                 name={"province"}
                                 defaultCurrent={0}
-                                value={selectedProvince || undefined}
+                                // value={selectedProvince || undefined}
                                 required
                             />
                         </div>
@@ -339,7 +339,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 disabled={!selectedProvince}
                                 name={"district"}
                                 defaultCurrent={0}
-                                value={selectedDistrict || undefined}
+                                // value={selectedDistrict || undefined}
                                 required
                             />
                         </div>
@@ -356,7 +356,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                                 disabled={!selectedDistrict}
                                 name={"commune"}
                                 defaultCurrent={0}
-                                value={communes.find(c => c.text === formData.address.commune)?.value}
+                                // value={communes.find(c => c.text === formData.address.commune)?.value}
                             />
                         </div>
                     </div>

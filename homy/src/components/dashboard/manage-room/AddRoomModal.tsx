@@ -1,6 +1,6 @@
 import React from 'react';
 import RoomForm from './RoomForm';
-
+import "./room.css"
 interface AddRoomModalProps {
   isOpen: boolean;
   toggleModal: () => void;
@@ -38,6 +38,7 @@ const AddRoomModal: React.FC<AddRoomModalProps> = ({
             handleRoomImageChange={handleRoomImageChange}
             handleRemoveImage={handleRemoveImage}
             selectedAmenities={selectedAmenities}
+            onClose={toggleModal}
           />
           <div className="modal-footer">
             <button type="submit" className="btn btn-primary">Lưu</button>

@@ -1,119 +1,78 @@
 "use client";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import NiceSelect from "@/ui/NiceSelect";
+import PropertyTableBodyPost from "./PropertyTableBodyPost";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
-import { useState } from "react";
+import usePostsByUser from "./usePost";
 
 const PostManagement = () => {
-   const selectHandler = (e: any) => {};
-   const [posts, setPosts] = useState([
-      {
-         title: "Post 1",
-         date: "October 10, 2024",
-         views: "1.2K",
-         status: "Published",
-      },
-      {
-         title: "Post 2",
-         date: "October 12, 2024",
-         views: "950",
-         status: "Draft",
-      },
-      // Add more posts here
-   ]);
+    const { posts, totalPages, pageIndex, setPageIndex, loading } = usePostsByUser();
 
-   return (
-      <div className="dashboard-body">
-         <div className="position-relative">
-            <DashboardHeaderTwo title="Manage Posts" />
-            <h2 className="main-title d-block d-lg-none">Manage Posts</h2>
-            
-            {/* Header Section */}
+    const selectHandler = (e: any) => { };
+
+    return (
+        <div className="dashboard-body">
+            <DashboardHeaderTwo title="My Posts" />
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               <div className="fs-16">
-                  Showing <span className="color-dark fw-500">1–{posts.length}</span> of{" "}
-                  <span className="color-dark fw-500">40</span> results
-               </div>
-               <div className="d-flex ms-auto xs-mt-30">
-                  <div className="short-filter d-flex align-items-center ms-sm-auto">
-                     <div className="fs-16 me-2">Sort by:</div>
-                     <NiceSelect
+                <div className="short-filter d-flex align-items-center ms-sm-auto">
+                    <NiceSelect
                         className="nice-select"
                         options={[
-                           { value: "1", text: "Newest" },
-                           { value: "2", text: "Most Viewed" },
-                           { value: "3", text: "Top Rated" },
-                           { value: "4", text: "Oldest" },
+                            { value: "1", text: "Newest" },
+                            { value: "2", text: "Best Seller" },
+                            { value: "3", text: "Best Match" },
+                            { value: "4", text: "Price Low" },
+                            { value: "5", text: "Price High" },
                         ]}
                         defaultCurrent={0}
                         onChange={selectHandler}
-                        name=""
-                        placeholder=""
-                     />
-                  </div>
-               </div>
+                        name="sortOptions"
+                        placeholder="Select Option"
+                    />
+                </div>
+                <li className="d-none d-md-inline-block ms-3">
+                    <Link href="/dashboard/create-post" className="btn-two" target="_blank">
+                        <span>Add Post</span>
+                    </Link>
+                </li>
             </div>
 
-            {/* Card Layout for Posts */}
-            <div className="card-grid">
-               {posts.map((post, index) => (
-                  <div key={index} className="post-card">
-                     <div className="post-card-header">
-                        <h3>{post.title}</h3>
-                        <span className={`status ${post.status.toLowerCase()}`}>
-                           {post.status}
-                        </span>
-                     </div>
-                     <div className="post-card-body">
-                        <p>Date: {post.date}</p>
-                        <p>Views: {post.views}</p>
-                     </div>
-                     <div className="post-card-actions">
-                        <Link href="#" className="btn-primary">
-                           Edit
-                        </Link>
-                        <Link href="#" className="btn-danger">
-                           Delete
-                        </Link>
-                     </div>
-                  </div>
-               ))}
+            <div className="bg-white card-box p0 border-20">
+                <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
+                    <table className="table property-list-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Date Created</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <PropertyTableBodyPost posts={posts} loading={loading} />
+                    </table>
+                </div>
             </div>
 
-            {/* Pagination */}
             <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
-               <li className="me-3">
-                  <Link href="#">1</Link>
-               </li>
-               <li className="selected">
-                  <Link href="#">2</Link>
-               </li>
-               <li>
-                  <Link href="#">3</Link>
-               </li>
-               <li>
-                  <Link href="#">4</Link>
-               </li>
-               <li>....</li>
-               <li className="ms-2">
-                  <Link href="#" className="d-flex align-items-center">
-                     Last <Image src={icon_1} alt="" className="ms-2" />
-                  </Link>
-               </li>
+                {[...Array(totalPages)].map((_, index) => (
+                    <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
+                        <Link href="#" onClick={() => setPageIndex(index + 1)}>
+                            {index + 1}
+                        </Link>
+                    </li>
+                ))}
+                {totalPages > 1 && (
+                    <li className="ms-2">
+                        <Link href="#" onClick={() => setPageIndex(totalPages)}>
+                            Last <Image src={icon_1} alt="" className="ms-2" />
+                        </Link>
+                    </li>
+                )}
             </ul>
-
-            {/* Floating Add Post Button */}
-            <Link href="/dashboard/create-post">
-               <div className="floating-add-btn">
-                  <span className="plus-icon">+</span>
-                  Add Post
-               </div>
-            </Link>
-         </div>
-      </div>
-   );
+        </div>
+    );
 };
 
 export default PostManagement;

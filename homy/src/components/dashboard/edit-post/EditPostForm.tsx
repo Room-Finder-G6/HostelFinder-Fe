@@ -1,11 +1,11 @@
 "use client";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Overview from "./Overview";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import UploadImage from "@/components/UploadImage";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export interface PostData {
     hostelId: string;
@@ -26,7 +26,7 @@ interface EditPostFormProps {
     postId: string;
 }
 
-const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
+const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
 
     const [postData, setPostData] = useState<PostData>({
         hostelId: '',
@@ -47,7 +47,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
                     setPostData(response.data.data);
                 }
             } catch (error: any) {
-                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
+                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, { position: "top-center" });
             }
         };
 
@@ -64,7 +64,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
     };
 
     const handleImageUpload = (files: File[]) => {
-        handleData({imageUrls: files});
+        handleData({ imageUrls: files });
     };
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -82,7 +82,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
 
         const token = localStorage.getItem("token");
         if (!token) {
-            toast.error("Token không tìm thấy", {position: "top-center"});
+            toast.error("Token không tìm thấy", { position: "top-center" });
             return;
         }
 
@@ -91,11 +91,11 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
             const decodedToken: DecodedToken = jwtDecode(token);
             userId = decodedToken.UserId;
             if (!userId) {
-                toast.error("Không tìm thấy User ID trong token", {position: "top-center"});
+                toast.error("Không tìm thấy User ID trong token", { position: "top-center" });
                 return;
             }
         } catch (error) {
-            toast.error("Token không hợp lệ", {position: "top-center"});
+            toast.error("Token không hợp lệ", { position: "top-center" });
             return;
         }
 
@@ -119,21 +119,24 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
 
         try {
             await apiInstance.put(`/posts/${postId}`, formData);
-            toast.success("Cập nhật bài đăng thành công", {position: "top-center"});
+            toast.success("Cập nhật bài đăng thành công", { position: "top-center" });
         } catch (error: any) {
-            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, {position: "top-center"});
+            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, { position: "top-center" });
         }
     };
 
     return (
         <div>
-            <DashboardHeaderTwo title="Chỉnh sửa bài cho thuê"/>
+            <DashboardHeaderTwo title="Chỉnh sửa bài cho thuê" />
             <h2 className="main-title d-block d-lg-none">Chỉnh sửa bài cho thuê</h2>
-            <Overview onDataChange={handleData} postData={postData}/>
+            <Overview onDataChange={handleData} postData={postData} />
 
             <div className="bg-white card-box border-20 mt-40">
                 <h4 className="dash-title-three">Hình ảnh</h4>
-                <UploadImage onImageUpload={handleImageUpload} multiple={true} existingImages={postData.imageUrls}/>
+                <UploadImage onImageUpload={handleImageUpload}
+                    multiple={true}
+                // existingImages={postData.imageUrls}
+                />
             </div>
 
             <form onSubmit={handleSubmit}>

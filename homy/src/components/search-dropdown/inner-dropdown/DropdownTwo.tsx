@@ -127,11 +127,6 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                             ]}
                             onChange={handlePriceChange}
                             name="price"
-                            currentValue={
-                                filterData.minPrice === 10000 ? "1" :
-                                    filterData.minPrice === 20000 ? "2" :
-                                        filterData.minPrice === 30000 ? "3" : "0"
-                            }
                             placeholder="Mức giá"
                         />
 
@@ -151,10 +146,6 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                             ]}
                             onChange={handleSizeChange}
                             name="size"
-                            currentValue={
-                                filterData.minSize === 20 ? "1" :
-                                    filterData.minSize === 30 ? "2" : "3"
-                            }
                             placeholder="Diện tích"
                         />
                     </div>

@@ -31,7 +31,7 @@ const ListingFourArea = () => {
         try {
             const response = await apiInstance.post("posts/filter", filterData);
             setIsLoading(true);
-            if (response.status === 100) {
+            if (response.status === 200) {
                 setFilteredPosts(response.data.data);
                 console.log("Filtered posts:", response.data.data);
             } else {
