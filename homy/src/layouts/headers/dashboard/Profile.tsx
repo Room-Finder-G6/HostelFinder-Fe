@@ -10,7 +10,8 @@ const Profile: React.FC = () => {
 
    const handleLogout = () => {
       localStorage.removeItem("token");
-      router.push("/");
+      router.refresh();
+      window.location.href = '/';
    };
 
    return (

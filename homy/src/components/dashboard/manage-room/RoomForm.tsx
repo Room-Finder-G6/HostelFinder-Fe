@@ -69,52 +69,45 @@ const RoomForm: React.FC<RoomFormProps> = ({
 
   return (
     <>
+      {/* Close Button */}
       <button
         type="button"
         onClick={onClose}
-        style={{
-          position: 'absolute',
-          top: '10px',
-          right: '10px',
-          background: 'red',
-          color: 'white',
-          border: 'none',
-          borderRadius: '50%',
-          width: '24px',
-          height: '24px',
-          lineHeight: '24px',
-          textAlign: 'center',
-          cursor: 'pointer',
-        }}
+        className="absolute top-4 right-4 text-3xl text-gray-500 hover:text-red-600 focus:outline-none p-2 bg-gray-100 rounded-full shadow-md hover:bg-gray-200"
       >
         &times;
       </button>
-      <div className="modal-form-group">
-        <label>Tên phòng*</label>
+      <div className="space-y-4">
+        <label className="block text-sm font-medium text-gray-700">
+          Tên phòng<span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="roomName"
           value={roomFormData.roomName}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
+
       </div>
-      <div className="modal-form-group">
-        <label>Tầng</label>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Tầng
+        </label>
         <input
           type="number"
           name="floor"
           value={roomFormData.floor}
           onChange={handleRoomInputChange}
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
           min="0"
         />
       </div>
 
-      <div className="modal-form-group">
-        <label>
-          Số người thuê tối đa <span style={{ color: 'red' }}>*</span>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Số người thuê tối đa<span className="text-red-500">*</span>
         </label>
         <input
           type="number"
@@ -122,13 +115,15 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.maxRenters}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
           min="1"
         />
       </div>
 
-      <div className="modal-form-group">
-        <label>Tiền đặt cọc(VND) *</label>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Tiền đặt cọc (VND)<span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="deposit"
@@ -139,12 +134,14 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleDepositChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
-      <div className="modal-form-group">
-        <label>Giá thuê hàng tháng(VND) *</label>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Giá thuê hàng tháng (VND)<span className="text-red-500">*</span>
+        </label>
         <input
           type="text"
           name="monthlyRentCost"
@@ -155,83 +152,82 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleMonthlyRentCostChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
-      <div className="modal-form-group">
-        <label>Diện tích(m2) *</label>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Diện tích (m²)<span className="text-red-500">*</span>
+        </label>
         <input
           type="number"
           name="size"
           value={roomFormData.size}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
-      <div className="modal-form-group">
-        <label>Loại phòng *</label>
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Loại phòng<span className="text-red-500">*</span>
+        </label>
         <select
           name="roomType"
           value={roomFormData.roomType}
           onChange={handleRoomInputChange}
           required
-          className="form-select"
+          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="">Chọn loại phòng</option>
           <option value="1">Phòng trọ</option>
           <option value="2">Phòng chung cư</option>
           <option value="3">Phòng chung cư mini</option>
-          {/* Thêm các loại phòng khác nếu có */}
+          {/* Add more room types as needed */}
         </select>
       </div>
 
       {/* Lấy ra list dịch vụ của các phòng*/}
-      <AmenitiesList
-        onAmenitySelect={handleAmenitySelect}
-        selectedAmenities={selectedAmenities}
-      />
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Dịch vụ phòng
+        </label>
+        <AmenitiesList
+          onAmenitySelect={handleAmenitySelect}
+          selectedAmenities={selectedAmenities}
+        />
+      </div>
 
-      {/* Upload hình ảnh phòng */}
-      <div className="modal-form-group">
-        <label>Hình ảnh phòng</label>
+      {/* Room Images */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Hình ảnh phòng
+        </label>
         <input
           type="file"
           name="roomImages"
           multiple
           onChange={handleRoomImageChange}
-          className="form-control"
+          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
         />
       </div>
 
+      {/* Image Previews */}
       {roomFormData.images && roomFormData.images.length > 0 && (
-        <div className="selected-images">
+        <div className="mt-4 grid grid-cols-3 gap-4">
           {roomFormData.images.map((image, index) => (
-            <div key={index} className="image-preview" style={{ position: 'relative' }}>
+            <div key={index} className="relative">
               <img
                 src={URL.createObjectURL(image)}
                 alt={`Preview ${index}`}
-                style={{ maxWidth: '100px', marginRight: '10px' }}
+                className="w-full h-30 object-cover rounded-md"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  background: 'red',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '24px',
-                  height: '24px',
-                  lineHeight: '24px',
-                  textAlign: 'center',
-                  cursor: 'pointer',
-                }}
+                className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 focus:outline-none"
               >
                 &times;
               </button>
