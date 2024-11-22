@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiInstance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api",
+    baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || "http://hostelfinder-alb-1388463493.us-east-1.elb.amazonaws.com/api",
     withCredentials: true,
    
 });
