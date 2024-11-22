@@ -10,6 +10,7 @@ import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
 import ServicePriceModal from "./ServicePriceModal";
 import { useSearchParams } from "next/navigation";
+
 import {
    FaBuilding,
    FaFileInvoiceDollar,
@@ -19,7 +20,10 @@ import {
    FaPlusCircle,
    FaTags,
    FaEdit,
+   FaPlus,
+   FaMoneyBill,
 } from 'react-icons/fa';
+import { RxUpdate } from "react-icons/rx";
 interface JwtPayload {
    UserId: string;
 }
@@ -279,23 +283,34 @@ const RoomManagement = () => {
                   onHostelChange={handleHostelChange}
                />
                {/* Utility Buttons */}
-               <div className="flex items-center gap-2">
+               <div className="flex items-center gap-4">
+                  {/* Nút Thêm phòng */}
                   <button
-                     className="px-3 py-1 text-sm rounded bg-gray-500 hover:bg-gray-600 text-white"
+                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
                      onClick={toggleAddRoomModal}
                   >
+                     {/* Khu vực chứa Icon */}
+                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-300 rounded">
+                        <FaPlus size={14} />
+                     </div>
                      Thêm phòng
                   </button>
                   <button
-                     className="px-3 py-1 text-sm rounded bg-red-500 hover:bg-red-600 text-white"
+                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
                      onClick={toggleServicePriceModal}
                   >
+                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-700 rounded">
+                        <FaMoneyBill size={14} />
+                     </div>
                      Bảng giá dịch vụ
                   </button>
                   <button
-                     className="px-3 py-1 text-sm rounded bg-green-500 hover:bg-green-600 text-white"
+                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
                      onClick={toggleUpdateModal}
                   >
+                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-700 rounded">
+                        <RxUpdate size={14} />
+                     </div>
                      Cập nhật thông tin
                   </button>
                </div>
@@ -317,8 +332,8 @@ const RoomManagement = () => {
                      <button
                         key={floor}
                         className={`px-3 py-1 text-sm rounded ${selectedFloor === floor.toString()
-                              ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                              : "bg-gray-400 hover:bg-gray-500 text-white"
+                           ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+                           : "bg-gray-400 hover:bg-gray-500 text-white"
                            }`}
                         onClick={() => setSelectedFloor(floor.toString())}
                      >
@@ -332,7 +347,7 @@ const RoomManagement = () => {
 
             {/* Table Section */}
             <div className="bg-white card-box p0 border-20">
-               <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
+               <div className="table-responsive pt-25 pb-25 pe-4 ps-4" style={{ minHeight: '400px' }}>
                   <table className="table property-list-table">
                      <thead>
                         <tr>
@@ -416,9 +431,9 @@ const RoomManagement = () => {
             {isAddRoomModalOpen && (
                <div className="modal-overlay">
                   <div className="modal-content">
-                     <h3 className="modal-title" style={{ color: "red" }}>Thêm phòng</h3>
+                     <h3 className="modal-title" style={{ color: "black" }}>Thêm phòng</h3>
                      <form onSubmit={handleAddRoomSubmit}>
-                        {/* Sử dụng RoomForm */}
+                        {/* Nội dung RoomForm */}
                         <RoomForm
                            roomFormData={roomFormData}
                            handleRoomInputChange={handleRoomInputChange}
@@ -428,10 +443,21 @@ const RoomManagement = () => {
                            selectedAmenities={selectedAmenities}
                            onClose={toggleAddRoomModal}
                         />
-
-                        <div className="modal-footer">
-                           <button type="submit" className="btn btn-primary">Lưu</button>
-                           <button type="button" className="btn btn-secondary" onClick={toggleAddRoomModal}>Thoát</button>
+                        {/* Footer */}
+                        <div className="modal-footer flex justify-end gap-2">
+                           <button
+                              type="submit"
+                              className="bg-indigo-600 text-white py-2 px-4 text-sm rounded-md hover:bg-indigo-700 focus:outline-none"
+                           >
+                              Lưu
+                           </button>
+                           <button
+                              type="button"
+                              className="btn btn-secondary py-2 px-4 text-sm rounded-md"
+                              onClick={toggleAddRoomModal}
+                           >
+                              Thoát
+                           </button>
                         </div>
                      </form>
                   </div>

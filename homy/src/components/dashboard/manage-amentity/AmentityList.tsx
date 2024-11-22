@@ -49,7 +49,6 @@ const AmenitiesList: React.FC<AmenitiesListProps> = ({ onAmenitySelect, selected
 
   return (
     <div>
-      <h5>Tiện nghi</h5>
       <div className="row">
         {amenities.map((amenity) => (
           <div key={amenity.id} className="col-md-3 mb-3">

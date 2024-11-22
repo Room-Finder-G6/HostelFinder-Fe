@@ -73,18 +73,18 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                         </div>
 
                         <div className="row">
-                           <div className="col-sm-6">
+                           <div className="col-sm-12">
                               <Link href="#" className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
                                  <Image src={loginIcon_1} alt="Google Icon" />
                                  <span className="ps-3">Signup with Google</span>
                               </Link>
                            </div>
-                           <div className="col-sm-6">
+                           {/* <div className="col-sm-6">
                               <Link href="#" className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
                                  <Image src={loginIcon_2} alt="Facebook Icon" />
                                  <span className="ps-3">Signup with Facebook</span>
                               </Link>
-                           </div>
+                           </div> */}
                         </div>
                      </div>
                   </div>
