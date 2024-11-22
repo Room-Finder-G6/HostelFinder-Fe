@@ -13,7 +13,7 @@ const HeaderFour = () => {
 
    const { sticky } = UseSticky();
    const [isSearch, setIsSearch] = useState<boolean>(false);
-   
+
    return (
       <>
          <header className={`theme-main-menu menu-overlay menu-style-six sticky-menu ${sticky ? "fixed" : ""}`}>
@@ -46,7 +46,7 @@ const HeaderFour = () => {
                            aria-label="Toggle navigation">
                            <span></span>
                         </button>
-                        <div className="collapse navbar-collapse ms-xl-5" id="navbarNav">
+                        <div id="navbarNav">
                            <NavMenu />
                         </div>
                      </nav>

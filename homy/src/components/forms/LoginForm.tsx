@@ -1,12 +1,14 @@
 "use client";
+
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import apiInstance from "../../utils/apiInstance";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 import * as yup from "yup";
 
 interface LoginFormProps {
@@ -19,19 +21,17 @@ interface FormData {
 }
 
 const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
+  const router = useRouter();
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
 
-
-
-
   const togglePasswordVisibility = () => {
-    setPasswordVisibility(!isPasswordVisible);
+    setPasswordVisibility((prev) => !prev);
   };
 
   const schema = yup
     .object({
-      userName: yup.string().required().label("UserName"),
-      password: yup.string().required().label("Password"),
+      userName: yup.string().required("User name is required"),
+      password: yup.string().required("Password is required"),
     })
     .required();
 
@@ -45,27 +45,29 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
     try {
       const res = await apiInstance.post("auth/login", data);
       if (res.status === 200 && res.data.succeeded) {
-        const { message, data } = res.data;
-        console.log(res.data);
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userName", data.userName);
+        const { message, data: responseData } = res.data;
+        localStorage.setItem("token", responseData.token);
+        localStorage.setItem("userName", responseData.userName);
         toast.success(message, { position: "top-center" });
 
-        if (data.role === "User") {
-          window.location.href = "/";
-        } else if (data.role === "Admin") {
-          window.location.href = "/dashboard/dashboard-index";
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+
+        if (responseData.role === "User") {
+          router.push("/");
+        } else if (responseData.role === "Admin" || responseData.role === "Landlord") {
+          const modal =
+            router.push("/dashboard/dashboard-index");
         }
       }
     } catch (error: any) {
-      if (error.response && error.response.status === 400) {
+      if (error.response?.status === 400) {
         toast.error(error.response.data.message, { position: "top-center" });
       } else {
-        toast.error("Something went wrong!", { position: "top-center" });
+        toast.error(error.message, { position: "top-center" });
       }
     }
   };
-
 
   return (
     <div>
@@ -93,8 +95,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
               />
               <span className="placeholder_icon">
                 <span
-                  className={`passVicon ${isPasswordVisible ? "eye-slash" : ""
-                    }`}
+                  className={`passVicon ${isPasswordVisible ? "eye-slash" : ""}`}
                 >
                   <Image
                     onClick={togglePasswordVisibility}
