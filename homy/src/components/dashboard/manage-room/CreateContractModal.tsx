@@ -1,9 +1,11 @@
+// components/CreateContractModal.tsx
+
 import React, { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { useForm } from "react-hook-form";
-import "./rentralContract.css";
+import { Modal, Button, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
-
+import CurrencyInput from 'react-currency-input-field';
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -19,10 +21,35 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     hostelId,
     onSuccess,
 }) => {
-    const { register, handleSubmit, reset, setValue } = useForm();
+    const { register, handleSubmit, reset, watch, formState: { errors }, setValue } = useForm();
     const [services, setServices] = useState([]);
-    const [showDetails, setShowDetails] = useState(false); // Điều khiển hiển thị trường chi tiết
+    const [showDetails, setShowDetails] = useState(false);
     const [previewImages, setPreviewImages] = useState<Record<string, string>>({});
+    const [roomData, setRoomData] = useState<any>(null);
+    const [monthlyRentFormatted, setMonthlyRentFormatted] = useState("");
+    const [depositAmountFormatted, setDepositAmountFormatted] = useState("");
+
+    useEffect(() => {
+        if (roomId && isOpen) {
+            fetchRoomData();
+        }
+    }, [roomId, isOpen])
+
+    //fetch của phòng
+    const fetchRoomData = async () => {
+        try {
+            const response = await apiInstance.get(`/rooms/${roomId}`);
+            if (response.data.succeeded) {
+                setRoomData(response.data.data);
+                setValue('monthlyRentNow', response.data.data.monthlyRentCost);
+                setValue('monthlyRent', response.data.data.monthlyRentCost)
+                setValue('depositAmount', response.data.data.monthlyRentCost)
+
+            }
+        } catch (error: any) {
+            toast.error(error.message, { position: "top-center" })
+        }
+    }
     // Fetch danh sách dịch vụ
     useEffect(() => {
         if (hostelId) {
@@ -54,7 +81,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         // Thông tin hợp đồng
         formData.append("RoomId", roomId);
         formData.append("StartDate", data.startDate);
-        formData.append("EndDate", data.endDate || "");
+        formData.append("EndDate", data.endDate);
         formData.append("MonthlyRent", data.monthlyRent);
         formData.append("DepositAmount", data.depositAmount);
         formData.append("PaymentCycleDays", data.paymentCycleDays);
@@ -103,36 +130,31 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         });
 
         try {
-            await apiInstance.post(`/rental-contracts`, formData, {
+            const response = await apiInstance.post(`/rental-contracts`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            toast("Hợp đồng tạo thành công");
+            toast.success(response.data.data.message);
             onSuccess();
             reset();
             onClose();
         } catch (error: any) {
             console.error("Error creating contract:", error.response?.data || error);
-            alert("Có lỗi xảy ra khi tạo hợp đồng");
+            alert(error.response?.data.message);
         }
     };
 
-    return isOpen ? (
-        <div className="modal-overlay">
-            <div className="modal-content">
-                <button
-                    type="button"
-                    className="close-button"
-                    onClick={onClose}
-                >
-                    &times;
-                </button>
-                <h1 className="modal-title">Tạo Hợp Đồng</h1>
-                <form onSubmit={handleSubmit(onSubmit)} className="modal-form">
+    return (
+        <Modal show={isOpen} onHide={onClose} size="lg" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Tạo Hợp Đồng</Modal.Title>
+            </Modal.Header>
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
                     {/* Thông tin hợp đồng */}
-                    <section className="section mb-5">
-                        <h2 className="text-lg font-semibold">Thông tin hợp đồng</h2>
-                        <div className="modal-form-group">
-                            <label>Ngày bắt đầu *</label>
+                    <section className="mb-4">
+                        <h5>Thông tin hợp đồng</h5>
+                        <div className="mb-3">
+                            <label className="form-label">Ngày bắt đầu *</label>
                             <input
                                 type="date"
                                 {...register("startDate")}
@@ -140,26 +162,53 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Tiền thuê *</label>
+                        <div className="mb-3">
+                            <label className="form-label">Ngày kết thúc *</label>
                             <input
-                                type="number"
-                                {...register("monthlyRent")}
+                                type="date"
+                                {...register("endDate")}
                                 className="form-control"
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Tiền đặt cọc *</label>
-                            <input
-                                type="number"
-                                {...register("depositAmount")}
+                        <div className="mb-3">
+                            <label className="form-label">Tiền thuê *</label>
+                            <CurrencyInput
                                 className="form-control"
+                                id="monthlyRent"
+                                name="monthlyRent"
+                                placeholder="Nhập tiền thuê"
+                                defaultValue={roomData?.monthlyRentCost}
+                                decimalsLimit={0}
+                                groupSeparator="."
+                                decimalSeparator=","
+                                onValueChange={(value) => setValue('monthlyRent', value)}
+                                required
+                            />
+                            {errors.monthlyRent && (
+                                <span className="text-danger">Vui lòng nhập tiền thuê</span>
+                            )}
+                            <small>
+                                Giá thuê phòng hiện tại: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(watch('monthlyRentNow') || 0)}
+                            </small>
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Tiền đặt cọc <span style={{ color: 'red' }}>*</span></label>
+                            <CurrencyInput
+                                className="form-control"
+                                id="depositAmount"
+                                name="depositAmount"
+                                placeholder="Nhập tiền đặt cọc"
+                                defaultValue={roomData?.monthlyRentCost}
+                                decimalsLimit={0}
+                                groupSeparator="."
+                                decimalSeparator=","
+                                onValueChange={(value) => setValue('depositAmount', value)}
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Kỳ thanh toán (ngày) *</label>
+                        <div className="mb-3">
+                            <label className="form-label">Kỳ thanh toán (ngày) *</label>
                             <input
                                 type="number"
                                 {...register("paymentCycleDays")}
@@ -167,8 +216,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Điều khoản hợp đồng</label>
+                        <div className="mb-3">
+                            <label className="form-label">Điều khoản hợp đồng</label>
                             <textarea
                                 {...register("contractTerms")}
                                 className="form-control"
@@ -176,10 +225,10 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                         </div>
                     </section>
                     {/* Thông tin người thuê */}
-                    <section className="section mb-5">
-                        <h3 className="text-lg font-semibold">Thông tin người thuê</h3>
-                        <div className="modal-form-group">
-                            <label>Họ tên <span className="text-red-500">*</span></label>
+                    <section className="mb-4">
+                        <h5>Thông tin người thuê</h5>
+                        <div className="mb-3">
+                            <label className="form-label">Họ tên *</label>
                             <input
                                 type="text"
                                 {...register("tenant.fullName")}
@@ -187,8 +236,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Email <span className="text-red-500" style={{ color: 'red' }}>*</span></label>
+                        <div className="mb-3">
+                            <label className="form-label">Email *</label>
                             <input
                                 type="email"
                                 {...register("tenant.email")}
@@ -196,8 +245,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Số điện thoại *</label>
+                        <div className="mb-3">
+                            <label className="form-label">Số điện thoại *</label>
                             <input
                                 type="text"
                                 {...register("tenant.phone")}
@@ -206,8 +255,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             />
                         </div>
 
-                        <div className="modal-form-group">
-                            <label>Ảnh đại diện</label>
+                        <div className="mb-3">
+                            <label className="form-label">Ảnh đại diện</label>
                             <input
                                 type="file"
                                 {...register("tenant.avatarImage")}
@@ -218,12 +267,13 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 <img
                                     src={previewImages.avatar}
                                     alt="Avatar preview"
-                                    className="preview-image"
+                                    className="img-thumbnail mt-2"
+                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                                 />
                             )}
                         </div>
-                        <div className="modal-form-group">
-                            <label>CCCD *</label>
+                        <div className="mb-3">
+                            <label className="form-label">CCCD *</label>
                             <input
                                 type="text"
                                 {...register("tenant.IdentityCardNumber")}
@@ -231,8 +281,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 required
                             />
                         </div>
-                        <div className="modal-form-group">
-                            <label>Mặt trước CCCD</label>
+                        <div className="mb-3">
+                            <label className="form-label">Mặt trước CCCD</label>
                             <input
                                 type="file"
                                 {...register("tenant.frontImageImage")}
@@ -243,13 +293,14 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 <img
                                     src={previewImages.frontImage}
                                     alt="Front image preview"
-                                    className="preview-image"
+                                    className="img-thumbnail mt-2"
+                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                                 />
                             )}
                         </div>
 
-                        <div className="modal-form-group">
-                            <label>Mặt sau CCCD</label>
+                        <div className="mb-3">
+                            <label className="form-label">Mặt sau CCCD</label>
                             <input
                                 type="file"
                                 {...register("tenant.backImageImage")}
@@ -260,100 +311,96 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 <img
                                     src={previewImages.backImage}
                                     alt="Back image preview"
-                                    className="preview-image"
+                                    className="img-thumbnail mt-2"
+                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                                 />
                             )}
                         </div>
                     </section>
                     {/* Thêm nút để hiển thị trường chi tiết */}
-                    <button
-                        type="button"
-                        className="btn btn-link"
+                    <Button
+                        variant="link"
                         onClick={() => setShowDetails(!showDetails)}
+                        className="mb-3"
                     >
                         {showDetails ? "Ẩn thông tin chi tiết" : "Thêm thông tin chi tiết"}
-                    </button>
+                    </Button>
 
                     {showDetails && (
-                        <>
-                            <div className="modal-form-group">
-                                <label>Ngày sinh</label>
+                        <section className="mb-4">
+                            <div className="mb-3">
+                                <label className="form-label">Ngày sinh</label>
                                 <input
                                     type="date"
                                     {...register("tenant.dateOfBirth")}
                                     className="form-control"
                                 />
                             </div>
-                            <div className="modal-form-group">
-                                <label>Tỉnh/Thành</label>
+                            <div className="mb-3">
+                                <label className="form-label">Tỉnh/Thành</label>
                                 <input
                                     type="text"
                                     {...register("tenant.province")}
                                     className="form-control"
                                 />
                             </div>
-                            <div className="modal-form-group">
-                                <label>Quận/Huyện</label>
+                            <div className="mb-3">
+                                <label className="form-label">Quận/Huyện</label>
                                 <input
                                     type="text"
                                     {...register("tenant.district")}
                                     className="form-control"
                                 />
                             </div>
-                            <div className="modal-form-group">
-                                <label>Phường/Xã</label>
+                            <div className="mb-3">
+                                <label className="form-label">Phường/Xã</label>
                                 <input
                                     type="text"
                                     {...register("tenant.commune")}
                                     className="form-control"
                                 />
                             </div>
-                            <div className="modal-form-group">
-                                <label>Địa chỉ chi tiết</label>
+                            <div className="mb-3">
+                                <label className="form-label">Địa chỉ chi tiết</label>
                                 <textarea
                                     {...register("tenant.detailAddress")}
                                     className="form-control"
                                 ></textarea>
                             </div>
-                        </>
+                        </section>
                     )}
 
                     {/* Dịch vụ */}
-                    <section className="section">
-                        <h3 className="text-lg font-semibold">Số Liệu Dịch Vụ</h3>
-                        <table className="table-auto w-full border-collapse border border-gray-300">
+                    <section className="mb-4">
+                        <h5>Số Liệu Dịch Vụ</h5>
+                        <Table bordered hover responsive>
                             <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Tên Dịch Vụ</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Giá Đơn Vị</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Đơn Vị</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Ngày Hiệu Lực</th>
-                                    <th className="border border-gray-300 px-4 py-2 text-left">Nhập Số Liệu</th>
+                                <tr>
+                                    <th>Tên Dịch Vụ</th>
+                                    <th>Giá Đơn Vị</th>
+                                    <th>Đơn Vị</th>
+                                    <th>Ngày Hiệu Lực</th>
+                                    <th>Nhập Số Liệu</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {services.map((service: any, index: number) => {
                                     return (
                                         <tr key={service.serviceId}>
-                                            <td className="border border-gray-300 px-4 py-2">{service.serviceName
-                                            }</td>
-                                            <td className="border border-gray-300 px-4 py-2">
-                                                {service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}
-                                            </td>
-                                            <td className="border border-gray-300 px-4 py-2">
-                                                {service.unit || "N/A"}
-                                            </td>
-                                            <td className="border border-gray-300 px-4 py-2">
+                                            <td>{service.serviceName}</td>
+                                            <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
+                                            <td>{service.unit || "N/A"}</td>
+                                            <td>
                                                 {service.effectiveFrom
                                                     ? new Date(service.effectiveFrom).toLocaleDateString("vi-VN")
                                                     : "N/A"}
                                             </td>
-                                            <td className="border border-gray-300 px-4 py-2">
+                                            <td>
                                                 <input
                                                     type="number"
                                                     placeholder="Nhập số liệu"
                                                     {...register(`services.${index}.reading`)}
-                                                    className="w-full border p-2 rounded"
+                                                    className="form-control"
                                                 />
                                                 <input
                                                     type="hidden"
@@ -365,24 +412,20 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                     );
                                 })}
                             </tbody>
-                        </table>
+                        </Table>
                     </section>
-                    <div className="modal-footer">
-                        <button type="submit" className="btn btn-primary">
-                            Lưu
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={onClose}
-                        >
-                            Thoát
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    ) : null;
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" type="submit">
+                        Lưu
+                    </Button>
+                    <Button variant="secondary" onClick={onClose}>
+                        Thoát
+                    </Button>
+                </Modal.Footer>
+            </form>
+        </Modal>
+    );
 };
 
 export default CreateContractModal;

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
+import Loading from "@/components/Loading";
 interface Hostel {
   id: string;
   hostelName: string;
@@ -17,7 +18,7 @@ interface JwtPayload {
 const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHostelChange }) => {
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+  const [loading, setLoading] = useState<boolean>(false);
   // Hàm lấy landlordId từ token
   const getUserIdFromToken = useCallback(() => {
     const token = window.localStorage.getItem("token");
@@ -39,7 +40,7 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
     const fetchHostels = async () => {
       const landlordId = getUserIdFromToken();
       if (!landlordId) return;
-
+      setLoading(true);
       try {
         const response = await apiInstance.get(
           `/hostels/GetHostelsByLandlordId/${landlordId}`
@@ -52,6 +53,9 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
       } catch (error) {
         console.error("Error fetching hostels:", error);
       }
+      finally {
+        setLoading(false);
+      }
     };
     fetchHostels();
   }, [getUserIdFromToken]);
@@ -62,25 +66,26 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
 
   return (
     <div className="mb-2">
-      {/* <label
-        htmlFor="hostelSelect"
-        className="block text-sm font-medium text-gray-700 mb-2 text-left"
-      >
-        Nhà trọ:
-      </label> */}
-      <select
-        id="hostelSelect"
-        className="block px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-left"
-        value={selectedHostel}
-        onChange={onHostelChange}
-      >
-        <option value="">Chọn nhà trọ</option>
-        {hostels.map((hostel) => (
-          <option key={hostel.id} value={hostel.id}>
-            {hostel.hostelName}
-          </option>
-        ))}
-      </select>
+      {loading ? (
+        <div className="flex justify-center items-center">
+          <Loading />
+        </div>
+      ) : (
+        <select
+          id="hostelSelect"
+          className="form-select"
+          value={selectedHostel}
+          onChange={onHostelChange}
+          style={{ minWidth: "160px", maxHeight: "40px" }}
+        >
+          <option value="">Chọn nhà trọ</option>
+          {hostels.map((hostel) => (
+            <option key={hostel.id} value={hostel.id}>
+              {hostel.hostelName}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 };

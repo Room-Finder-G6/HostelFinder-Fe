@@ -6,6 +6,7 @@ import loginIcon_1 from "@/assets/images/icon/google.png";
 import loginIcon_2 from "@/assets/images/icon/facebook.png";
 import RegisterForm from "@/components/forms/RegisterForm";
 import ForgotPassword from "@/components/forms/ForgotPassword";
+import { signIn } from "next-auth/react";
 
 const tabTitle: string[] = ["Login", "Signup"];
 
@@ -17,6 +18,10 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
       setActiveTab(index);
       setShowForgotPassword(false); // Reset Forgot Password when switching tabs
    };
+
+   const handleGoogleSign = () => {
+      signIn("google");
+   }
 
    return (
       <>
@@ -74,10 +79,13 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
 
                         <div className="row">
                            <div className="col-sm-12">
-                              <Link href="#" className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
+                              <button
+                                 onClick={handleGoogleSign}
+                                 className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
+                              >
                                  <Image src={loginIcon_1} alt="Google Icon" />
-                                 <span className="ps-3">Signup with Google</span>
-                              </Link>
+                                 <span className="ps-3">Sign in with Google</span>
+                              </button>
                            </div>
                            {/* <div className="col-sm-6">
                               <Link href="#" className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
