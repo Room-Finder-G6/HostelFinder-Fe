@@ -8,5 +8,6 @@ export interface FilteredPosts {
     firstImage: string;
     monthlyRentCost: number;
     size: number;
+    membershipTag: string;
     createdOn: string;
 }

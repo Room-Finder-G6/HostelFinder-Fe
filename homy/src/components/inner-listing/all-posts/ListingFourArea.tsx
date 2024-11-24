@@ -26,6 +26,12 @@ const ListingFourArea = () => {
         maxPrice: 9999999
     });
 
+    const membershipColors: Record<string, string> = {
+        Đồng: 'gray',
+        Bạc: '#4DC1B5',
+        Vàng: '#e1c009',
+    };
+
     const handleSearch = async () => {
         setIsLoading(true);
         try {
@@ -43,6 +49,7 @@ const ListingFourArea = () => {
             setIsLoading(false);
         }
     };
+
 
     useEffect(() => {
         handleSearch();
@@ -72,9 +79,8 @@ const ListingFourArea = () => {
                     <div key={item.id} className="listing-card-seven border-20 p-20 mb-30 wow fadeInUp">
                         <div className="d-flex flex-wrap layout-one">
                             <div
-                                className={`img-gallery z-1 border-20 overflow-hidden`}>
-                                {/*<div className={`tag border-20 ${item.tag_bg}`}>{item.tag}</div>*/}
-                                {/* 03 <i className="fa-regular fa-image"></i>*/}
+                                className={`img-gallery position-relative z-1 border-20 overflow-hidden`}>
+                                <div className={`tag border-20 `} style={{backgroundColor:`${membershipColors[item.membershipTag]}`}}>Vip&nbsp;{item.membershipTag}</div>
                                 <Image src={item.firstImage} alt=""
                                        className="img-fluid w-100 h-100 object-fit-cover rounded-3"
                                        width={300}

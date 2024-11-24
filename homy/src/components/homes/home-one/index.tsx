@@ -1,7 +1,6 @@
 import FooterOne from "@/layouts/footers/FooterOne"
 import HeaderOne from "@/layouts/headers/HeaderOne"
 import Banner from "./Banner"
-import Feedback from "./Feedback"
 import BLockFeatureOne from "./BLockFeatureOne"
 import BLockFeatureTwo from "./BLockFeatureTwo"
 import BLockFeatureThree from "./BLockFeatureThree"

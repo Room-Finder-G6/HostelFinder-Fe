@@ -4,6 +4,7 @@ import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
 import {jwtDecode} from "jwt-decode"; // Fixed import statement
 import {toast} from "react-toastify";
+import {getUserIdFromToken} from "@/utils/tokenUtils";
 
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
@@ -27,36 +28,27 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
     const [hostels, setHostels] = useState<Hostel[]>([]);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [hostelId, setHostelId] = useState<string>("");
+    const [membershipServices, setMembershipServices] = useState([]);
+    const userId = getUserIdFromToken();
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken: DecodedToken = jwtDecode(token);
-                const userId = decodedToken.UserId;
-
-                if (userId) {
-                    const fetchHostels = async () => {
-                        try {
-                            const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
-                            if (response.status === 200) {
-                                setHostels(response.data.data);
-                            }
-                        } catch (error: any) {
-                            toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
-                        }
-                    };
-
-                    fetchHostels();
-                } else {
-                    toast.error("User ID not found in token", {position: "top-center"});
-                }
-            } catch (error) {
-                toast.error("Invalid token", {position: "top-center"});
-            }
-        } else {
-            toast.error("Token not found in localStorage", {position: "top-center"});
+        if (!userId) {
+            toast.error("Cannot retrieve user ID", {position: "top-center"});
+            return;
         }
+
+        const fetchHostels = async () => {
+            try {
+                const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
+                if (response.status === 200) {
+                    setHostels(response.data.data);
+                }
+            } catch (error: any) {
+                toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
+            }
+        };
+
+        fetchHostels();
     }, []);
 
     // Fetch rooms when hostelId changes
@@ -75,6 +67,21 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
             fetchRooms();
         }
     }, [hostelId]);
+
+    useEffect(() => {
+        const fetchMembershipServices = async () => {
+            try {
+                const response = await apiInstance.get(`membership/membershipServices/${userId}`);
+                if (response.status === 200) {
+                    setMembershipServices(response.data.data);
+                }
+            } catch (error: any) {
+                toast.error(`Error fetching membership services: ${error.response?.data?.message || error.message}`, {position: "top-center"});
+            }
+        };
+
+        fetchMembershipServices();
+    }, []);
 
     const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
@@ -155,18 +162,23 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
             </div>
 
             <div className="row align-items-end">
-                {/* Membership Service ID */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="membershipServiceId">Mã dịch vụ*</label>
-                        <input
-                            type="text"
+                        <label htmlFor="membershipServiceId">Chọn dịch vụ đăng bài*</label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={membershipServices.map((service:any) => ({
+                                value: service.id,
+                                text: `Bài đăng ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
+                            }))}
+                            defaultCurrent={0}
+                            onChange={(e) => handleSelectChange("membershipServiceId", e)}
                             name="membershipServiceId"
-                            placeholder="Mã dịch vụ member"
-                            onChange={handleInputChange}
+                            placeholder="Chọn dịch vụ"
                         />
                     </div>
                 </div>
+
 
                 {/* Availability */}
                 <div className="col-md-6">

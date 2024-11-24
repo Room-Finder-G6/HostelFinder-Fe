@@ -1,18 +1,22 @@
 import {jwtDecode} from "jwt-decode";
-import { toast } from "react-toastify";
 
 
-export interface CustomJwtPayLoad {
-    userId : string; 
+export interface DecodedToken {
+    UserId : string;
 }
 
-export const decodeToken = (token: string): CustomJwtPayLoad | null => {
-    try{
-        const decoded = jwtDecode<CustomJwtPayLoad>(token);
-        return decoded;
-    }
-    catch(error) {
-        toast("Token invalid");
+export const getUserIdFromToken = (): string | null => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        console.error("Token not found in localStorage");
         return null;
     }
-}
+
+    try {
+        const decodedToken: DecodedToken = jwtDecode(token);
+        return decodedToken.UserId || null;
+    } catch (error) {
+        console.error("Invalid token", error);
+        return null;
+    }
+};
