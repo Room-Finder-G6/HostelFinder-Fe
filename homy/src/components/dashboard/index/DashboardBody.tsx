@@ -103,7 +103,7 @@ const DashboardBody = () => {
                <div className="col-xl-5 col-lg-6 d-flex">
                   <div className="recent-job-tab bg-white border-20 mt-30 plr w-100">
                      <h5 className="dash-title-two">Recent Message</h5>
-                     <RecentMessage/>
+                     <RecentMessage />
                   </div>
                </div>
             </div>

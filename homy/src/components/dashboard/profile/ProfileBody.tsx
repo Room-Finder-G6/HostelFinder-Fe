@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Image from "next/image";
 import UserAvatarSetting from "./UserAvatarSetting";
-import Link from "next/link";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import apiInstance from "@/utils/apiInstance";

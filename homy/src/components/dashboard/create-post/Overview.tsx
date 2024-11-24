@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {PostData} from "@/components/dashboard/create-post/AddPostBody";
+import React, { useEffect, useState } from "react";
+import { PostData } from "@/components/dashboard/create-post/AddPostBody";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {jwtDecode} from "jwt-decode"; // Fixed import statement
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
+import { getUserIdFromToken } from "@/utils/tokenUtils";
 
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
@@ -19,75 +19,94 @@ interface Room {
     roomName: string;
 }
 
-interface DecodedToken {
-    UserId: string;
-}
-
-const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
+const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
     const [hostels, setHostels] = useState<Hostel[]>([]);
     const [rooms, setRooms] = useState<Room[]>([]);
     const [hostelId, setHostelId] = useState<string>("");
+    const [membershipServices, setMembershipServices] = useState<any[]>([]);
+    const userId = getUserIdFromToken();
 
+    // Fetch hostels by userId
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken: DecodedToken = jwtDecode(token);
-                const userId = decodedToken.UserId;
-
-                if (userId) {
-                    const fetchHostels = async () => {
-                        try {
-                            const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
-                            if (response.status === 200) {
-                                setHostels(response.data.data);
-                            }
-                        } catch (error: any) {
-                            toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
-                        }
-                    };
-
-                    fetchHostels();
-                } else {
-                    toast.error("User ID not found in token", {position: "top-center"});
-                }
-            } catch (error) {
-                toast.error("Invalid token", {position: "top-center"});
-            }
-        } else {
-            toast.error("Token not found in localStorage", {position: "top-center"});
+        if (!userId) {
+            toast.error("Không thể lấy User ID. Vui lòng đăng nhập lại.", { position: "top-center" });
+            return;
         }
-    }, []);
+
+        const fetchHostels = async () => {
+            try {
+                const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
+                if (response.status === 200 && response.data.data) {
+                    setHostels(response.data.data);
+                } else {
+                    toast.warn("Không có nhà trọ nào được tìm thấy.", { position: "top-center" });
+                }
+            } catch (error: any) {
+                toast.error(`Lỗi khi lấy danh sách nhà trọ: ${error.response?.data?.message || error.message}`, {
+                    position: "top-center",
+                });
+            }
+        };
+
+        fetchHostels();
+    }, [userId]);
 
     // Fetch rooms when hostelId changes
     useEffect(() => {
-        if (hostelId) {
-            const fetchRooms = async () => {
-                try {
-                    const response = await apiInstance.get(`rooms/hostels/${hostelId}`);
-                    if (response.status === 200) {
-                        setRooms(response.data.data);
-                    }
-                } catch (error: any) {
-                    toast.error(`Chưa thêm phòng cho nhà trọ này`, {position: "top-center"});
+        if (!hostelId) return;
+
+        const fetchRooms = async () => {
+            try {
+                const response = await apiInstance.get(`rooms/hostels/${hostelId}`);
+                if (response.status === 200 && response.data.data) {
+                    setRooms(response.data.data);
+                } else {
+                    toast.warn("Không tìm thấy phòng nào cho nhà trọ này.", { position: "top-center" });
                 }
-            };
-            fetchRooms();
-        }
+            } catch (error: any) {
+                toast.error(`Lỗi khi lấy danh sách phòng: ${error.response?.data?.message || error.message}`, {
+                    position: "top-center",
+                });
+            }
+        };
+
+        fetchRooms();
     }, [hostelId]);
+
+    // Fetch membership services
+    useEffect(() => {
+        if (!userId) return;
+
+        const fetchMembershipServices = async () => {
+            try {
+                const response = await apiInstance.get(`membership/membershipServices/${userId}`);
+                if (response.status === 200 && response.data.data) {
+                    setMembershipServices(response.data.data);
+                } else {
+                    toast.warn("Không tìm thấy loại bài đăng nào.", { position: "top-center" });
+                }
+            } catch (error: any) {
+                toast.error(`Lỗi khi lấy loại bài đăng: ${error.response?.data?.message || error.message}`, {
+                    position: "top-center",
+                });
+            }
+        };
+
+        fetchMembershipServices();
+    }, [userId]);
 
     const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value;
-        onDataChange({[name]: value});
+        onDataChange({ [name]: value });
 
-        if (name === 'hostelId') {
+        if (name === "hostelId") {
             setHostelId(value); // Update hostelId state when hostel selection changes
         }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
-        onDataChange({[name]: value});
+        const { name, value } = e.target;
+        onDataChange({ [name]: value });
     };
 
     return (
@@ -103,7 +122,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                             className="form-control"
                         >
                             <option value="">Chọn nhà trọ</option>
-                            {Array.isArray(hostels) && hostels.map((hostel) => (
+                            {hostels.map((hostel) => (
                                 <option key={hostel.id} value={hostel.id}>
                                     {hostel.hostelName}
                                 </option>
@@ -122,7 +141,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                             className="form-control"
                         >
                             <option value="">Chọn phòng</option>
-                            {Array.isArray(rooms) && rooms.map((room) => (
+                            {rooms.map((room) => (
                                 <option key={room.id} value={room.id}>
                                     {room.roomName}
                                 </option>
@@ -155,15 +174,20 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
             </div>
 
             <div className="row align-items-end">
-                {/* Membership Service ID */}
+                {/* Membership Services */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="membershipServiceId">Mã dịch vụ*</label>
-                        <input
-                            type="text"
+                        <label htmlFor="membershipServiceId">Chọn loại bài đăng*</label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={membershipServices.map((service) => ({
+                                value: service.id,
+                                text: `Bài đăng Vip ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
+                            }))}
+                            defaultCurrent={0}
+                            onChange={(e) => handleSelectChange("membershipServiceId", e)}
                             name="membershipServiceId"
-                            placeholder="Mã dịch vụ member"
-                            onChange={handleInputChange}
+                            placeholder="Loại bài đăng"
                         />
                     </div>
                 </div>
@@ -171,17 +195,17 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 {/* Availability */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="isAvailable">Trạng thái*</label>
+                        <label htmlFor="isAvailable">Trạng thái phòng*</label>
                         <NiceSelect
                             className="nice-select"
                             options={[
-                                {value: "true", text: "Còn trống"},
-                                {value: "false", text: "Hết phòng"},
+                                { value: "true", text: "Còn trống" },
+                                { value: "false", text: "Hết phòng" },
                             ]}
                             defaultCurrent={0}
-                            onChange={(e) => handleSelectChange("isAvailable", e)}
-                            name="isAvailable"
-                            placeholder="Select Availability"
+                            onChange={(e) => handleSelectChange("status", e)}
+                            name="status"
+                            placeholder="Trạng thái phòng"
                         />
                     </div>
                 </div>

@@ -1,16 +1,38 @@
-// components/dashboard/RoomTableBody.tsx
 import React, { useEffect, useState } from 'react';
 import apiInstance from '@/utils/apiInstance';
-import { Room } from './Room';
+import Loading from "@/components/Loading";
+import { FaInfoCircle, FaEdit, FaTrash, FaFileContract, FaFileInvoice, FaEllipsisV } from 'react-icons/fa';
+import CreateContractModal from './CreateContractModal';
+import RoomDetailsModal from './RoomDetailsModal';
+import { TfiWrite } from "react-icons/tfi";
+import { Dropdown } from 'react-bootstrap';
+
+interface Room {
+    id: string;
+    roomName: string;
+    floor?: string;
+    size: number;
+    maxRenters: number;
+    monthlyRentCost: number;
+    isAvailable: boolean;
+    createdOn: string;
+    imageRoom: string;
+}
 
 interface RoomTableBodyProps {
     selectedHostel: string;
+    selectedFloor: string | null;
+    refresh: number;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh }) => {
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [selectedRoomId, setSelectedRoomId] = useState<string>('');
+    const [isRoomDetailsModalOpen, setIsRoomDetailsModalOpen] = useState<boolean>(false);
+    const [roomDetailsId, setRoomDetailsId] = useState<string>('');
 
     useEffect(() => {
         if (!selectedHostel) return;
@@ -18,7 +40,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         const fetchRooms = async () => {
             setLoading(true);
             try {
-                const response = await apiInstance.get(`/rooms/hostels/${selectedHostel}`);
+                let url = `/rooms/hostels/${selectedHostel}`;
+                if (selectedFloor) {
+                    url += `?floor=${selectedFloor}`;
+                }
+                const response = await apiInstance.get(url);
                 if (response.data.succeeded) {
                     setRooms(response.data.data);
                 } else {
@@ -32,13 +58,52 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         };
 
         fetchRooms();
-    }, [selectedHostel]);
+    }, [selectedHostel, selectedFloor, refresh]);
+
+    const handleEdit = (roomId: string) => {
+        console.log(`Edit Room ID: ${roomId}`);
+    };
+
+    const handleDelete = (roomId: string) => {
+        console.log(`Delete Room ID: ${roomId}`);
+    };
+
+    const handleCreateContract = (roomId: string) => {
+        setSelectedRoomId(roomId);
+        setIsModalOpen(true);
+    };
+
+    const handleCreateInvoice = (roomId: string) => {
+        console.log(`Create Invoice for Room ID: ${roomId}`);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedRoomId('');
+    };
+
+    const handleSuccessCreateContract = () => {
+        setIsModalOpen(false);
+        setSelectedRoomId('');
+    };
+
+    const handleViewRoomDetails = (roomId: string) => {
+        setRoomDetailsId(roomId);
+        setIsRoomDetailsModalOpen(true);
+    };
+
+    const handleCloseRoomDetailsModal = () => {
+        setIsRoomDetailsModalOpen(false);
+        setRoomDetailsId('');
+    };
 
     if (loading) {
         return (
             <tbody>
                 <tr>
-                    <td colSpan={5}>Đang tải dữ liệu...</td>
+                    <td colSpan={5}>
+                        <Loading />
+                    </td>
                 </tr>
             </tbody>
         );
@@ -48,7 +113,9 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         return (
             <tbody>
                 <tr>
-                    <td colSpan={5}>Lỗi: {error}</td>
+                    <td colSpan={5} className="text-danger text-center py-3">
+                        Lỗi: {error}
+                    </td>
                 </tr>
             </tbody>
         );
@@ -58,48 +125,101 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel }) => {
         return (
             <tbody>
                 <tr>
-                    <td colSpan={5}>Không có phòng nào trong nhà trọ này.</td>
+                    <td
+                        colSpan={5}
+                        className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
+                    >
+                        Không có phòng nào trong nhà trọ này.
+                    </td>
                 </tr>
             </tbody>
         );
     }
 
     return (
-        <tbody>
-            {rooms.map((room) => (
-                <tr key={room.id}>
-                    <td>
-                        <div className="property-info d-flex align-items-center">
-                            <img
-                                src={room.imageRoom}
-                                alt={room.roomName}
-                                style={{ width: '80px', height: '80px', objectFit: 'cover', marginRight: '10px' }}
-                            />
-                            <div>
-                                <h6 className="mb-1">{room.roomName}</h6>
-                                <p className="mb-0">Nhà trọ: {room.hostelName}</p>
-                                <p className="mb-0">Tầng: {room.floor ?? 'N/A'}</p>
-                                <p className="mb-0">Diện tích: {room.size} m²</p>
+        <>
+            <tbody>
+                {rooms.map((room) => (
+                    <tr key={room.id} className="border-bottom">
+                        <td className="py-3 px-4">
+                            <div className="d-flex align-items-center">
+                                <img
+                                    src={room.imageRoom}
+                                    alt={room.roomName}
+                                    className="rounded me-3"
+                                    style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                                />
+                                <div>
+                                    <h6 className="fw-semibold fs-5">{room.roomName}</h6>
+                                    <p className="text-muted small">Tầng: {room.floor ?? 'N/A'}</p>
+                                    <p className="text-muted small">Diện tích: {room.size} m²</p>
+                                    <p className="text-muted small">Số người tối đa: {room.maxRenters}</p>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td>{new Date(room.createdOn).toLocaleDateString()}</td>
-                    <td>{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)}VNĐ</td>
-                    <td>
-                        {room.status ? (
-                            <span className="badge bg-success">Còn trống</span>
-                        ) : (
-                            <span className="badge bg-secondary">Hết phòng</span>
-                        )}
-                    </td>
-                    <td>
-                        {/* Các hành động như chỉnh sửa, xóa */}
-                        <button className="btn btn-primary btn-sm me-2">Chỉnh sửa</button>
-                        <button className="btn btn-danger btn-sm">Xóa</button>
-                    </td>
-                </tr>
-            ))}
-        </tbody>
+                        </td>
+                        <td className="py-3 px-4">{new Date(room.createdOn).toLocaleDateString()}</td>
+                        <td className="py-3 px-4">{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
+                        <td className="py-3 px-4">
+                            {room.isAvailable ? (
+                                <span className="badge bg-light text-success rounded-pill">
+                                    Còn trống
+                                </span>
+                            ) : (
+                                <span className="badge bg-light text-dark rounded-pill">
+                                    Đã thuê
+                                </span>
+                            )}
+                        </td>
+                        <td className="py-3 px-4 text-end">
+                            <Dropdown>
+                                <Dropdown.Toggle id={`dropdown-${room.id}`} className="btn-sm btn-light">
+                                    <FaEllipsisV />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
+                                        <FaInfoCircle className="me-2" />
+                                        Thông tin phòng
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleEdit(room.id)}>
+                                        <FaEdit className="me-2" />
+                                        Chỉnh sửa
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleDelete(room.id)}>
+                                        <FaTrash className="me-2" />
+                                        Xóa
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
+                                        <FaFileContract className="me-2" />
+                                        Tạo hợp đồng
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                        <FaFileInvoice className="me-2" />
+                                        Tạo hóa đơn
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                        <TfiWrite className="me-2" />
+                                        Ghi số dịch vụ
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+            <CreateContractModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                roomId={selectedRoomId}
+                hostelId={selectedHostel}
+                onSuccess={handleSuccessCreateContract}
+            />
+            <RoomDetailsModal
+                isOpen={isRoomDetailsModalOpen}
+                onClose={handleCloseRoomDetailsModal}
+                roomId={roomDetailsId}
+            />
+        </>
     );
 };
 

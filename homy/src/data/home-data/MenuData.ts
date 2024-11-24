@@ -30,9 +30,10 @@ const menu_data: MenuItem[] = [
                 id: 1,
                 mega_title: "Loại danh sách",
                 mega_menus: [
-                    { link: "/listing_04", title: "Bài đăng phòng" },
-                    { link: "/listing_02", title: "Bộ lọc hàng đầu" },
-                ],
+                    { link: "/all-posts", title: "Tất cả bài đăng" },
+                    { link: "/listing_02", title: "Grid Top Filter" },
+                    
+                ]
             },
             {
                 id: 2,

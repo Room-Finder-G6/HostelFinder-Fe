@@ -5,7 +5,6 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import UseSticky from "@/hooks/UseSticky"
 import LoginModal from "@/modals/LoginModal"
-import logo_6 from "@/assets/images/logo/logo_06.svg";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Guess from "@/layouts/headers/right-header/Guess";
 import Authored from "./right-header/Authored"
@@ -51,7 +50,7 @@ const HeaderOne = ({ style }: any) => {
                                     aria-label="Toggle navigation">
                                     <span></span>
                                 </button>
-                                <div className="collapse navbar-collapse" id="navbarNav">
+                                <div id="navbarNav">
                                     <NavMenu />
                                 </div>
                             </nav>
