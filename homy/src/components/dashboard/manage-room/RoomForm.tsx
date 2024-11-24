@@ -1,6 +1,8 @@
+// components/RoomForm.tsx
 import React from 'react';
 import AmenitiesList from '../manage-amentity/AmentityList';
 import "./room.css"
+
 interface RoomFormProps {
   roomFormData: {
     hostelId: string;
@@ -22,8 +24,6 @@ interface RoomFormProps {
   selectedAmenities: string[];
   onClose: () => void;
 }
-
-
 
 const RoomForm: React.FC<RoomFormProps> = ({
   roomFormData,
@@ -69,17 +69,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
 
   return (
     <>
-      {/* Close Button */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-4 right-4 text-3xl text-gray-500 hover:text-red-600 focus:outline-none p-2 bg-gray-100 rounded-full shadow-md hover:bg-gray-200"
-      >
-        &times;
-      </button>
-      <div className="space-y-4">
-        <label className="block text-sm font-medium text-gray-700">
-          Tên phòng<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Tên phòng<span className="text-danger">*</span>
         </label>
         <input
           type="text"
@@ -87,12 +79,12 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.roomName}
           onChange={handleRoomInputChange}
           required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
         />
-
       </div>
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
+
+      <div className="mb-3">
+        <label className="form-label">
           Tầng
         </label>
         <input
@@ -100,14 +92,14 @@ const RoomForm: React.FC<RoomFormProps> = ({
           name="floor"
           value={roomFormData.floor}
           onChange={handleRoomInputChange}
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
           min="0"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Số người thuê tối đa<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Số người thuê tối đa<span className="text-danger">*</span>
         </label>
         <input
           type="number"
@@ -115,14 +107,14 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.maxRenters}
           onChange={handleRoomInputChange}
           required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
           min="1"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Tiền đặt cọc (VND)<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Tiền đặt cọc (VND)<span className="text-danger">*</span>
         </label>
         <input
           type="text"
@@ -134,13 +126,13 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleDepositChange}
           required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Giá thuê hàng tháng (VND)<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Giá thuê hàng tháng (VND)<span className="text-danger">*</span>
         </label>
         <input
           type="text"
@@ -152,13 +144,13 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleMonthlyRentCostChange}
           required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Diện tích (m²)<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Diện tích (m²)<span className="text-danger">*</span>
         </label>
         <input
           type="number"
@@ -166,20 +158,20 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.size}
           onChange={handleRoomInputChange}
           required
-          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-control"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Loại phòng<span className="text-red-500">*</span>
+      <div className="mb-3">
+        <label className="form-label">
+          Loại phòng<span className="text-danger">*</span>
         </label>
         <select
           name="roomType"
           value={roomFormData.roomType}
           onChange={handleRoomInputChange}
           required
-          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="form-select"
         >
           <option value="">Chọn loại phòng</option>
           <option value="1">Phòng trọ</option>
@@ -190,8 +182,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       {/* Lấy ra list dịch vụ của các phòng*/}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
+      <div className="mb-3">
+        <label className="form-label">
           Dịch vụ phòng
         </label>
         <AmenitiesList
@@ -201,8 +193,8 @@ const RoomForm: React.FC<RoomFormProps> = ({
       </div>
 
       {/* Room Images */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
+      <div className="mb-3">
+        <label className="form-label">
           Hình ảnh phòng
         </label>
         <input
@@ -210,24 +202,24 @@ const RoomForm: React.FC<RoomFormProps> = ({
           name="roomImages"
           multiple
           onChange={handleRoomImageChange}
-          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          className="form-control"
         />
       </div>
 
       {/* Image Previews */}
       {roomFormData.images && roomFormData.images.length > 0 && (
-        <div className="mt-4 grid grid-cols-3 gap-4">
+        <div className="mt-3 row row-cols-1 row-cols-md-4 g-2">
           {roomFormData.images.map((image, index) => (
-            <div key={index} className="relative">
+            <div key={index} className="col position-relative">
               <img
                 src={URL.createObjectURL(image)}
                 alt={`Preview ${index}`}
-                className="w-full h-30 object-cover rounded-md"
+                className="img-fluid rounded"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-700 focus:outline-none"
+                className="btn btn-danger btn-xs position-absolute top-0 end-0 m-1"
               >
                 &times;
               </button>
@@ -235,6 +227,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           ))}
         </div>
       )}
+
     </>
   );
 };

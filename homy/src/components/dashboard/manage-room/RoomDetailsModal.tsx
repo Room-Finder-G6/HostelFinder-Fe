@@ -1,9 +1,9 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
+import { Modal, Tabs, Tab, Table } from 'react-bootstrap';
 import { FaClipboardList, FaFileInvoiceDollar, FaTimes, FaUser, FaWrench } from "react-icons/fa";
 import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
+import Loading from "@/components/Loading";
 
 interface RoomDetailsModalProps {
     isOpen: boolean;
@@ -33,16 +33,38 @@ interface Tenant {
     moveInDate: string;
 }
 
+interface InvoiceDetailItem {
+    invoiceId: string;
+    serviceName: string;
+    unitCost: number;
+    actualCost: number;
+    numberOfCustomer: number;
+    previousReading: number;
+    currentReading: number;
+    isRentRoom: boolean;
+    billingDate: string;
+}
+
 interface InvoiceDetail {
-    // Define the structure based on your API's invoice details
+    id: string;
+    billingMonth: number;
+    billingYear: number;
+    totalAmount: number;
+    isPaid: boolean;
+    invoiceDetails: InvoiceDetailItem[];
 }
 
 interface ContractDetail {
-    // Define the structure based on your API's contract details
+    startDate: string;
+    endDate: string;
+    monthlyRent: number;
+    depositAmount: number;
+    paymentCycleDays: number;
+    contractTerms: string | null;
 }
 
 interface RoomRepairHistory {
-    // Define the structure based on your API's repair history
+    // Định nghĩa cấu trúc dựa trên lịch sử sửa chữa từ API của bạn
 }
 
 interface RoomDetailsData {
@@ -59,6 +81,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<string>("general");
+
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();
@@ -97,75 +120,33 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                 return "Phòng đôi";
             case 3:
                 return "Phòng gia đình";
-            // Add more cases as needed
             default:
                 return "Không xác định";
         }
     }
 
     return (
-        <div className="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="modal-content bg-white rounded-lg w-11/12 max-w-4xl p-6 relative overflow-y-auto max-h-screen">
-                <button className="absolute top-4 right-4 text-gray-600 hover:text-gray-800" onClick={onClose}>
-                    <FaTimes size={20} />
-                </button>
-                <h2 className="text-2xl mb-4">Thông tin phòng</h2>
-
+        <Modal show={isOpen} onHide={onClose} size="xl" centered>
+            <Modal.Header closeButton>
+                <Modal.Title>Thông tin phòng</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
                 {loading ? (
-                    <p>Đang tải...</p>
+                    <Loading />
                 ) : error ? (
-                    <p className="text-red-500">{error}</p>
+                    <p className="text-danger">{error}</p>
                 ) : roomDetails ? (
                     <div>
-                        {/* Tab Buttons */}
-                        <div className="flex space-x-4 mb-4">
-                            <button
-                                className={`flex items-center space-x-2 px-3 py-2 rounded ${activeTab === "general" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                                    }`}
-                                onClick={() => setActiveTab("general")}
-                            >
-                                <FaClipboardList />
-                                <span>Thông tin chung</span>
-                            </button>
-                            <button
-                                className={`flex items-center space-x-2 px-3 py-2 rounded ${activeTab === "tenants" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                                    }`}
-                                onClick={() => setActiveTab("tenants")}
-                            >
-                                <FaUser />
-                                <span>Khách thuê trọ</span>
-                            </button>
-                            <button
-                                className={`flex items-center space-x-2 px-3 py-2 rounded ${activeTab === "invoices" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                                    }`}
-                                onClick={() => setActiveTab("invoices")}
-                            >
-                                <FaFileInvoiceDollar />
-                                <span>Lịch sử hóa đơn</span>
-                            </button>
-                            <button
-                                className={`flex items-center space-x-2 px-3 py-2 rounded ${activeTab === "contracts" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                                    }`}
-                                onClick={() => setActiveTab("contracts")}
-                            >
-                                <FaClipboardList />
-                                <span>Lịch sử hợp đồng</span>
-                            </button>
-                            <button
-                                className={`flex items-center space-x-2 px-3 py-2 rounded ${activeTab === "repairs" ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"
-                                    }`}
-                                onClick={() => setActiveTab("repairs")}
-                            >
-                                <FaWrench />
-                                <span>Lịch sử sửa chữa</span>
-                            </button>
-                        </div>
-
-                        {/* Tab Content */}
-                        <div>
-                            {activeTab === "general" && (
-                                <section className="mb-6">
-                                    <h3 className="text-xl font-semibold mb-2">Thông tin chung</h3>
+                        {/* Tabs */}
+                        <Tabs
+                            activeKey={activeTab}
+                            onSelect={(k) => setActiveTab(k || "general")}
+                            className="mb-3"
+                        >
+                            <Tab eventKey="general" title={<span><FaClipboardList className="me-2" />Thông tin chung</span>}>
+                                {/* Thông tin chung */}
+                                <section className="mb-3">
+                                    <h5>Thông tin chung</h5>
                                     <p><strong>Tên phòng:</strong> {roomDetails.roomInfoDetail.roomName}</p>
                                     <p><strong>Tầng:</strong> {roomDetails.roomInfoDetail.floor}</p>
                                     <p><strong>Số người tối đa:</strong> {roomDetails.roomInfoDetail.maxRenters}</p>
@@ -174,33 +155,36 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     <p><strong>Trạng thái:</strong> {roomDetails.roomInfoDetail.isAvailable ? "Còn trống" : "Đã thuê"}</p>
                                     <p><strong>Giá thuê hàng tháng:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.roomInfoDetail.monthlyRentCost)} đ</p>
                                     <p><strong>Loại phòng:</strong> {getRoomType(roomDetails.roomInfoDetail.roomType)}</p>
-                                    {/* Hình ảnh phòng (Always visible or can be moved to a separate tab) */}
-                                    <div className="mb-6">
-                                        <h3 className="text-xl font-semibold mb-2">Hình ảnh phòng</h3>
-                                        <div className="flex flex-wrap gap-4 room-images">
+                                    {/* Hình ảnh phòng */}
+                                    <div className="mb-3">
+                                        <h5>Hình ảnh phòng</h5>
+                                        <div className="d-flex flex-wrap gap-2">
                                             {roomDetails.pictureRoom.map((url, index) => (
                                                 <img
                                                     key={index}
                                                     src={url}
                                                     alt={`Hình ảnh phòng ${index + 1}`}
-                                                    className="w-32 h-32 object-cover rounded"
+                                                    className="rounded"
+                                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                                                 />
                                             ))}
                                         </div>
                                     </div>
                                 </section>
-                            )}
-                            {activeTab === "tenants" && (
-                                <section className="mb-6">
-                                    <h3 className="text-xl font-semibold mb-2">Khách thuê trọ</h3>
+                            </Tab>
+                            <Tab eventKey="tenants" title={<span><FaUser className="me-2" />Khách thuê trọ</span>}>
+                                {/* Khách thuê trọ */}
+                                <section className="mb-3">
+                                    <h5>Khách thuê trọ</h5>
                                     {roomDetails.infomationTenacy.length > 0 ? (
-                                        <div className="space-y-4">
+                                        <div className="list-group">
                                             {roomDetails.infomationTenacy.map((tenant, index) => (
-                                                <div key={index} className="flex items-center space-x-4">
+                                                <div key={index} className="list-group-item d-flex align-items-center">
                                                     <img
                                                         src={tenant.avatarUrl}
                                                         alt={tenant.fullName}
-                                                        className="w-16 h-16 rounded-full object-cover"
+                                                        className="rounded-circle me-3"
+                                                        style={{ width: '60px', height: '60px', objectFit: 'cover' }}
                                                     />
                                                     <div>
                                                         <p><strong>Tên:</strong> {tenant.fullName}</p>
@@ -218,70 +202,91 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                         <p>Không có khách thuê trọ.</p>
                                     )}
                                 </section>
-                            )}
-
-                            {activeTab === "invoices" && (
-                                <section className="mb-6">
-                                    <h3 className="text-xl font-semibold mb-2">Lịch sử hóa đơn</h3>
+                            </Tab>
+                            <Tab eventKey="invoices" title={<span><FaFileInvoiceDollar className="me-2" />Lịch sử hóa đơn</span>}>
+                                {/* Lịch sử hóa đơn */}
+                                <section className="mb-3">
+                                    <h5>Lịch sử hóa đơn</h5>
                                     {roomDetails.invoiceDetailInRoom ? (
-                                        // Render invoice details here
                                         <div>
-                                            {/* Example: */}
-                                            {/* <p><strong>Mã hóa đơn:</strong> {roomDetails.invoiceDetailInRoom.invoiceId}</p>
-                                            <p><strong>Số tiền:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.invoiceDetailInRoom.amount)} đ</p>
-                                            <p><strong>Ngày tạo:</strong> {new Date(roomDetails.invoiceDetailInRoom.createdDate).toLocaleDateString()}</p> */}
-                                            {/* Add more fields as necessary */}
+                                            <p><strong>Mã hóa đơn:</strong> {roomDetails.invoiceDetailInRoom.id}</p>
+                                            <p><strong>Tháng/Năm:</strong> {roomDetails.invoiceDetailInRoom.billingMonth}/{roomDetails.invoiceDetailInRoom.billingYear}</p>
+                                            <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.invoiceDetailInRoom.totalAmount)} đ</p>
+                                            <p><strong>Trạng thái:</strong> {roomDetails.invoiceDetailInRoom.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}</p>
+
+                                            {/* Chi tiết hóa đơn */}
+                                            <Table striped bordered hover>
+                                                <thead>
+                                                    <tr>
+                                                        <th>Dịch vụ</th>
+                                                        <th>Đơn giá</th>
+                                                        <th>Chi phí thực tế</th>
+                                                        <th>Số lượng khách</th>
+                                                        <th>Chỉ số trước</th>
+                                                        <th>Chỉ số hiện tại</th>
+                                                        <th>Ngày lập</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {roomDetails.invoiceDetailInRoom.invoiceDetails.map((detail, index) => (
+                                                        <tr key={index}>
+                                                            <td>{detail.serviceName}</td>
+                                                            <td>{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                                            <td>{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                                            <td>{detail.numberOfCustomer}</td>
+                                                            <td>{detail.previousReading}</td>
+                                                            <td>{detail.currentReading}</td>
+                                                            <td>{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </Table>
                                         </div>
                                     ) : (
                                         <p>Không có lịch sử hóa đơn.</p>
                                     )}
                                 </section>
-                            )}
-
-                            {activeTab === "contracts" && (
-                                <section className="mb-6">
-                                    <h3 className="text-xl font-semibold mb-2">Lịch sử hợp đồng</h3>
+                            </Tab>
+                            <Tab eventKey="contracts" title={<span><FaClipboardList className="me-2" />Lịch sử hợp đồng</span>}>
+                                {/* Lịch sử hợp đồng */}
+                                <section className="mb-3">
+                                    <h5>Lịch sử hợp đồng</h5>
                                     {roomDetails.contractDetailInRoom ? (
-                                        // Render contract details here
                                         <div>
-                                            {/* Example: */}
-                                            {/* <p><strong>Mã hợp đồng:</strong> {roomDetails.contractDetailInRoom.contractId}</p>
                                             <p><strong>Ngày bắt đầu:</strong> {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString()}</p>
-                                            <p><strong>Ngày kết thúc:</strong> {new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString()}</p> */}
-                                            {/* Add more fields as necessary */}
+                                            <p><strong>Ngày kết thúc:</strong> {new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString()}</p>
+                                            <p><strong>Tiền thuê hàng tháng:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.monthlyRent)} đ</p>
+                                            <p><strong>Số tiền đặt cọc:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.depositAmount)} đ</p>
+                                            <p><strong>Chu kỳ thanh toán (ngày):</strong> {roomDetails.contractDetailInRoom.paymentCycleDays}</p>
+                                            {roomDetails.contractDetailInRoom.contractTerms && (
+                                                <p><strong>Điều khoản hợp đồng:</strong> {roomDetails.contractDetailInRoom.contractTerms}</p>
+                                            )}
                                         </div>
                                     ) : (
                                         <p>Không có lịch sử hợp đồng.</p>
                                     )}
                                 </section>
-                            )}
-
-                            {activeTab === "repairs" && (
-                                <section className="mb-6">
-                                    <h3 className="text-xl font-semibold mb-2">Lịch sử sửa chữa</h3>
+                            </Tab>
+                            <Tab eventKey="repairs" title={<span><FaWrench className="me-2" />Lịch sử sửa chữa</span>}>
+                                {/* Lịch sử sửa chữa */}
+                                <section className="mb-3">
+                                    <h5>Lịch sử sửa chữa</h5>
                                     {roomDetails.roomRepairHostory ? (
-                                        // Render repair history here
                                         <div>
-                                            {/* Example: */}
-                                            {/* <p><strong>Mã sửa chữa:</strong> {roomDetails.roomRepairHostory.repairId}</p>
-                                            <p><strong>Mô tả:</strong> {roomDetails.roomRepairHostory.description}</p>
-                                            <p><strong>Ngày sửa chữa:</strong> {new Date(roomDetails.roomRepairHostory.repairDate).toLocaleDateString()}</p> */}
-                                            {/* Add more fields as necessary */}
+                                            {/* Hiển thị lịch sử sửa chữa tại đây */}
                                         </div>
                                     ) : (
                                         <p>Không có lịch sử sửa chữa.</p>
                                     )}
                                 </section>
-                            )}
-                        </div>
-
-
+                            </Tab>
+                        </Tabs>
                     </div>
                 ) : (
                     <p>Không có dữ liệu để hiển thị.</p>
                 )}
-            </div>
-        </div>
+            </Modal.Body>
+        </Modal>
     );
 };
 
