@@ -81,7 +81,6 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<string>("general");
-
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();

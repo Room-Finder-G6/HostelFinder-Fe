@@ -1,13 +1,23 @@
-// components/RoomTableBody.tsx
 import React, { useEffect, useState } from 'react';
 import apiInstance from '@/utils/apiInstance';
-import { Room } from './Room';
 import Loading from "@/components/Loading";
 import { FaInfoCircle, FaEdit, FaTrash, FaFileContract, FaFileInvoice, FaEllipsisV } from 'react-icons/fa';
 import CreateContractModal from './CreateContractModal';
 import RoomDetailsModal from './RoomDetailsModal';
 import { TfiWrite } from "react-icons/tfi";
 import { Dropdown } from 'react-bootstrap';
+
+interface Room {
+    id: string;
+    roomName: string;
+    floor?: string;
+    size: number;
+    maxRenters: number;
+    monthlyRentCost: number;
+    isAvailable: boolean;
+    createdOn: string;
+    imageRoom: string;
+}
 
 interface RoomTableBodyProps {
     selectedHostel: string;
@@ -51,11 +61,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     }, [selectedHostel, selectedFloor, refresh]);
 
     const handleEdit = (roomId: string) => {
-        // Logic to edit the room
+        console.log(`Edit Room ID: ${roomId}`);
     };
 
     const handleDelete = (roomId: string) => {
-        // Logic to delete the room
+        console.log(`Delete Room ID: ${roomId}`);
     };
 
     const handleCreateContract = (roomId: string) => {
@@ -64,7 +74,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     };
 
     const handleCreateInvoice = (roomId: string) => {
-        // Logic to create an invoice for the room
+        console.log(`Create Invoice for Room ID: ${roomId}`);
     };
 
     const handleCloseModal = () => {
@@ -75,7 +85,6 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const handleSuccessCreateContract = () => {
         setIsModalOpen(false);
         setSelectedRoomId('');
-        // Làm mới danh sách phòng nếu cần
     };
 
     const handleViewRoomDetails = (roomId: string) => {
@@ -162,9 +171,8 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                             )}
                         </td>
                         <td className="py-3 px-4 text-end">
-                            {/* Dropdown Menu */}
                             <Dropdown>
-                                <Dropdown.Toggle variant="link" id={`dropdown-${room.id}`} className="btn-sm">
+                                <Dropdown.Toggle id={`dropdown-${room.id}`} className="btn-sm btn-light">
                                     <FaEllipsisV />
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
@@ -199,7 +207,6 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                     </tr>
                 ))}
             </tbody>
-            {/* Modal Tạo Hợp Đồng */}
             <CreateContractModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
@@ -207,7 +214,6 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 hostelId={selectedHostel}
                 onSuccess={handleSuccessCreateContract}
             />
-            {/* Modal Thông Tin Phòng */}
             <RoomDetailsModal
                 isOpen={isRoomDetailsModalOpen}
                 onClose={handleCloseRoomDetailsModal}

@@ -79,8 +79,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.roomName}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
+
       </div>
 
       <div className="mb-3">
@@ -92,7 +93,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           name="floor"
           value={roomFormData.floor}
           onChange={handleRoomInputChange}
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
           min="0"
         />
       </div>
@@ -107,7 +108,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.maxRenters}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
           min="1"
         />
       </div>
@@ -126,7 +127,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleDepositChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
@@ -144,7 +145,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           }
           onChange={handleMonthlyRentCostChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
@@ -158,7 +159,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.size}
           onChange={handleRoomInputChange}
           required
-          className="form-control"
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         />
       </div>
 
@@ -171,7 +172,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           value={roomFormData.roomType}
           onChange={handleRoomInputChange}
           required
-          className="form-select"
+          className="mt-1 block w-full border border-gray-300 bg-white rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="">Chọn loại phòng</option>
           <option value="1">Phòng trọ</option>
@@ -202,7 +203,7 @@ const RoomForm: React.FC<RoomFormProps> = ({
           name="roomImages"
           multiple
           onChange={handleRoomImageChange}
-          className="form-control"
+          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border file:border-gray-300 file:rounded-md file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
         />
       </div>
 
