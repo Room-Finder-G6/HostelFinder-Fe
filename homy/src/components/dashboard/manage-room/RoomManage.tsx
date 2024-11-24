@@ -274,41 +274,49 @@ const RoomManagement = () => {
       <div className="dashboard-body">
          <div className="position-relative">
             <DashboardHeaderTwo title="Quản lí phòng trọ" />
-            <h2 className="main-title d-block d-lg-none">Quản lí phòng trọ </h2>
-
+            <h2 className="main-title d-block d-lg-none">Quản lí phòng trọ</h2>
             {/* Hostel Selector */}
-            <div className="flex items-center gap-4 mb-4">
+            <div className="d-flex align-items-center gap-4 mb-4">
                <HostelSelector
                   selectedHostel={selectedHostel}
                   onHostelChange={handleHostelChange}
                />
                {/* Utility Buttons */}
-               <div className="flex items-center gap-4">
+               <div className="d-flex align-items-center gap-4">
                   {/* Nút Thêm phòng */}
                   <button
-                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
+                     className="btn btn-success btn-sm d-flex align-items-center"
                      onClick={toggleAddRoomModal}
                   >
                      {/* Khu vực chứa Icon */}
-                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-300 rounded">
+                     <div
+                        className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
+                        style={{ width: '24px', height: '24px', color: 'green' }}
+                     >
                         <FaPlus size={14} />
                      </div>
                      Thêm phòng
                   </button>
                   <button
-                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
+                     className="btn btn-success btn-sm d-flex align-items-center"
                      onClick={toggleServicePriceModal}
                   >
-                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-700 rounded">
+                     <div
+                        className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
+                        style={{ width: '24px', height: '24px', color: 'green' }}
+                     >
                         <FaMoneyBill size={14} />
                      </div>
                      Bảng giá dịch vụ
                   </button>
                   <button
-                     className="flex items-center px-2 py-2 text-sm rounded bg-green-400 hover:bg-green-700 text-white transition-colors duration-200"
+                     className="btn btn-success btn-sm d-flex align-items-center"
                      onClick={toggleUpdateModal}
                   >
-                     <div className="flex items-center justify-center w-6 h-6 mr-2 bg-white-700 rounded">
+                     <div
+                        className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
+                        style={{ width: '24px', height: '24px', color: 'green' }}
+                     >
                         <RxUpdate size={14} />
                      </div>
                      Cập nhật thông tin
@@ -316,38 +324,32 @@ const RoomManagement = () => {
                </div>
             </div>
 
-
             {/* Floor Buttons */}
             {floors.length > 0 && (
-               <div className="flex flex-wrap items-center gap-2 mb-4">
+               <div className="d-flex flex-wrap align-items-center gap-2 mb-4">
                   <button
-                     className={`px-3 py-1 text-sm rounded bg-blue-600 hover:bg-blue-700 text-white ${selectedFloor === null ? "font-semibold" : "bg-gray-400 hover:bg-gray-500"
-                        }`}
+                     className={`btn btn-sm ${selectedFloor === null ? 'btn-primary fw-bold' : 'btn-secondary'} d-flex align-items-center`}
                      onClick={() => setSelectedFloor(null)}
                   >
-                     <FaBuilding className="inline-block mr-1" />
+                     <FaBuilding className="me-1" />
                      Tất cả tầng
                   </button>
                   {floors.map((floor) => (
                      <button
                         key={floor}
-                        className={`px-3 py-1 text-sm rounded ${selectedFloor === floor.toString()
-                           ? "bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-                           : "bg-gray-400 hover:bg-gray-500 text-white"
-                           }`}
+                        className={`btn btn-sm ${selectedFloor === floor.toString() ? 'btn-primary fw-bold' : 'btn-secondary'} d-flex align-items-center`}
                         onClick={() => setSelectedFloor(floor.toString())}
                      >
-                        <FaBuilding className="inline-block mr-1" />
+                        <FaBuilding className="me-1" />
                         {floor}
                      </button>
                   ))}
                </div>
             )}
 
-
             {/* Table Section */}
-            <div className="bg-white card-box p0 border-20">
-               <div className="table-responsive pt-25 pb-25 pe-4 ps-4" style={{ minHeight: '400px' }}>
+            <div className="bg-white p-0" style={{ borderRadius: '20px' }}>
+               <div className="table-responsive pe-4 ps-4" style={{ minHeight: '400px', paddingTop: '25px', paddingBottom: '25px' }}>
                   <table className="table property-list-table">
                      <thead>
                         <tr>
@@ -363,103 +365,38 @@ const RoomManagement = () => {
                </div>
             </div>
 
-            {/* Pagination */}
-            <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
-               <li className="me-3"><a href="#">1</a></li>
-               <li className="selected"><a href="#">2</a></li>
-               <li><a href="#">3</a></li>
-               <li><a href="#">4</a></li>
-               <li>....</li>
-               <li className="ms-2"><a href="#" className="d-flex align-items-center">
-                  Last &gt;</a></li>
-            </ul>
-
-            {/* Update Information Modal */}
-            {/* {isUpdateModalOpen && (
-               <div className="modal-overlay">
-                  <div className="modal-content">
-                     <h3 className="modal-title">Cập nhật nhà</h3>
-                     <form onSubmit={handleSubmit}>
-                        <div className="modal-form-group">
-                           <label>Tên nhà *</label>
-                           <input
-                              type="text"
-                              name="houseName"
-                              value={formData.houseName}
-                              onChange={handleInputChange}
-                              required
-                              className="form-control"
-                           />
-                        </div>
-                        <div className="modal-form-group">
-                           <label>Địa chỉ *</label>
-                           <input
-                              type="text"
-                              name="address"
-                              value={formData.address}
-                              onChange={handleInputChange}
-                              required
-                              className="form-control"
-                           />
-                        </div>
-                        <div className="modal-form-group">
-                           <label>Loại nhà *</label>
-                           <select name="houseType" value={formData.houseType} onChange={handleInputChange} required className="form-select">
-                              <option value="">Chọn loại nhà</option>
-                              <option value="nhatro">Nhà trọ</option>
-                              <option value="canho">Căn hộ</option>
-                           </select>
-                        </div>
-                        <div className="modal-form-group">
-                           <label>Hình thức cho thuê *</label>
-                           <select name="rentalType" value={formData.rentalType} onChange={handleInputChange} required className="form-select">
-                              <option value="">Chọn hình thức cho thuê</option>
-                              <option value="baoPhong">Bao phòng</option>
-                              <option value="tungPhong">Từng phòng</option>
-                           </select>
-                        </div>
-                        <div className="modal-footer">
-                           <button type="submit" className="btn btn-primary">Lưu</button>
-                           <button type="button" className="btn btn-secondary" onClick={toggleUpdateModal}>Thoát</button>
-                        </div>
-                     </form>
-                  </div>
-               </div>
-            )} */}
-
             {/* Modal thêm phòng */}
             {isAddRoomModalOpen && (
-               <div className="modal-overlay">
-                  <div className="modal-content">
-                     <h3 className="modal-title" style={{ color: "black" }}>Thêm phòng</h3>
-                     <form onSubmit={handleAddRoomSubmit}>
-                        {/* Nội dung RoomForm */}
-                        <RoomForm
-                           roomFormData={roomFormData}
-                           handleRoomInputChange={handleRoomInputChange}
-                           handleAmenitySelect={handleAmenitySelect}
-                           handleRoomImageChange={handleRoomImageChange}
-                           handleRemoveImage={handleRemoveImage}
-                           selectedAmenities={selectedAmenities}
-                           onClose={toggleAddRoomModal}
-                        />
-                        {/* Footer */}
-                        <div className="modal-footer flex justify-end gap-2">
-                           <button
-                              type="submit"
-                              className="bg-indigo-600 text-white py-2 px-4 text-sm rounded-md hover:bg-indigo-700 focus:outline-none"
-                           >
-                              Lưu
-                           </button>
-                           <button
-                              type="button"
-                              className="btn btn-secondary py-2 px-4 text-sm rounded-md"
-                              onClick={toggleAddRoomModal}
-                           >
-                              Thoát
-                           </button>
+               <div className="modal show d-block" tabIndex={1}>
+                  <div className="modal-dialog modal-lg">
+                     <div className="modal-content">
+                        <div className="modal-header">
+                           <h3 className="modal-title" style={{ color: '#007bff' }}>Thêm phòng</h3>
+                           <button type="button" className="btn-close" onClick={toggleAddRoomModal}></button>
                         </div>
-                     </form>
+                        <form onSubmit={handleAddRoomSubmit}>
+                           <div className="modal-body">
+                              {/* Nội dung RoomForm */}
+                              <RoomForm
+                                 roomFormData={roomFormData}
+                                 handleRoomInputChange={handleRoomInputChange}
+                                 handleAmenitySelect={handleAmenitySelect}
+                                 handleRoomImageChange={handleRoomImageChange}
+                                 handleRemoveImage={handleRemoveImage}
+                                 selectedAmenities={selectedAmenities}
+                                 onClose={toggleAddRoomModal}
+                              />
+                           </div>
+                           <div className="modal-footer">
+                              <button type="submit" className="btn btn-primary">
+                                 Lưu
+                              </button>
+                              <button type="button" className="btn btn-secondary" onClick={toggleAddRoomModal}>
+                                 Thoát
+                              </button>
+                           </div>
+                        </form>
+                     </div>
                   </div>
                </div>
             )}
@@ -471,9 +408,9 @@ const RoomManagement = () => {
                   hostelId={selectedHostel}
                />
             )}
-
          </div>
       </div>
+
    );
 };
 
