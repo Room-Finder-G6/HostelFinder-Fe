@@ -15,7 +15,7 @@ const PostAdmin = () => {
 
     return (
         <div className="dashboard-body">
-            <AdminHeaderTwo title="All Posts" /> {/* Đổi title */}
+            <AdminHeaderTwo title="TẤT CẢ BÀI ĐĂNG" /> {/* Đổi title */}
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                 <div className="short-filter d-flex align-items-center ms-sm-auto">
                     <NiceSelect
@@ -35,7 +35,7 @@ const PostAdmin = () => {
                 </div>
                 <li className="d-none d-md-inline-block ms-3">
                     <Link href="/dashboard/create-post" className="btn-two" target="_blank">
-                        <span>Add Post</span>
+                        <span>Tất cả bài đăng</span>
                     </Link>
                 </li>
             </div>
@@ -45,9 +45,9 @@ const PostAdmin = () => {
                     <table className="table property-list-table">
                         <thead>
                             <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Date Created</th>
-                                <th scope="col">Status</th>
+                                <th scope="col">Tiêu đề</th>
+                                <th scope="col">Ngày Tạo</th>
+                                <th scope="col">Trạng thái</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>

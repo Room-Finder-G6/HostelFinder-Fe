@@ -14,7 +14,7 @@ interface PropertyTableBodyPostProps {
     loading: boolean;
 }
 
-function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
+const PropertyTableBodyPost: React.FC<PropertyTableBodyPostProps> = ({ posts, loading }) => {
     if (loading) {
         return (
             <tbody>
@@ -41,14 +41,18 @@ function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
                 <tr key={post.id}>
                     <td>
                         <div className="d-lg-flex align-items-center position-relative">
-                            {Array.isArray(post.image) && post.image.length > 0 && (
-                                <Image src={post.image[0]} alt="Post Image" width={100} height={100} className="p-img" />
-                            )}
+                            {/* Hiển thị ảnh hoặc fallback */}
+                            <Image
+                                src={post.image || "/default-image.png"}
+                                alt="Post Image"
+                                width={100}
+                                height={100}
+                                className="p-img rounded-3 border"
+                            />
                             <div className="ps-lg-4 md-pt-10">
                                 <Link href="#" className="property-name tran3s color-dark fw-500 fs-20 stretched-link">
                                     {post.title}
                                 </Link>
-                            
                             </div>
                         </div>
                     </td>
@@ -56,7 +60,12 @@ function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
                     <td>{post.status ? "Active" : "Inactive"}</td>
                     <td>
                         <div className="action-dots float-end">
-                            <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button
+                                className="action-btn dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
                                 <span></span>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end">
@@ -77,6 +86,6 @@ function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
             ))}
         </tbody>
     );
-}
+};
 
 export default PropertyTableBodyPost;

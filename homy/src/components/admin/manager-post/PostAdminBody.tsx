@@ -62,12 +62,12 @@ function PostAdminBodyProps({ posts, loading }: PostAdminBodyProps) {
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
-                                        <Image src={icon_3} alt="Edit Icon" className="lazy-img" /> Edit
+                                        <Image src={icon_3} alt="Edit Icon" className="lazy-img" /> Cập nhật
                                     </Link>
                                 </li>
                                 <li>
                                     <Link className="dropdown-item" href="#">
-                                        <Image src={icon_4} alt="Delete Icon" className="lazy-img" /> Delete
+                                        <Image src={icon_4} alt="Delete Icon" className="lazy-img" /> Xóa
                                     </Link>
                                 </li>
                             </ul>

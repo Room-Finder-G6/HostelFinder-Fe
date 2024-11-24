@@ -10,7 +10,9 @@ import usePostsByUser from "./usePost";
 const PostManagement = () => {
     const { posts, totalPages, pageIndex, setPageIndex, loading } = usePostsByUser();
 
-    const selectHandler = (e: any) => { };
+    const selectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(e.target.value);
+    };
 
     return (
         <div className="dashboard-body">
