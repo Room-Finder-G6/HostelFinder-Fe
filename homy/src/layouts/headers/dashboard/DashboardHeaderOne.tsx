@@ -26,7 +26,6 @@ import dashboardIcon_9 from "@/assets/images/dashboard/icon/room.svg";
 import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_active.svg";
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
-import roomIconActive from "@/assets/images/dashboard/icon/roomIconActive.svg";
 import roomIcon from "@/assets/images/dashboard/icon/roomIconActive.svg";
 
 interface DashboardHeaderOneProps {
