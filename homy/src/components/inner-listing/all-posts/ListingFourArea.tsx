@@ -16,15 +16,7 @@ const truncateText = (text: string, maxLength: number = 100) => {
 const ListingFourArea = () => {
     const [filteredPosts, setFilteredPosts] = useState<FilteredPosts[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [filterData, setFilterData] = useState<FilterPostData>({
-        province: "",
-        district: "",
-        commune: "",
-        minSize: 0,
-        maxSize: 999,
-        minPrice: 0,
-        maxPrice: 9999999
-    });
+    const [filterData, setFilterData] = useState<FilterPostData>();
 
     const membershipColors: Record<string, string> = {
         Đồng: 'gray',
@@ -66,7 +58,7 @@ const ListingFourArea = () => {
                 <div className="search-wrapper-one layout-one bg position-relative mb-55 md-mb-40">
                     <div className="bg-wrapper border-layout">
                         <DropdownTwo
-                            filterData={filterData}
+                            filterData={filterData || {}}
                             onFilterChange={handleFilterChange}
                             onSearch={handleSearch}
                         />

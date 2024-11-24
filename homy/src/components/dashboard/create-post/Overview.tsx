@@ -164,17 +164,17 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
             <div className="row align-items-end">
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="membershipServiceId">Chọn dịch vụ đăng bài*</label>
+                        <label htmlFor="membershipServiceId">Chọn loại bài đăng*</label>
                         <NiceSelect
                             className="nice-select"
                             options={membershipServices.map((service:any) => ({
                                 value: service.id,
-                                text: `Bài đăng ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
+                                text: `Bài đăng Vip ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
                             }))}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange("membershipServiceId", e)}
                             name="membershipServiceId"
-                            placeholder="Chọn dịch vụ"
+                            placeholder="Loại bài đăng"
                         />
                     </div>
                 </div>
@@ -183,7 +183,7 @@ const Overview: React.FC<OverviewProps> = ({onDataChange}) => {
                 {/* Availability */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="isAvailable">Trạng thái*</label>
+                        <label htmlFor="isAvailable">Trạng thái phòng*</label>
                         <NiceSelect
                             className="nice-select"
                             options={[

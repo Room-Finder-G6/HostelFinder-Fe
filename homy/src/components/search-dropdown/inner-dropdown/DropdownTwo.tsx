@@ -1,6 +1,8 @@
 import NiceSelect from "@/ui/NiceSelect";
-import React, {useEffect, useState} from "react";
-import {FilterPostData} from "@/models/filterPostData";
+import React, { useEffect, useState } from "react";
+import { FilterPostData } from "@/models/filterPostData";
+import Link from "next/link";
+import ListingDropdownModal from "@/modals/ListingDropdownModal";
 
 interface DropdownTwoProps {
     filterData: FilterPostData;
@@ -8,7 +10,53 @@ interface DropdownTwoProps {
     onSearch: () => void;
 }
 
-const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) => {
+interface PriceRange {
+    min: number;
+    max: number | null; // Thêm null để đại diện cho không giới hạn;
+}
+
+interface SizeRange {
+    min: number
+    max: number | null; // Thêm null để đại diện cho không giới hạn
+}
+
+const PRICE_RANGES: Record<string, PriceRange> = {
+    "0": { min: 0, max: 0 }, // Tất cả mức giá
+    "1": { min: 0, max: 2000000 },
+    "2": { min: 2000000, max: 4000000 },
+    "3": { min: 4000000, max: 6000000 },
+    "4": { min: 6000000, max: 10000000 },
+    "5": { min: 10000000, max: null }
+};
+
+const SIZE_RANGES: Record<string, SizeRange> = {
+    "0": { min: 0, max: 0 }, // Tất cả diện tích
+    "1": { min: 0, max: 30 },
+    "2": { min: 30, max: 50 },
+    "3": { min: 50, max: 80 },
+    "4": { min: 80, max: 100 },
+    "5": { min: 100, max: null } // max = null nghĩa là không giới hạn
+};
+
+const PRICE_OPTIONS = [
+    { value: "0", text: "Tất cả mức giá" },
+    { value: "1", text: "Dưới 2.000.000đ" },
+    { value: "2", text: "Từ 2.000.000đ - 4.000.000" },
+    { value: "3", text: "Từ 4.000.000đ - 6.000.000" },
+    { value: "4", text: "Từ 6.000.000đ - 10.000.000" },
+    { value: "5", text: "Từ 10.000.000đ" }
+];
+
+const SIZE_OPTIONS = [
+    { value: "0", text: "Tất cả diện tích" },
+    { value: "1", text: "Dưới 30 m²" },
+    { value: "2", text: "30 - 50 m²" },
+    { value: "3", text: "50 - 80 m²" },
+    { value: "4", text: "80 - 100 m²" },
+    { value: "5", text: "Lớn hơn 100 m²" }
+];
+
+const DropdownTwo = ({ filterData, onFilterChange, onSearch }: DropdownTwoProps) => {
     const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
     const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
 
@@ -62,32 +110,32 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
     };
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = parseInt(e.target.value);
+        const selectedRange = PRICE_RANGES[e.target.value];
         onFilterChange({
             ...filterData,
-            minPrice: value === 0 ? 0 : value === 1 ? 10000 : value === 2 ? 20000 : 30000,
-            maxPrice: value === 0 ? 0 : value === 1 ? 200000 : value === 2 ? 300000 : 400000,
+            minPrice: selectedRange.min,
+            maxPrice: selectedRange.max ?? Number.MAX_SAFE_INTEGER, // Sử dụng MAX_SAFE_INTEGER khi max là null
         });
     };
 
     const handleSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
+        const selectedRange = SIZE_RANGES[e.target.value];
         onFilterChange({
             ...filterData,
-            minSize: value === "1" ? 20 : value === "2" ? 30 : value === "3" ? 50 : 0,
-            maxSize: value === "1" ? 30 : value === "2" ? 50 : value === "3" ? 100 : 0,
+            minSize: selectedRange.min,
+            maxSize: selectedRange.max ?? Number.MAX_SAFE_INTEGER, // Sử dụng MAX_SAFE_INTEGER khi max là null
         });
     };
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault(); // Ngăn form tải lại trang
-        onSearch(); // Gọi API search
+        e.preventDefault();
+        onSearch();
     };
 
     return (
         <form onSubmit={handleSubmit}>
             <div className="row gx-0 align-items-center">
-                <div className="col-xl-2 col-lg-3">
+                <div className="col-xl-3 col-lg-4">
                     <div className="input-box-one border-left">
                         <div className="label">Chọn tỉnh/thành phố</div>
                         <NiceSelect
@@ -119,17 +167,11 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                         <div className="label">Mức giá</div>
                         <NiceSelect
                             className="nice-select"
-                            options={[
-                                {value: "0", text: "Tất cả mức giá"},
-                                {value: "1", text: "$10,000 - $200,000"},
-                                {value: "2", text: "$20,000 - $300,000"},
-                                {value: "3", text: "$30,000 - $400,000"},
-                            ]}
+                            options={PRICE_OPTIONS}
                             onChange={handlePriceChange}
                             name="price"
                             placeholder="Mức giá"
                         />
-
                     </div>
                 </div>
 
@@ -138,12 +180,7 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                         <div className="label">Diện tích</div>
                         <NiceSelect
                             className="nice-select"
-                            options={[
-                                {value: "0", text: "Tất cả diện tích"},
-                                {value: "1", text: "20 - 30 m²"},
-                                {value: "2", text: "30 - 50 m²"},
-                                {value: "3", text: "50 - 100 m²"},
-                            ]}
+                            options={SIZE_OPTIONS}
                             onChange={handleSizeChange}
                             name="size"
                             placeholder="Diện tích"
@@ -155,7 +192,7 @@ const DropdownTwo = ({filterData, onFilterChange, onSearch}: DropdownTwoProps) =
                     <div className="input-box-one lg-mt-20">
                         <div className="d-flex align-items-center">
                             <button
-                                type="submit" // Đảm bảo đây là submit button
+                                type="submit"
                                 className="fw-500 text-uppercase tran3s search-btn"
                             >
                                 Search
