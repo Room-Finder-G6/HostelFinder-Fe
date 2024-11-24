@@ -1,11 +1,10 @@
-// components/CreateContractModal.tsx
-
 import React, { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { useForm } from "react-hook-form";
 import { Modal, Button, Table } from "react-bootstrap";
 import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
+
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -33,23 +32,36 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         if (roomId && isOpen) {
             fetchRoomData();
         }
-    }, [roomId, isOpen])
+    }, [roomId, isOpen]);
 
-    //fetch của phòng
+    // Hàm reset form và các state liên quan
+    const resetForm = () => {
+        reset();
+        setShowDetails(false);
+        setPreviewImages({});
+    };
+
+    // Hàm xử lý khi đóng modal
+    const handleClose = () => {
+        resetForm();
+        onClose();
+    };
+
+    // Fetch dữ liệu phòng
     const fetchRoomData = async () => {
         try {
             const response = await apiInstance.get(`/rooms/${roomId}`);
             if (response.data.succeeded) {
                 setRoomData(response.data.data);
                 setValue('monthlyRentNow', response.data.data.monthlyRentCost);
-                setValue('monthlyRent', response.data.data.monthlyRentCost)
-                setValue('depositAmount', response.data.data.monthlyRentCost)
-
+                setValue('monthlyRent', response.data.data.monthlyRentCost);
+                setValue('depositAmount', response.data.data.monthlyRentCost);
             }
         } catch (error: any) {
-            toast.error(error.message, { position: "top-center" })
+            toast.error(error.message, { position: "top-center" });
         }
-    }
+    };
+
     // Fetch danh sách dịch vụ
     useEffect(() => {
         if (hostelId) {
@@ -133,18 +145,20 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
             const response = await apiInstance.post(`/rental-contracts`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            toast.success(response.data.data.message);
-            onSuccess();
-            reset();
-            onClose();
+            if (response.status === 200 && response.data.succeeded) {
+                toast.success(response.data.message);
+                onSuccess();
+                resetForm(); // Reset form sau khi tạo thành công
+                onClose();   // Đóng modal
+            }
         } catch (error: any) {
             console.error("Error creating contract:", error.response?.data || error);
-            alert(error.response?.data.message);
+            toast.error(error.response?.data.message);
         }
     };
 
     return (
-        <Modal show={isOpen} onHide={onClose} size="lg" centered>
+        <Modal show={isOpen} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
                 <Modal.Title>Tạo Hợp Đồng</Modal.Title>
             </Modal.Header>
@@ -276,7 +290,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             <label className="form-label">CCCD *</label>
                             <input
                                 type="text"
-                                {...register("tenant.IdentityCardNumber")}
+                                {...register("tenant.identityCard")}
                                 className="form-control"
                                 required
                             />
@@ -317,7 +331,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             )}
                         </div>
                     </section>
-                    {/* Thêm nút để hiển thị trường chi tiết */}
+                    {/* Nút hiển thị trường chi tiết */}
                     <Button
                         variant="link"
                         onClick={() => setShowDetails(!showDetails)}
@@ -419,7 +433,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                     <Button variant="primary" type="submit">
                         Lưu
                     </Button>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="secondary" onClick={handleClose}>
                         Thoát
                     </Button>
                 </Modal.Footer>

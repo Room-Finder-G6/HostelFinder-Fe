@@ -33,7 +33,7 @@ const Profile: React.FC = () => {
                   <button
                      type="button"
                      className="dropdown-item d-flex align-items-center"
-                     onClick={handleLogout} // Gọi hàm logout
+                     onClick={handleLogout} 
                   >
                      <Image src={profileIcon_3} alt="Logout Icon" className="lazy-img" />
                      <span className="ms-2 ps-1">Đăng xuất</span>

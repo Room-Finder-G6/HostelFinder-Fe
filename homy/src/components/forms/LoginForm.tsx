@@ -54,10 +54,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         backdrops.forEach(backdrop => backdrop.remove());
 
         if (responseData.role === "User") {
-          router.push("/");
-        } else if (responseData.role === "Admin" || responseData.role === "Landlord") {
-          const modal =
-            router.push("/dashboard/dashboard-index");
+          window.location.href = '/';
+        } else if (responseData.role === "Landlord") {
+          router.push("/dashboard/dashboard-index");
+        }
+        else if (responseData.role === "Admin") {
+          router.push("/admin/admin-index");
         }
       }
     } catch (error: any) {
