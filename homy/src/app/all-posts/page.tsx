@@ -1,4 +1,4 @@
-import ListingFour from "@/components/inner-listing/listing-04";
+import ListingFour from "../../components/inner-listing/all-posts";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {

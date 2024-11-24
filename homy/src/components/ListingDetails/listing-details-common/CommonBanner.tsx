@@ -8,7 +8,7 @@ const CommonBanner = ({ title, monthlyRentCost, style_3, address }: any) => {
             <div className="d-flex flex-wrap mt-10">
                <div className={`list-type text-uppercase mt-15 me-3 ${style_3 ? "bg-white text-dark fw-500" : "text-uppercase border-20"}`}>Cho thuê</div>
                <div className="address mt-15">
-                  <i className="bi bi-geo-alt"></i>
+                  <i className="bi bi-geo-alt"></i>&nbsp;
                   {address?.commune},&nbsp; {address?.district},&nbsp; {address?.province}
                </div>
             </div>
