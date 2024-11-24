@@ -10,7 +10,7 @@ const EditPostBody = () => {
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Sửa thông tin bài đăng"/>
+                <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
                 <EditPostForm postId={postId as string} />
             </div>
         </div>

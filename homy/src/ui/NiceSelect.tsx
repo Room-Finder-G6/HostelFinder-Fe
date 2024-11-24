@@ -1,87 +1,98 @@
 "use client";
-import React, { useState, useCallback, useRef, FC, ChangeEvent } from "react";
-import { useClickAway } from "react-use";
+import React, {useState, useCallback, useRef, useEffect, FC, ChangeEvent} from "react";
+import {useClickAway} from "react-use";
 
 interface Option {
-  value: string;
-  text: string;
+    value: string;
+    text: string;
 }
 
 type NiceSelectProps = {
-  options: Option[];
-  defaultCurrent: number;
-  placeholder: string;
-  className?: string;
-  onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  name: string;
-  required?: boolean; // Đổi từ require thành required
-  disabled?: boolean; // Thêm thuộc tính disabled
+    options: Option[];
+    defaultCurrent?: number;
+    placeholder: string;
+    className?: string;
+    onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+    name: string;
+    required?: boolean;
+    disabled?: boolean;
 };
 
 const NiceSelect: FC<NiceSelectProps> = ({
-  options,
-  defaultCurrent,
-  placeholder,
-  className,
-  onChange,
-  name,
-  required,
-  disabled, // Thêm thuộc tính này
-}) => {
-  const [open, setOpen] = useState(false);
-  const [current, setCurrent] = useState<Option>(options[defaultCurrent]);
-  const ref = useRef<HTMLDivElement | null>(null);
+                                             options,
+                                             defaultCurrent,
+                                             placeholder,
+                                             className,
+                                             onChange,
+                                             name,
+                                             required,
+                                             disabled,
 
-  const onClose = useCallback(() => {
-    setOpen(false);
-  }, []);
+                                         }) => {
+    const [open, setOpen] = useState(false);
+    const [current, setCurrent] = useState<Option | undefined>(
+        defaultCurrent !== undefined ? options[defaultCurrent] : undefined
+    );
+    const ref = useRef<HTMLDivElement | null>(null);
 
-  useClickAway(ref, onClose);
+    const onClose = useCallback(() => {
+        setOpen(false);
+    }, []);
 
-  const currentHandler = (item: Option) => {
-    setCurrent(item);
-    onChange({ target: { value: item.value } } as ChangeEvent<HTMLSelectElement>);
-    onClose();
-  };
+    useClickAway(ref, onClose);
 
-  return (
-    <div
-      className={`nice-select form-select-lg ${className || ""} ${open ? "open" : ""}`}
-      role="button"
-      tabIndex={0}
-      onClick={() => !disabled && setOpen((prev) => !prev)} // Ngăn chặn mở khi disabled
-      onKeyDown={(e) => {
-        if (e.key === "Enter" && !disabled) {
-          setOpen((prev) => !prev);
-        }
-      }}
-      ref={ref}
-    >
-      <span className="current">{current?.text || placeholder}</span>
-      {open && (
-        <ul
-          className="list"
-          role="menubar"
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => e.stopPropagation()}
+   /* useEffect(() => {
+        // Cập nhật `current` nếu `currentValue` thay đổi
+        const matchedOption = options.find((option) => option.value === currentValue);
+        setCurrent(matchedOption);
+    }, [currentValue]);*/
+
+    const currentHandler = (item: Option) => {
+        setCurrent(item);
+        onChange({target: {value: item.value}} as ChangeEvent<HTMLSelectElement>);
+        onClose();
+    };
+
+    return (
+        <div
+            className={`nice-select form-select-lg ${className || ""} ${open ? "open" : ""} ${
+                disabled ? "disabled" : ""
+            }`}
+            role="button"
+            tabIndex={0}
+            onClick={() => !disabled && setOpen((prev) => !prev)}
+            onKeyDown={(e) => {
+                if (e.key === "Enter" && !disabled) {
+                    setOpen((prev) => !prev);
+                }
+            }}
+            ref={ref}
         >
-          {options?.map((item, i) => (
-            <li
-              key={i}
-              data-value={item.value}
-              className={`option ${item.value === current?.value ? "selected focus" : ""}`}
-              style={{ fontSize: '14px' }}
-              role="menuitem"
-              onClick={() => !disabled && currentHandler(item)} // Ngăn chặn chọn khi disabled
-              onKeyDown={(e) => e.stopPropagation()}
-            >
-              {item.text}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+            {/* Hiển thị giá trị hiện tại hoặc placeholder */}
+            <span className="current">{current?.text || placeholder}</span>
+            {/* Dropdown danh sách lựa chọn */}
+            {open && (
+                <ul
+                    className="list"
+                    role="menubar"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                >
+                    {options?.map((item, i) => (
+                        <li
+                            key={i}
+                            data-value={item.value}
+                            className={`option ${item.value === current?.value ? "selected focus" : ""}`}
+                            role="menuitem"
+                            onClick={() => !disabled && currentHandler(item)}
+                        >
+                            {item.text}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
 };
 
 export default NiceSelect;

@@ -115,7 +115,7 @@ const AddPostBody: React.FC = () => {
                 <h2 className="main-title d-block d-lg-none">Thêm bài cho thuê</h2>
                 <Overview onDataChange={handleData}/>
 
-                <div className="bg-white card-box border-20 mt-40">
+                <div className="bg-white card-box border-20 mt-10">
                     <h4 className="dash-title-three">Hình ảnh</h4>
                     <UploadImage onImageUpload={handleImageUpload} multiple={true}/>
                 </div>
