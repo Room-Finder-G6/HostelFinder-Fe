@@ -21,7 +21,6 @@ const usePostsByUser = () => {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [userId, setUserId] = useState<string | null>(null);
 
-    // Hàm lấy `userId` từ token
     const getUserIdFromToken = useCallback(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -37,10 +36,9 @@ const usePostsByUser = () => {
         return null;
     }, []);
 
-    // Gọi API để lấy danh sách bài đăng của người dùng
     const fetchPostsByUser = async (pageNumber: number) => {
         if (!userId) return;
-
+    
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
@@ -54,7 +52,14 @@ const usePostsByUser = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setPosts(response.data.data || []);
+    
+            // Thêm xử lý URL ảnh nếu cần
+            const postsWithFullImageUrls = response.data.data.map((post: any) => ({
+                ...post,
+                image: post.image ? `${process.env.NEXT_PUBLIC_API_URL}${post.image}` : null, // Xử lý đường dẫn ảnh
+            }));
+    
+            setPosts(postsWithFullImageUrls || []);
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error("Error fetching posts: ", error);
@@ -62,7 +67,7 @@ const usePostsByUser = () => {
             setLoading(false);
         }
     };
-
+    
     useEffect(() => {
         const id = getUserIdFromToken();
         if (id) {

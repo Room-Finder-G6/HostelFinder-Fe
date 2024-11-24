@@ -7,3 +7,20 @@
 @import "../../public/assets/fonts/bootstrap-icons-1.11.1/font/bootstrap-icons.css";
 @import "../../public/assets/fonts/font-awesome-6.4.2/css/all.css";
 @import "../../public/assets/scss/style.scss";
+
+/* Import font chữ hỗ trợ tiếng Việt */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap&subset=vietnamese');
+
+/* Font chữ cho toàn bộ trang */
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Font chữ riêng cho menu */
+.navbar-nav {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+  

@@ -48,10 +48,10 @@ const PropertyListBody = () => {
                   <table className="table property-list-table">
                      <thead>
                         <tr>
-                           <th scope="col">Title</th>
-                           <th scope="col">Date</th>
-                           <th scope="col">View</th>
-                           <th scope="col">Status</th>
+                           <th scope="col">Tiêu đề</th>
+                           <th scope="col">Ngày</th>
+                           <th scope="col">Số lượt xem</th>
+                           <th scope="col">Trạng thái</th>
                            <th scope="col">Action</th>
                         </tr>
                      </thead>

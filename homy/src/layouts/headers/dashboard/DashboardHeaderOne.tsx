@@ -88,12 +88,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
             section: "profile",
             title: "Profile",
             items: [
-                {
-                    href: "/dashboard/profile",
-                    activeIcon: dashboardIconActive_3,
-                    inactiveIcon: dashboardIcon_3,
-                    label: "Profile"
-                },
+                // {
+                //     href: "/dashboard/profile",
+                //     activeIcon: dashboardIconActive_3,
+                //     inactiveIcon: dashboardIcon_3,
+                //     label: "Profile"
+                // },
                 {
                     href: "/dashboard/account-settings",
                     activeIcon: dashboardIconActive_4,
