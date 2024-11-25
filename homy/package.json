@@ -27,7 +27,7 @@
     "next-auth": "4.24.8",
     "react": "^18",
     "react-18-image-lightbox": "^5.1.4",
-    "react-bootstrap": "^2.10.5",
+    "react-bootstrap": "^2.10.6",
     "react-chartjs-2": "^5.2.0",
     "react-countup": "^6.5.0",
     "react-currency-input-field": "^3.9.0",
