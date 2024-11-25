@@ -49,11 +49,12 @@ const UserTableBody: React.FC<UserTableBodyProps> = ({ users, loading }) => {
                         <Image
                             src={user.avatarUrl}
                             alt={`${user.username}'s avatar`}
-                            width={40}
-                            height={40}
-                            className="rounded-circle"
+                            width={180} // Tăng kích thước chiều rộng
+                            height={180} // Tăng kích thước chiều cao
+                            className="rounded-3 border" // Bo góc và thêm border nếu cần
                         />
                     </td>
+
                     <td>{user.username}</td>
                     <td>{user.email}</td>
                     <td>{user.phone}</td>

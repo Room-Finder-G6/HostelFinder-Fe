@@ -5,9 +5,16 @@ import { jwtDecode } from "jwt-decode";
 interface Post {
     id: string;
     title: string;
+    description: string;
     status: boolean;
-    image: string | null;
+    firstImage: string | null;
     createdOn: string;
+    address: {
+        province: string;
+        district: string;
+        commune: string;
+        detailAddress: string;
+    };
 }
 
 interface JwtPayload {
@@ -21,7 +28,6 @@ const usePostsByUser = () => {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [userId, setUserId] = useState<string | null>(null);
 
-    // Hàm lấy `userId` từ token
     const getUserIdFromToken = useCallback(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -37,7 +43,6 @@ const usePostsByUser = () => {
         return null;
     }, []);
 
-    // Gọi API để lấy danh sách bài đăng của người dùng
     const fetchPostsByUser = async (pageNumber: number) => {
         if (!userId) return;
 
@@ -46,7 +51,7 @@ const usePostsByUser = () => {
             const token = localStorage.getItem("token");
             const response = await apiInstance.get(`/posts/user/${userId}`, {
                 params: {
-                    pageNumber: pageNumber,
+                    pageNumber,
                     pageSize: 10,
                     sortDirection: 0,
                 },
@@ -54,7 +59,13 @@ const usePostsByUser = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setPosts(response.data.data || []);
+
+            const postsWithImages = response.data.data.map((post: any) => ({
+                ...post,
+                image: post.image ? `${process.env.NEXT_PUBLIC_API_URL}/${post.image}` : "/default-image.png",
+            }));
+
+            setPosts(postsWithImages || []);
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error("Error fetching posts: ", error);

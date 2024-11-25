@@ -1,6 +1,6 @@
 // components/dashboard/UpdateRoomModal.tsx
 import React from 'react';
-import RoomForm from "./RoomForm";
+import RoomForm from "../RoomForm";
 
 interface UpdateRoomModalProps {
     isOpen: boolean;
