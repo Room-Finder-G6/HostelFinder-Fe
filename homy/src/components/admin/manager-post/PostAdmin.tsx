@@ -5,37 +5,17 @@ import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 import useAllPosts from "./useAllPost";
-import PostAdminBodyProps from "./PostAdminBody";
-import NiceSelect from "@/ui/NiceSelect";
 
 const PostAdmin = () => {
-    const { posts, totalPages, pageIndex, setPageIndex, loading } = useAllPosts(); // Sử dụng useAllPosts
-
-    const selectHandler = (e: any) => { };
+    const { posts, totalPages, pageIndex, setPageIndex, loading } = useAllPosts();
 
     return (
         <div className="dashboard-body">
-            <AdminHeaderTwo title="TẤT CẢ BÀI ĐĂNG" /> {/* Đổi title */}
+            <AdminHeaderTwo title="TẤT CẢ BÀI ĐĂNG" />
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-                <div className="short-filter d-flex align-items-center ms-sm-auto">
-                    <NiceSelect
-                        className="nice-select"
-                        options={[
-                            { value: "1", text: "Newest" },
-                            { value: "2", text: "Best Seller" },
-                            { value: "3", text: "Best Match" },
-                            { value: "4", text: "Price Low" },
-                            { value: "5", text: "Price High" },
-                        ]}
-                        defaultCurrent={0}
-                        onChange={selectHandler}
-                        name="sortOptions"
-                        placeholder="Select Option"
-                    />
-                </div>
                 <li className="d-none d-md-inline-block ms-3">
                     <Link href="/dashboard/create-post" className="btn-two" target="_blank">
-                        <span>Tất cả bài đăng</span>
+                        <span>Tạo bài đăng</span>
                     </Link>
                 </li>
             </div>
@@ -48,11 +28,14 @@ const PostAdmin = () => {
                                 <th scope="col">Tiêu đề</th>
                                 <th scope="col">Ngày Tạo</th>
                                 <th scope="col">Trạng thái</th>
+                                <th scope="col">Mô tả</th> 
+                                <th scope="col">Địa chỉ</th> 
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <PostAdminBodyProps posts={posts} loading={loading} />
+                        <PostAdminBody posts={posts} loading={loading} />
                     </table>
+
                 </div>
             </div>
 

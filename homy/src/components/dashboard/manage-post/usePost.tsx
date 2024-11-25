@@ -5,9 +5,16 @@ import { jwtDecode } from "jwt-decode";
 interface Post {
     id: string;
     title: string;
+    description: string;
     status: boolean;
-    image: string | null;
+    firstImage: string | null;
     createdOn: string;
+    address: {
+        province: string;
+        district: string;
+        commune: string;
+        detailAddress: string;
+    };
 }
 
 interface JwtPayload {
@@ -38,13 +45,13 @@ const usePostsByUser = () => {
 
     const fetchPostsByUser = async (pageNumber: number) => {
         if (!userId) return;
-    
+
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
             const response = await apiInstance.get(`/posts/user/${userId}`, {
                 params: {
-                    pageNumber: pageNumber,
+                    pageNumber,
                     pageSize: 10,
                     sortDirection: 0,
                 },
@@ -52,14 +59,13 @@ const usePostsByUser = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-    
-            // Thêm xử lý URL ảnh nếu cần
-            const postsWithFullImageUrls = response.data.data.map((post: any) => ({
+
+            const postsWithImages = response.data.data.map((post: any) => ({
                 ...post,
-                image: post.image ? `${process.env.NEXT_PUBLIC_API_URL}${post.image}` : null, // Xử lý đường dẫn ảnh
+                image: post.image ? `${process.env.NEXT_PUBLIC_API_URL}/${post.image}` : "/default-image.png",
             }));
-    
-            setPosts(postsWithFullImageUrls || []);
+
+            setPosts(postsWithImages || []);
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error("Error fetching posts: ", error);
@@ -67,7 +73,7 @@ const usePostsByUser = () => {
             setLoading(false);
         }
     };
-    
+
     useEffect(() => {
         const id = getUserIdFromToken();
         if (id) {
