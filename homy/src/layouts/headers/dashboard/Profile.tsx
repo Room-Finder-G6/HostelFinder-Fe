@@ -19,7 +19,7 @@ const Profile: React.FC = () => {
          <div className="user-name-data">
             <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
                <li>
-                  <Link className="dropdown-item d-flex align-items-center" href="/profile">
+                  <Link className="dropdown-item d-flex align-items-center" href="/dashboard/profile">
                      <Image src={profileIcon_1} alt="Profile Icon" className="lazy-img" />
                      <span className="ms-2 ps-1">Profile</span>
                   </Link>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { useForm } from "react-hook-form";
-import { Modal, Button, Table } from "react-bootstrap";
+import { Modal, Button, Table } from "react-bootstrap"
 import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
 import "./../rentralContract.css";

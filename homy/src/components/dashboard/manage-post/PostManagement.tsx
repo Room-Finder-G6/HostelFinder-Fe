@@ -1,56 +1,39 @@
 "use client";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import NiceSelect from "@/ui/NiceSelect";
-import PropertyTableBodyPost from "./PropertyTableBodyPost";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 import usePostsByUser from "./usePost";
+import UserPostsBody from "./PropertyTableBodyPost";
 
-const PostManagement = () => {
+const UserPostManagement = () => {
     const { posts, totalPages, pageIndex, setPageIndex, loading } = usePostsByUser();
-
-    const selectHandler = (e: any) => { };
 
     return (
         <div className="dashboard-body">
             <DashboardHeaderTwo title="My Posts" />
-            <div className="d-sm-flex align-items-center justify-content-between mb-25">
-                <div className="short-filter d-flex align-items-center ms-sm-auto">
-                    <NiceSelect
-                        className="nice-select"
-                        options={[
-                            { value: "1", text: "Newest" },
-                            { value: "2", text: "Best Seller" },
-                            { value: "3", text: "Best Match" },
-                            { value: "4", text: "Price Low" },
-                            { value: "5", text: "Price High" },
-                        ]}
-                        defaultCurrent={0}
-                        onChange={selectHandler}
-                        name="sortOptions"
-                        placeholder="Select Option"
-                    />
-                </div>
-                <li className="d-none d-md-inline-block ms-3">
-                    <Link href="/dashboard/create-post" className="btn-two" target="_blank">
-                        <span>Add Post</span>
+            <div className="d-flex align-items-center justify-content-between mb-25">
+                <li className="ms-auto">
+                    <Link href="/dashboard/create-post" className="btn-two">
+                        <span>Create New Post</span>
                     </Link>
                 </li>
             </div>
 
-            <div className="bg-white card-box p0 border-20">
-                <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
+            <div className="bg-white card-box p-4 border-20">
+                <div className="table-responsive">
                     <table className="table property-list-table">
                         <thead>
-                            <tr>
-                                <th scope="col">Title</th>
-                                <th scope="col">Date Created</th>
-                                <th scope="col">Status</th>
+                        <tr>
+                                <th scope="col">Tiêu đề</th>
+                                <th scope="col">Ngày Tạo</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Mô tả</th> 
+                                <th scope="col">Địa chỉ</th> 
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <PropertyTableBodyPost posts={posts} loading={loading} />
+                        <UserPostsBody posts={posts} loading={loading} />
                     </table>
                 </div>
             </div>
@@ -75,4 +58,4 @@ const PostManagement = () => {
     );
 };
 
-export default PostManagement;
+export default UserPostManagement;

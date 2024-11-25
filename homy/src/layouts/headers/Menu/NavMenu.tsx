@@ -4,8 +4,8 @@ import Link from "next/link.js";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-
 import logo from "@/assets/images/logo/logo_01.svg";
+import '@/styles/index.scss'; // File chứa các thiết lập CSS
 
 const NavMenu = () => {
     const pathname = usePathname();
