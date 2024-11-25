@@ -145,7 +145,7 @@ const PropertyTableBody = () => {
     if (hostels.length === 0) {
         return <tbody>
             <tr>
-                <td colSpan={4}>No hostels found</td>
+                <td colSpan={4}>Hiện chưa có nhà trọ nào.</td>
             </tr>
         </tbody>;
     }

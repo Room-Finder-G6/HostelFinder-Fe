@@ -8,7 +8,7 @@ import HostelSelector from "./HostelSelector";
 import { jwtDecode } from "jwt-decode";
 import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
-import ServicePriceModal from "./ServicePriceModal";
+import ServicePriceModal from "./popup-modal/ServicePriceModal";
 import { useSearchParams } from "next/navigation";
 
 import {

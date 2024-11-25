@@ -5,9 +5,9 @@ import { TfiWrite } from 'react-icons/tfi';
 
 import apiInstance from '@/utils/apiInstance';
 import Loading from '@/components/Loading';
-import CreateContractModal from './CreateContractModal';
-import RoomDetailsModal from './RoomDetailsModal';
-
+import CreateContractModal from './popup-modal/CreateContractModal';
+import RoomDetailsModal from './popup-modal/RoomDetailsModal';
+import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
 interface Room {
     id: string;
     roomName: string;
@@ -35,6 +35,8 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [selectedRoomId, setSelectedRoomId] = useState<string>('');
     const [isRoomDetailsModalOpen, setIsRoomDetailsModalOpen] = useState<boolean>(false);
     const [roomDetailsId, setRoomDetailsId] = useState<string>('');
+    const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState<boolean>(false);
+    const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
 
     // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
@@ -78,7 +80,8 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     };
 
     const handleCreateInvoice = (roomId: string) => {
-        console.log(`Create Invoice for Room ID: ${roomId}`);
+        setInvoiceRoomId(roomId);
+        setIsInvoiceModalOpen(true);
     };
 
     const handleViewRoomDetails = (roomId: string) => {
@@ -120,7 +123,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
             <tbody>
                 <tr>
                     <td colSpan={5} className="text-danger text-center py-3">
-                        Lỗi: {error}
+                        Không có phòng nào trong nhà trọ này.
                     </td>
                 </tr>
             </tbody>
@@ -224,6 +227,14 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 isOpen={isRoomDetailsModalOpen}
                 onClose={handleCloseRoomDetailsModal}
                 roomId={roomDetailsId}
+            />
+            <CreateInvoiceModal
+                isOpen={isInvoiceModalOpen}
+                onClose={() => {
+                    setIsInvoiceModalOpen(false);
+                    setInvoiceRoomId('');
+                }}
+                roomId={invoiceRoomId}
             />
         </>
     );

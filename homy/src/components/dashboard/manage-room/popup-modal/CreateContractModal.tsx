@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Modal, Button, Table } from "react-bootstrap"
 import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
+import "./../rentralContract.css";
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -26,8 +27,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     const [showDetails, setShowDetails] = useState(false);
     const [previewImages, setPreviewImages] = useState<Record<string, string>>({});
     const [roomData, setRoomData] = useState<any>(null);
-    const [monthlyRentFormatted, setMonthlyRentFormatted] = useState("");
-    const [depositAmountFormatted, setDepositAmountFormatted] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (roomId && isOpen) {
@@ -89,6 +89,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     };
 
     const onSubmit = async (data: any) => {
+        setIsLoading(true);
         const formData = new FormData();
 
         // Thông tin hợp đồng
@@ -155,6 +156,8 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         } catch (error: any) {
             console.error("Error creating contract:", error.response?.data || error);
             toast.error(error.response?.data.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -165,6 +168,13 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
             </Modal.Header>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                    {isLoading && (
+                        <div className="loading-overlay">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    )}
                     {/* Thông tin hợp đồng */}
                     <section className="mb-4">
                         <h5>Thông tin hợp đồng</h5>
@@ -221,6 +231,9 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 onValueChange={(value) => setValue('depositAmount', value)}
                                 required
                             />
+                            <div className="alert alert-warning mt-2" role="alert">
+                                Chú ý: Đây là số tiền cọc ở phòng trọ và sẽ không được tính vào hóa đơn.
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Kỳ thanh toán (ngày) *</label>
@@ -431,10 +444,17 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                     </section>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" type="submit">
-                        Lưu
+                    <Button variant="primary" type="submit" disabled={isLoading}>
+                        {isLoading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                {' '}Đang lưu...
+                            </>
+                        ) : (
+                            'Lưu'
+                        )}
                     </Button>
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
                         Thoát
                     </Button>
                 </Modal.Footer>
