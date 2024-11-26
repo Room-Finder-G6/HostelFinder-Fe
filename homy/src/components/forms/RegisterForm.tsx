@@ -27,7 +27,23 @@ const RegisterForm = () => {
 
    const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({ resolver: yupResolver(schema) });
 
+   const [isPasswordVisible, setPasswordVisibility] = useState(false);
+   const [isAgreed, setIsAgreed] = useState(false);
+
+   const togglePasswordVisibility = () => {
+      setPasswordVisibility(!isPasswordVisible);
+   };
+
+   const handleAgreeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setIsAgreed(e.target.checked);
+   };
+
    const onSubmit = async (data: FormData) => {
+      if (!isAgreed) {
+         toast.error("Vui lòng đồng ý với các điều khoản của chúng tôi.", { position: "top-center" });
+         return; 
+      }
+
       try {
          const response = await apiInstance.post("auth/register", data);
          if (response.status === 200 && response.data.succeeded) {
@@ -46,17 +62,6 @@ const RegisterForm = () => {
             toast.error("Có lỗi xảy ra. Vui lòng thử lại.", { position: 'top-center' });
          }
       }
-   };
-
-   const [isPasswordVisible, setPasswordVisibility] = useState(false);
-   const [isAgreed, setIsAgreed] = useState(false);
-
-   const togglePasswordVisibility = () => {
-      setPasswordVisibility(!isPasswordVisible);
-   };
-
-   const handleAgreeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setIsAgreed(e.target.checked);
    };
 
    return (
@@ -88,7 +93,7 @@ const RegisterForm = () => {
                   <label htmlFor="password">Mật khẩu*</label>
                   <input type={isPasswordVisible ? "text" : "password"} id="password" {...register("password")} placeholder="Nhập mật khẩu" className="pass_log_id" />
                   <span className="placeholder_icon">
-                     <span className={`passVicon ${isPasswordVisible ? "eye-slash" : ""}`}>
+                     <span className={`passVicon ${isPasswordVisible ? "eye-slash" : ""}`} >
                         <Image onClick={togglePasswordVisibility} src={OpenEye} alt="Toggle Password Visibility" />
                      </span>
                   </span>
@@ -114,7 +119,6 @@ const RegisterForm = () => {
                <button
                   type="submit"
                   className={`btn-two w-100 text-uppercase d-block mt-20 ${isAgreed ? "enabled-button" : "disabled-button"}`}
-                  disabled={!isAgreed}
                >
                   ĐĂNG KÝ
                </button>
@@ -122,6 +126,6 @@ const RegisterForm = () => {
          </div>
       </form>
    );
-}
+};
 
 export default RegisterForm;
