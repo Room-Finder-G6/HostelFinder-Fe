@@ -253,8 +253,8 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                     <thead className="table-primary">
                                                         <tr>
                                                             <th>Dịch vụ</th>
-                                                            <th className="text-end">Đơn giá</th>
-                                                            <th className="text-end">Chi phí thực tế</th>
+                                                            <th className="text-center">Đơn giá</th>
+                                                            <th className="text-center">Chi phí thực tế</th>
                                                             <th className="text-center">Số lượng khách</th>
                                                             <th className="text-center">Chỉ số trước</th>
                                                             <th className="text-center">Chỉ số hiện tại</th>
@@ -265,11 +265,11 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                         {roomDetails.invoiceDetailInRoom.invoiceDetails.map((detail, index) => (
                                                             <tr key={index}>
                                                                 <td>{detail.serviceName}</td>
-                                                                <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
-                                                                <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
                                                                 <td className="text-center">{detail.numberOfCustomer}</td>
-                                                                <td className="text-center">{detail.previousReading}</td>
-                                                                <td className="text-center">{detail.currentReading}</td>
+                                                                <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
+                                                                <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
                                                                 <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
                                                             </tr>
                                                         ))}

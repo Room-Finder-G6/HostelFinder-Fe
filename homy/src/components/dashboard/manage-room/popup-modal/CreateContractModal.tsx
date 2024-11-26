@@ -172,7 +172,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     return (
         <Modal show={isOpen} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Tạo Hợp Đồng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Tạo Hợp Đồng</Modal.Title>
             </Modal.Header>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>

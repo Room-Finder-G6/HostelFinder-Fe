@@ -149,7 +149,7 @@ const MeterReadingForm: React.FC<MeterReadingFormProps> = ({ isOpen, onClose, ro
                             {services.map((service) => (
                                 <tr key={service.serviceId}>
                                     <td>{service.serviceName}</td>
-                                    <td>{service.unitCost.toLocaleString()}</td>
+                                    <td>{service.unitCost.toLocaleString('vi-VN')}</td>
                                     <td>{service.previousReading}</td>
                                     <td>
                                         <Form.Control
