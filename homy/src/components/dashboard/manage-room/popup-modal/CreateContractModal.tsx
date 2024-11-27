@@ -23,7 +23,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     onSuccess,
 }) => {
     const { register, handleSubmit, reset, watch, formState: { errors }, setValue } = useForm();
-    const [services, setServices] = useState([]);
+    const [services, setServices] = useState<any[]>([]);
     const [showDetails, setShowDetails] = useState(false);
     const [previewImages, setPreviewImages] = useState<Record<string, string>>({});
     const [roomData, setRoomData] = useState<any>(null);
@@ -32,6 +32,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     useEffect(() => {
         if (roomId && isOpen) {
             fetchRoomData();
+            fetchServiceData();
         }
     }, [roomId, isOpen]);
 
@@ -64,18 +65,18 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     };
 
     // Fetch danh sách dịch vụ
-    useEffect(() => {
-        if (hostelId) {
-            apiInstance
-                .get(`/ServiceCost/hostels?hostelId=${hostelId}`)
-                .then((response) => {
-                    setServices(response.data.data || []);
-                })
-                .catch((error) => {
-                    console.error("Error fetching services:", error);
-                });
+    const fetchServiceData = async () => {
+        try {
+            const response = await apiInstance.get(`/meterReadings/${hostelId}/${roomId}`);
+            if (response.data.succeeded) {
+                setServices(response.data.data || []);
+            }
+        } catch (error: any) {
+            console.error("Error fetching service data:", error);
+            toast.error("Failed to fetch service data", { position: "top-center" });
         }
-    }, [hostelId]);
+    };
+
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const file = e.target.files?.[0];
@@ -130,18 +131,25 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                 data.tenant.temporaryResidenceStatus || ""
             );
         }
+        // Collect meter readings
+        const meterReadings = services.map((service: any, index: number) => ({
+            roomId,
+            serviceId: service.serviceId,
+            currentReading: data[`reading_${service.serviceId}`], // Get reading from form data
+            billingMonth: new Date(data.startDate).getMonth() + 1, // Use start date month
+            billingYear: new Date(data.startDate).getFullYear(), // Use start date year
+        }));
 
-        // Ghi số liệu dịch vụ
-        data.services.forEach((service: any, index: number) => {
-            formData.append(
-                `AddMeterReadingServiceDto[${index}].ServiceId`,
-                service.serviceId
-            );
-            formData.append(
-                `AddMeterReadingServiceDto[${index}].Reading`,
-                service.reading
-            );
-        });
+        try {
+            const response = await apiInstance.post(`/meterReadings/list`, meterReadings, {
+                headers: { "Content-Type": "application/json" },
+            });
+            if (response.status === 200 && response.data.succeeded) {
+            }
+        } catch (error: any) {
+            console.error("Error creating contract:", error.response?.data || error);
+            toast.error(error.response?.data.message);
+        }
 
         try {
             const response = await apiInstance.post(`/rental-contracts`, formData, {
@@ -164,7 +172,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     return (
         <Modal show={isOpen} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Tạo Hợp Đồng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Tạo Hợp Đồng</Modal.Title>
             </Modal.Header>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
@@ -407,38 +415,27 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                     <th>Tên Dịch Vụ</th>
                                     <th>Giá Đơn Vị</th>
                                     <th>Đơn Vị</th>
-                                    <th>Ngày Hiệu Lực</th>
+                                    <th>Chỉ Số Cũ</th>
                                     <th>Nhập Số Liệu</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {services.map((service: any, index: number) => {
-                                    return (
-                                        <tr key={service.serviceId}>
-                                            <td>{service.serviceName}</td>
-                                            <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
-                                            <td>{service.unit || "N/A"}</td>
-                                            <td>
-                                                {service.effectiveFrom
-                                                    ? new Date(service.effectiveFrom).toLocaleDateString("vi-VN")
-                                                    : "N/A"}
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    placeholder="Nhập số liệu"
-                                                    {...register(`services.${index}.reading`)}
-                                                    className="form-control"
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    defaultValue={service.serviceId}
-                                                    {...register(`services.${index}.serviceId`)}
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {services.map((service: any) => (
+                                    <tr key={service.serviceId}>
+                                        <td>{service.serviceName}</td>
+                                        <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
+                                        <td>{service.unit || "N/A"}</td>
+                                        <td>{service.previousReading}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                {...register(`reading_${service.serviceId}`)} // Register dynamic field
+                                                className="form-control"
+                                                defaultValue={service.previousReading}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </Table>
                     </section>

@@ -127,7 +127,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     return (
         <Modal show={isOpen} onHide={onClose} size="xl" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Thông tin phòng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Thông tin phòng</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {loading ? (
@@ -178,7 +178,10 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     {roomDetails.infomationTenacy.length > 0 ? (
                                         <div className="list-group">
                                             {roomDetails.infomationTenacy.map((tenant, index) => (
-                                                <div key={index} className="list-group-item d-flex align-items-center">
+                                                <div
+                                                    key={index}
+                                                    className={`list-group-item d-flex align-items-center ${index === 0 ? 'bg-white text-black' : ''}`}
+                                                >
                                                     <img
                                                         src={tenant.avatarUrl}
                                                         alt={tenant.fullName}
@@ -193,6 +196,14 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                         <p><strong>Số CMND:</strong> {tenant.identityCardNumber}</p>
                                                         <p><strong>Ngày vào:</strong> {new Date(tenant.moveInDate).toLocaleDateString()}</p>
                                                         {tenant.description && <p><strong>Mô tả:</strong> {tenant.description}</p>}
+
+                                                        {/* Dấu hiệu người đại diện hợp đồng và người liên hệ */}
+                                                        {index === 0 && (
+                                                            <div>
+                                                                <span className="badge bg-success me-2">Người đại diện hợp đồng</span>
+                                                                <span className="badge bg-info">Người liên hệ</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))}
@@ -201,6 +212,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                         <p>Không có khách thuê trọ.</p>
                                     )}
                                 </section>
+
                             </Tab>
                             <Tab eventKey="invoices" title={<span><FaFileInvoiceDollar className="me-2" />Lịch sử hóa đơn</span>}>
                                 {/* Lịch sử hóa đơn */}
@@ -241,8 +253,8 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                     <thead className="table-primary">
                                                         <tr>
                                                             <th>Dịch vụ</th>
-                                                            <th className="text-end">Đơn giá</th>
-                                                            <th className="text-end">Chi phí thực tế</th>
+                                                            <th className="text-center">Đơn giá</th>
+                                                            <th className="text-center">Chi phí thực tế</th>
                                                             <th className="text-center">Số lượng khách</th>
                                                             <th className="text-center">Chỉ số trước</th>
                                                             <th className="text-center">Chỉ số hiện tại</th>
@@ -253,11 +265,11 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                         {roomDetails.invoiceDetailInRoom.invoiceDetails.map((detail, index) => (
                                                             <tr key={index}>
                                                                 <td>{detail.serviceName}</td>
-                                                                <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
-                                                                <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
                                                                 <td className="text-center">{detail.numberOfCustomer}</td>
-                                                                <td className="text-center">{detail.previousReading}</td>
-                                                                <td className="text-center">{detail.currentReading}</td>
+                                                                <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
+                                                                <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
                                                                 <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
                                                             </tr>
                                                         ))}

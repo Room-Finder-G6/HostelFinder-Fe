@@ -8,6 +8,7 @@ import Loading from '@/components/Loading';
 import CreateContractModal from './popup-modal/CreateContractModal';
 import RoomDetailsModal from './popup-modal/RoomDetailsModal';
 import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
+import MeterReadingForm from './popup-modal/MeterReadingModal';
 interface Room {
     id: string;
     roomName: string;
@@ -37,6 +38,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [roomDetailsId, setRoomDetailsId] = useState<string>('');
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState<boolean>(false);
     const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
+    const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
 
     // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
@@ -89,6 +91,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         setIsRoomDetailsModalOpen(true);
     };
 
+    const handleMeterReading = (roomId: string) => {
+        setSelectedRoomId(roomId);
+        setIsMeterReadingModalOpen(true);
+    }
+
     // Modal close handlers
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -103,6 +110,10 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const handleCloseRoomDetailsModal = () => {
         setIsRoomDetailsModalOpen(false);
         setRoomDetailsId('');
+    };
+    const handleCloseMeterReadingModal = () => {
+        setIsMeterReadingModalOpen(false);
+        setSelectedRoomId('');
     };
 
     // Render loading, error, or rooms
@@ -206,7 +217,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                                         <FaFileInvoice className="me-2" />
                                         Tạo hóa đơn
                                     </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                    <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
                                         <TfiWrite className="me-2" />
                                         Ghi số dịch vụ
                                     </Dropdown.Item>
@@ -230,11 +241,18 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
             />
             <CreateInvoiceModal
                 isOpen={isInvoiceModalOpen}
+                hostelId={selectedHostel}
                 onClose={() => {
                     setIsInvoiceModalOpen(false);
                     setInvoiceRoomId('');
                 }}
                 roomId={invoiceRoomId}
+            />
+            <MeterReadingForm
+                hostelId={selectedHostel}
+                roomId={selectedRoomId}
+                isOpen={isMeterReadingModalOpen}
+                onClose={handleCloseMeterReadingModal}
             />
         </>
     );
