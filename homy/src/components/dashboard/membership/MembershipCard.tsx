@@ -12,6 +12,8 @@ interface MembershipCardProps {
     maxPostsAllowed: number;
     maxPushTopAllowed: number;
   }[];
+  membershipId: string;  // Thêm prop membershipId để sử dụng khi mua gói
+  onBuyClick: (id: string) => void;  // Callback khi nhấn "Mua ngay"
 }
 
 const MembershipCard: React.FC<MembershipCardProps> = ({
@@ -21,6 +23,8 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
   discount,
   duration,
   services,
+  membershipId,
+  onBuyClick,
 }) => {
   return (
     <div className={styles.card}>
@@ -34,16 +38,15 @@ const MembershipCard: React.FC<MembershipCardProps> = ({
         {services.map((service, index) => (
           <li key={index}>
             {service.serviceName}: {service.maxPostsAllowed} bài đăng,{" "}
-            {service.maxPushTopAllowed} lượt đẩy,
-            {service.maxPostsAllowed} lượt đăng
+            {service.maxPushTopAllowed} lượt đẩy
           </li>
         ))}
       </ul>
       <div className={styles.cardButtons}>
-        <button className={`${styles.cardButton} ${styles.cardButtonPrimary}`}>
-          Dùng thử 1 tháng
-        </button>
-        <button className={`${styles.cardButton} ${styles.cardButtonSecondary}`}>
+        <button
+          className={`${styles.cardButton} ${styles.cardButtonPrimary}`}
+          onClick={() => onBuyClick(membershipId)} // Gọi hàm mua gói khi nhấn
+        >
           Mua ngay
         </button>
       </div>

@@ -23,6 +23,10 @@
   gap: 20px;
   justify-content: center;
   flex-wrap: wrap;
+  align-items: stretch; /* Căn đều chiều cao các thẻ */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Đảm bảo responsive */
+  gap: 20px;
 }
 
 .badge {
@@ -113,6 +117,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   transition: transform 0.3s;
+  flex-direction: column; /* Bố cục dọc */
+  justify-content: space-between; /* Tách phần nội dung và nút bấm */
+  flex-grow: 1; /* Tự động tăng chiều cao */
+  display: flex;
 }
 
 .card:hover {
@@ -162,4 +170,31 @@
 .button:last-child {
   background-color: white;
   color: #ff4d4f;
+}
+
+.serviceItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  
+}
+
+.serviceItem span {
+  margin-left: 8px;
+}
+/* Đoạn CSS để tạo vòng xoay */
+.spinner {
+  border: 8px solid #f3f3f3; /* Màu nền của vòng xoay */
+  border-top: 8px solid #3498db; /* Màu vòng xoay */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 2s linear infinite; /* Vòng xoay */
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

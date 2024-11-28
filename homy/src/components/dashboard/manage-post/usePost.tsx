@@ -43,17 +43,20 @@ const usePostsByUser = () => {
         return null;
     }, []);
 
-    const fetchPostsByUser = async (pageNumber: number) => {
+    const fetchPostsByUser = async (pageNumber: number, sortOption: string) => {
         if (!userId) return;
 
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
+            const sortDirection = sortOption === "1" ? "desc" : "asc";  // Sắp xếp theo ngày tạo, "desc" cho mới nhất và "asc" cho cũ nhất
+
             const response = await apiInstance.get(`/posts/user/${userId}`, {
                 params: {
                     pageNumber,
                     pageSize: 10,
-                    sortDirection: 0,
+                    sortBy: "createdAt",  // Đảm bảo API có hỗ trợ sắp xếp theo createdAt
+                    sortDirection,
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -83,11 +86,11 @@ const usePostsByUser = () => {
 
     useEffect(() => {
         if (userId) {
-            fetchPostsByUser(pageIndex);
+            fetchPostsByUser(pageIndex, "1"); // Default: sort by Newest
         }
     }, [userId, pageIndex]);
 
-    return { posts, loading, totalPages, pageIndex, setPageIndex };
+    return { posts, loading, totalPages, pageIndex, setPageIndex, fetchPostsByUser };
 };
 
 export default usePostsByUser;
