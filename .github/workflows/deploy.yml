@@ -61,9 +61,9 @@ jobs:
       # Step 9: SSH into VPS and pull the image from Docker Hub
       - name: Deploy Docker container on VPS
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no user@${{ secrets.VPS_IP }} << 'EOF'
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << 'EOF'
             docker pull ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
             docker stop hostelfe || true
             docker rm hostelfe || true
-            docker run -d --name hostelfe -p 80:80 ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+            docker run -d --name hostelfe -p 4000:3000 ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
           EOF
