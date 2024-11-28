@@ -7,8 +7,8 @@ const AddHostelBody = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Add New Property" />
-            <h2 className="main-title d-block d-lg-none">Add New Hostel</h2>
+            <DashboardHeaderTwo title="Thêm nhà trọ" />
+            <h2 className="main-title d-block d-lg-none">Thêm nhà trọ</h2>
             <AddHostelForm />
             {/* <div className="bg-white card-box border-20 mt-40">
                <h4 className="dash-title-three">Photo & Video Attachment</h4>

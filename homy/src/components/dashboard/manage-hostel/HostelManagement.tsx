@@ -24,8 +24,8 @@ const HostelManagement = () => {
    return (
        <div className="dashboard-body">
           <div className="position-relative">
-             <DashboardHeaderTwo title="My Properties" />
-             <h2 className="main-title d-block d-lg-none">My Properties</h2>
+             <DashboardHeaderTwo title="Nhà trọ của bạn" />
+             <h2 className="main-title d-block d-lg-none">Nhà trọ của bạn</h2>
              <div className="d-sm-flex align-items-center justify-content-between mb-25">
                 <div className="d-flex ms-auto xs-mt-30">
                    <div className="short-filter d-flex align-items-center ms-sm-auto">

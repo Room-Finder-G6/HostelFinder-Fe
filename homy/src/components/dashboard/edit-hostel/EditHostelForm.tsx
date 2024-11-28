@@ -1,28 +1,53 @@
 ﻿"use client";
+
 import React, {useState, useEffect} from "react";
-import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 import GoongMap from "@/components/map/GoongMap";
 import Loading from "@/components/Loading";
+import ServicesList from "@/components/dashboard/manage-service/ServiceList";
 
-
-interface Address {
+// Type Definitions
+interface AddressDto {
     province: string;
     district: string;
     commune: string;
     detailAddress: string;
 }
 
-interface FormData {
-    landlordId: string;
+interface Service {
+    serviceId: string;
+    name: string;
+}
+
+interface HostelResponseDto {
+    id: string;
     hostelName: string;
     description: string;
-    address: Address;
-    size: number | string;
-    numberOfRooms: number | string;
+    address: AddressDto;
+    size: number;
+    numberOfRooms: number;
     coordinates: string;
+    imageUrl: string;
+    services: Service[];
+    createdOn: string;
+}
+
+interface UpdateHostelRequestDto {
+    hostelName: string;
+    description: string;
+    address: AddressDto;
+    size: number;
+    numberOfRooms: number;
+    coordinates: string;
+    serviceId: string[];
+    image?: File|null;
+}
+
+interface FormData extends Omit<UpdateHostelRequestDto, 'serviceId'> {
+    image: File | null;
+    imageUrl: string;
 }
 
 interface EditHostelFormProps {
@@ -31,14 +56,11 @@ interface EditHostelFormProps {
 
 const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     const router = useRouter();
-    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
-    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
-    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
     const [formData, setFormData] = useState<FormData>({
-        landlordId: "",
         hostelName: "",
         description: "",
         address: {
@@ -50,40 +72,47 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         size: 0,
         numberOfRooms: 0,
         coordinates: "",
+        image: null,
+        imageUrl: "",
     });
 
-    const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
-    const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+    // Handlers
+    const handleServiceSelect = (serviceIds: string[]): void => {
+        setSelectedServices(serviceIds);
+    };
+
+    const handleCoordinatesChange = (newCoordinates: string): void => {
+        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
+        setCoordinates([lng, lat]);
+        setFormData(prev => ({
+            ...prev,
+            coordinates: `${lng},${lat}`
+        }));
+    };
 
     // Fetch hostel data
     useEffect(() => {
-        const fetchHostelData = async () => {
+        const fetchHostelData = async (): Promise<void> => {
             try {
-                const response = await apiInstance.get(`/hostels/${hostelId}`);
+                const response = await apiInstance.get<{ data: HostelResponseDto }>(`/hostels/${hostelId}`);
                 const hostelData = response.data.data;
 
                 const coordArray = hostelData.coordinates.split(',').map(Number) as [number, number];
                 setCoordinates(coordArray);
 
+                const serviceIds = hostelData.services?.map(service => service.serviceId) || [];
+                setSelectedServices(serviceIds);
+
                 setFormData({
-                    ...hostelData,
-                    size: Number(hostelData.size),
-                    numberOfRooms: Number(hostelData.numberOfRooms)
+                    hostelName: hostelData.hostelName,
+                    description: hostelData.description,
+                    address: hostelData.address,
+                    size: hostelData.size,
+                    numberOfRooms: hostelData.numberOfRooms,
+                    coordinates: hostelData.coordinates,
+                    imageUrl: hostelData.imageUrl,
+                    image: null
                 });
-
-                // Set initial location selections
-                await fetchProvinces();
-                const provinceId = await findProvinceIdByName(hostelData.address.province);
-                if (provinceId) {
-                    setSelectedProvince(provinceId);
-                    await fetchDistricts(provinceId);
-
-                    const districtId = await findDistrictIdByName(hostelData.address.district, provinceId);
-                    if (districtId) {
-                        setSelectedDistrict(districtId);
-                        await fetchCommunes(districtId);
-                    }
-                }
 
                 setIsLoading(false);
             } catch (error) {
@@ -98,148 +127,90 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         }
     }, [hostelId]);
 
-    const handleCoordinatesChange = (newCoordinates: string) => {
-        const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
-        setCoordinates([lng, lat]);
-    };
-
-    const findProvinceIdByName = async (provinceName: string) => {
-        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
-        const data = await response.json();
-        const province = data.data.find((p: any) => p.name === provinceName);
-        return province?.id || null;
-    };
-
-    const findDistrictIdByName = async (districtName: string, provinceId: string) => {
-        const response = await fetch(
-            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceId}`
-        );
-        const data = await response.json();
-        const district = data.data.find((d: any) => d.name === districtName);
-        return district?.id || null;
-    };
-
-    useEffect(() => {
-        fetchProvinces();
-    }, []);
-
-    useEffect(() => {
-        if (selectedProvince) {
-            fetchDistricts(selectedProvince);
-        }
-    }, [selectedProvince]);
-
-    useEffect(() => {
-        if (selectedDistrict) {
-            fetchCommunes(selectedDistrict);
-        }
-    }, [selectedDistrict]);
-
-    const fetchProvinces = async () => {
-        const response = await fetch("https://open.oapi.vn/location/provinces?page=0&size=100");
-        const data = await response.json();
-        setProvinces(
-            data.data.map((province: any) => ({
-                value: province.id,
-                text: province.name,
-            }))
-        );
-    };
-
-    const fetchDistricts = async (provinceCode: string) => {
-        const response = await fetch(
-            `https://open.oapi.vn/location/districts?page=0&size=100&provinceId=${provinceCode}`
-        );
-        const data = await response.json();
-        setDistricts(
-            data.data.map((district: any) => ({
-                value: district.id,
-                text: district.name,
-            }))
-        );
-    };
-
-    const fetchCommunes = async (districtCode: string) => {
-        const response = await fetch(
-            `https://open.oapi.vn/location/wards?page=0&size=100&districtId=${districtCode}`
-        );
-        const data = await response.json();
-        setCommunes(
-            data.data.map((ward: any) => ({
-                value: ward.id,
-                text: ward.name,
-            }))
-        );
-    };
-
-    const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const provinceCode = e.target.value;
-        const province = provinces.find((p) => p.value === provinceCode);
-        setSelectedProvince(provinceCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, province: province?.text || ""},
-        });
-        setSelectedDistrict(null);
-        setCommunes([]);
-    };
-
-    const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const districtCode = e.target.value;
-        const district = districts.find((d) => d.value === districtCode);
-        setSelectedDistrict(districtCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, district: district?.text || ""},
-        });
-    };
-
-    const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const communeCode = e.target.value;
-        const commune = communes.find((c) => c.value === communeCode);
-        setFormData({
-            ...formData,
-            address: {...formData.address, commune: commune?.text || ""},
-        });
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ): void => {
         const {name, value} = e.target;
+
         if (name === "size" || name === "numberOfRooms") {
-            setFormData({...formData, [name]: parseInt(value)});
+            const numValue = parseInt(value) || 0;
+            setFormData(prev => ({...prev, [name]: numValue}));
         } else if (name === "detailAddress") {
-            setFormData({
-                ...formData,
-                address: {...formData.address, detailAddress: value},
-            });
+            setFormData(prev => ({
+                ...prev,
+                address: {...prev.address, detailAddress: value},
+            }));
+        } else if (name === "province" || name === "district" || name === "commune") {
+            setFormData(prev => ({
+                ...prev,
+                address: {...prev.address, [name]: value},
+            }));
         } else {
-            setFormData({...formData, [name]: value});
+            setFormData(prev => ({...prev, [name]: value}));
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setFormData(prev => ({...prev, image: file, imageUrl}));
+        }
+    };
+
+    const handleRemoveImage = (): void => {
+        setFormData(prev => ({...prev, image: null, imageUrl: ""}));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
         e.preventDefault();
 
         if (!formData.address.province || !formData.address.district || !formData.address.commune) {
-            toast.error("Vui lòng chọn đầy đủ tỉnh, quận, và xã/phường.", {position: "top-center"});
+            toast.error("Vui lòng đầy đủ tỉnh, quận, và xã/phường.", {position: "top-center"});
             return;
         }
 
-        const updatedFormData: FormData = {
-            ...formData,
-            coordinates: coordinates.join(', '),
+        const updateDto: UpdateHostelRequestDto = {
+            hostelName: formData.hostelName,
+            description: formData.description,
+            address: formData.address,
+            size: Number(formData.size),
+            numberOfRooms: Number(formData.numberOfRooms),
+            coordinates: coordinates.join(","),
+            serviceId: selectedServices,
+            image: formData.image,
         };
 
         try {
-            const response = await apiInstance.put(`/hostels/updateHostel/${hostelId}`, updatedFormData);
-            if (response.status === 200 && response.data.succeeded) {
-                toast.success("Cập nhật nhà trọ thành công", {position: "top-center"});
-                setTimeout(() => {
-                    router.push('/dashboard/manage-hostels');
-                }, 3000);
+            const formDataToSend = new FormData();
+            formDataToSend.append('HostelName', updateDto.hostelName);
+            formDataToSend.append('Description', updateDto.description);
+            formDataToSend.append('Address.Province', updateDto.address.province);
+            formDataToSend.append('Address.District', updateDto.address.district);
+            formDataToSend.append('Address.Commune', updateDto.address.commune);
+            formDataToSend.append('Address.DetailAddress', updateDto.address.detailAddress);
+            formDataToSend.append('Size', updateDto.size.toString());
+            formDataToSend.append('NumberOfRooms', updateDto.numberOfRooms.toString());
+            formDataToSend.append('Coordinates', updateDto.coordinates);
+            updateDto.serviceId.forEach(serviceId => {
+                formDataToSend.append('ServiceId', serviceId);
+            });
+            if (formData.image) {
+                formDataToSend.append('image', formData.image);
             }
+
+            await apiInstance.put(`/hostels/${hostelId}`, formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            toast.success("Cập nhật nhà trọ thành công", {position: "top-center"});
+            /*setTimeout(() => {
+                router.push("/dashboard/manage-hostels");
+            }, 3000);*/
         } catch (error: any) {
-            if (error.response && error.response.status === 400) {
+            if (error.response?.data?.message) {
                 toast.error(error.response.data.message, {position: "top-center"});
             } else {
                 toast.error("Đã xảy ra lỗi khi cập nhật", {position: "top-center"});
@@ -247,8 +218,8 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         }
     };
 
-    const handleCancel = () => {
-        router.push('/dashboard/manage-hostel');
+    const handleCancel = (): void => {
+        router.push("/dashboard/manage-hostels");
     };
 
     if (isLoading) {
@@ -259,9 +230,10 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
         <form onSubmit={handleSubmit}>
             <div className="bg-white card-box border-20">
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">Tên nhà trọ*</label>
+                    <label htmlFor="hostelName">Tên nhà trọ*</label>
                     <input
                         type="text"
+                        id="hostelName"
                         placeholder="Nhập tên phòng trọ"
                         name="hostelName"
                         value={formData.hostelName}
@@ -271,8 +243,9 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                 </div>
 
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="">Chi tiết*</label>
+                    <label htmlFor="description">Chi tiết*</label>
                     <textarea
+                        id="description"
                         className="size-lg"
                         placeholder="Hãy viết miêu tả chi tiết về phòng trọ..."
                         name="description"
@@ -285,9 +258,10 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                 <div className="row align-items-end">
                     <div className="col-md-6">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Diện tích*</label>
+                            <label htmlFor="size">Diện tích*</label>
                             <input
                                 type="number"
+                                id="size"
                                 placeholder="Diện tích phòng trọ"
                                 name="size"
                                 value={formData.size}
@@ -300,9 +274,10 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
 
                     <div className="col-md-6">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Số lượng phòng*</label>
+                            <label htmlFor="numberOfRooms">Số lượng phòng*</label>
                             <input
                                 type="number"
+                                id="numberOfRooms"
                                 placeholder="Số lượng phòng"
                                 name="numberOfRooms"
                                 value={formData.numberOfRooms}
@@ -315,14 +290,14 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
 
                     <div className="col-md-4">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Tỉnh/Thành phố*</label>
-                            <NiceSelect
-                                className="nice-select"
-                                options={provinces}
-                                onChange={selectProvinceHandler}
-                                placeholder="Chọn Tỉnh/Thành phố"
-                                name={"province"}
-                                defaultCurrent={0}
+                            <label htmlFor="province">Tỉnh/Thành phố*</label>
+                            <input
+                                type="text"
+                                id="province"
+                                placeholder="Nhập Tỉnh/Thành phố"
+                                name="province"
+                                value={formData.address.province}
+                                onChange={handleInputChange}
                                 required
                             />
                         </div>
@@ -330,15 +305,14 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
 
                     <div className="col-md-4">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Quận/Huyện*</label>
-                            <NiceSelect
-                                className="nice-select"
-                                options={districts}
-                                onChange={selectDistrictHandler}
-                                placeholder="Chọn Quận/Huyện"
-                                disabled={!selectedProvince}
-                                name={"district"}
-                                defaultCurrent={0}
+                            <label htmlFor="district">Quận/Huyện*</label>
+                            <input
+                                type="text"
+                                id="district"
+                                placeholder="Nhập Quận/Huyện"
+                                name="district"
+                                value={formData.address.district}
+                                onChange={handleInputChange}
                                 required
                             />
                         </div>
@@ -346,24 +320,25 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
 
                     <div className="col-md-4">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Xã/Phường*</label>
-                            <NiceSelect
-                                className="nice-select"
-                                options={communes}
-                                onChange={selectCommuneHandler}
-                                placeholder="Chọn Xã/Phường"
-                                disabled={!selectedDistrict}
-                                name={"commune"}
-                                defaultCurrent={0}
+                            <label htmlFor="commune">Xã/Phường*</label>
+                            <input
+                                type="text"
+                                id="commune"
+                                placeholder="Nhập Xã/Phường"
+                                name="commune"
+                                value={formData.address.commune}
+                                onChange={handleInputChange}
+                                required
                             />
                         </div>
                     </div>
 
                     <div className="col-md-12">
                         <div className="dash-input-wrapper mb-30">
-                            <label htmlFor="">Địa chỉ cụ thể*</label>
+                            <label htmlFor="detailAddress">Địa chỉ cụ thể*</label>
                             <input
                                 type="text"
+                                id="detailAddress"
                                 placeholder="Địa chỉ cụ thể"
                                 name="detailAddress"
                                 value={formData.address.detailAddress}
@@ -373,21 +348,72 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                         </div>
                     </div>
 
+                    <ServicesList
+                        onServiceSelect={handleServiceSelect}
+                        initialSelectedServices={selectedServices}
+                    />
+
+                    <div className="bg-white border-20 col-md-12 mb-10">
+                        <h4 className="dash-title-three">Thêm ảnh của nhà trọ</h4>
+                        <div className="dash-input-wrapper mb-20">
+                            <label>File Attachment*</label>
+                            <div className="d-flex align-items-center mb-15">
+                                {formData.imageUrl && (
+                                    <div
+                                        className="image-preview-wrapper position-relative me-3 mb-1"
+                                        style={{width: "15%"}}
+                                    >
+                                        <img
+                                            src={formData.imageUrl}
+                                            alt="Hostel"
+                                            className="image-preview"
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="remove-btn position-absolute top-0 end-0"
+                                            onClick={handleRemoveImage}
+                                        >
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="dash-btn-one d-inline-block position-relative me-3">
+                            <i className="bi bi-plus"></i>
+                            Upload Image
+                            <input
+                                type="file"
+                                id="uploadImage"
+                                name="uploadImage"
+                                onChange={handleImageChange}
+                                accept="image/*"
+                            />
+                        </div>
+                        <small>Upload file .jpg, .png</small>
+                    </div>
+
                     <div className="map-frame mb-10">
                         <div className="dash-input-wrapper mb-10">
-                            <label htmlFor="">Tọa độ</label>
+                            <label>Tọa độ</label>
                             <input
-                                className={'w-25'}
+                                className="w-25"
                                 type="text"
                                 readOnly
                                 name="coordinates"
-                                value={coordinates.join(', ')}
-                                onChange={handleInputChange}
+                                value={coordinates.join(", ")}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates}
-                                  onCoordinatesChange={handleCoordinatesChange}
-                                  showSearch={true}
+                        <GoongMap
+                            selectedLocation={coordinates}
+                            onCoordinatesChange={handleCoordinatesChange}
+                            showSearch={true}
                         />
                     </div>
                 </div>
