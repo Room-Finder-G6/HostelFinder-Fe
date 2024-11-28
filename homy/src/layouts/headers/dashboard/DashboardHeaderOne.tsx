@@ -137,12 +137,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                     inactiveIcon: dashboardIcon_7,
                     label: "Quản Lý Bài Đăng"
                 },
-                
+
                 {
                     href: "/dashboard/saved-search",
                     activeIcon: dashboardIconActive_9,
                     inactiveIcon: dashboardIcon_9,
-                    label: "Saved Search"
+                    label: "Quản lí hóa đơn"
                 },
                 {
                     href: "/dashboard/review",
@@ -257,8 +257,8 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         </li>
                         <li className="plr">
                             <Link href="/dashboard/saved-search" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/saved-search' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/saved-search' ? dashboardIconActive_9 : dashboardIcon_9} alt="Saved Search" />
-                                <span>Saved Search</span>
+                                <Image src={pathname === '/dashboard/saved-search' ? dashboardIconActive_9 : dashboardIcon_10} alt="Saved Search" />
+                                <span>Quản lí hóa đơn</span>
                             </Link>
                         </li>
                         <li className="plr">
