@@ -28,12 +28,12 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > .env
-          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> .env
-          echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> .env
-          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> .env
-          echo "NEXT_PUBLIC_GOONG_MAPTILES_KEY=${{ secrets.NEXT_PUBLIC_GOONG_MAPTILES_KEY }}" >> .env
-          echo "NEXT_PUBLIC_GOONG_API_KEY=${{ secrets.NEXT_PUBLIC_GOONG_API_KEY }}" >> .env
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > homy/.env
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> homy/.env
+          echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> homy/.env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_MAPTILES_KEY=${{ secrets.NEXT_PUBLIC_GOONG_MAPTILES_KEY }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_API_KEY=${{ secrets.NEXT_PUBLIC_GOONG_API_KEY }}" >> homy/.env
           
       # Step 4: Build the application
       - name: Build the application
