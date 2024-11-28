@@ -1,11 +1,11 @@
 "use client";
-import React, {useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
-import {jwtDecode} from "jwt-decode";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import ServicesList from "../../manage-service/ServiceList";
 
 interface CustomJwtPayload {
@@ -161,7 +161,7 @@ const AddHostelForm: React.FC = () => {
         setSelectedProvince(provinceCode);
         setFormData({
             ...formData,
-            address: {...formData.address, province: province?.text ?? ""},
+            address: { ...formData.address, province: province?.text ?? "" },
         });
         setSelectedDistrict(null);
         setCommunes([]);
@@ -173,7 +173,7 @@ const AddHostelForm: React.FC = () => {
         setSelectedDistrict(districtCode);
         setFormData({
             ...formData,
-            address: {...formData.address, district: district?.text ?? ""},
+            address: { ...formData.address, district: district?.text ?? "" },
         });
     };
 
@@ -182,21 +182,21 @@ const AddHostelForm: React.FC = () => {
         const commune = communes.find((c) => c.value === communeCode);
         setFormData({
             ...formData,
-            address: {...formData.address, commune: commune?.text ?? ""},
+            address: { ...formData.address, commune: commune?.text ?? "" },
         });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         if (name === "size" || name === "numberOfRooms") {
-            setFormData({...formData, [name]: parseInt(value)});
+            setFormData({ ...formData, [name]: parseInt(value) });
         } else if (name === "detailAddress") {
             setFormData({
                 ...formData,
-                address: {...formData.address, detailAddress: value},
+                address: { ...formData.address, detailAddress: value },
             });
         } else {
-            setFormData({...formData, [name]: value});
+            setFormData({ ...formData, [name]: value });
         }
     };
 
@@ -289,15 +289,15 @@ const AddHostelForm: React.FC = () => {
                 },
             });
             if (response.status === 200 || response.data.succeeded) {
-                const {message} = response.data;
-                toast.success(message, {position: "top-center"});
-                // Optionally, redirect or reset the form here
+                const { message } = response.data;
+                toast.success(message, { position: "top-center" });
+                window.location.href = '/dashboard/manage-hostels';
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
-                toast.error(error.response.data.message, {position: "top-center"});
+                toast.error(error.response.data.message, { position: "top-center" });
             } else {
-                toast.error("Something went wrong", {position: "top-center"});
+                toast.error("Something went wrong", { position: "top-center" });
             }
         }
     };
@@ -422,7 +422,7 @@ const AddHostelForm: React.FC = () => {
                     </div>
 
                     <div className="bg-white border-20 col-md-12 mb-10">
-                        <ServicesList onServiceSelect={handleServiceSelect}/>
+                        <ServicesList onServiceSelect={handleServiceSelect} />
                     </div>
 
                     {/* Photo Attachment Section */}
@@ -435,7 +435,7 @@ const AddHostelForm: React.FC = () => {
                                 {selectedFiles.length > 0 && (
                                     <div
                                         className="image-preview-wrapper position-relative me-3 mb-1"
-                                        style={{width: '15%'}} // Set fixed dimensions
+                                        style={{ width: '15%' }} // Set fixed dimensions
                                     >
                                         <img
                                             src={selectedFiles[0].previewUrl}
@@ -488,7 +488,7 @@ const AddHostelForm: React.FC = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
+                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
                         {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
                     </div>
 

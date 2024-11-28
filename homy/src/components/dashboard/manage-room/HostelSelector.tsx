@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
 import apiInstance from "@/utils/apiInstance";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from "jwt-decode"; // Sửa lại import
 import Loading from "@/components/Loading";
+import { toast } from "react-toastify"; // Thêm import cho toast
+
 interface Hostel {
   id: string;
   hostelName: string;
@@ -11,6 +13,7 @@ interface HostelSelectorProps {
   selectedHostel: string;
   onHostelChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
+
 interface JwtPayload {
   UserId: string;
 }
@@ -19,8 +22,9 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
   // Hàm lấy landlordId từ token
-  const getUserIdFromToken = useCallback(() => {
+  const getUserIdFromToken = useCallback((): string | null => {
     const token = window.localStorage.getItem("token");
     if (token) {
       try {
@@ -28,11 +32,11 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
         return decodedToken.UserId;
       } catch (error) {
         console.error("Error decoding token:", error);
-        setError("Error decoding user token");
+        setError("Lỗi khi giải mã token người dùng");
         return null;
       }
     }
-    setError("No token found");
+    setError("Không tìm thấy token");
     return null;
   }, []);
 
@@ -49,9 +53,11 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
           setHostels(response.data.data);
         } else {
           console.error("Failed to load hostels");
+          toast.error("Không thể tải danh sách nhà trọ.", { position: "top-center" });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching hostels:", error);
+        toast.error("Đã xảy ra lỗi khi tải danh sách nhà trọ.", { position: "top-center" });
       }
       finally {
         setLoading(false);
@@ -77,8 +83,9 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
           value={selectedHostel}
           onChange={onHostelChange}
           style={{ minWidth: "160px", maxHeight: "40px" }}
+          disabled={hostels.length === 0}
         >
-          <option value="">Chọn nhà trọ</option>
+          <option value="0">Chọn nhà trọ</option>
           {hostels.map((hostel) => (
             <option key={hostel.id} value={hostel.id}>
               {hostel.hostelName}

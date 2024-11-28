@@ -53,7 +53,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 }
                 const response = await apiInstance.get(url);
                 if (response.data.succeeded) {
-                    setRooms(response.data.data);
+                    setRooms(response.data.data || []);
                 } else {
                     setError('Không thể tải danh sách phòng');
                 }
@@ -129,17 +129,6 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         );
     }
 
-    if (error) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={5} className="text-danger text-center py-3">
-                        Không có phòng nào trong nhà trọ này.
-                    </td>
-                </tr>
-            </tbody>
-        );
-    }
 
     if (rooms.length === 0) {
         return (
@@ -149,13 +138,12 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                         colSpan={5}
                         className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
                     >
-                        Không có phòng nào trong nhà trọ này.
+                        Hiện tại chưa có phòng trọ nào
                     </td>
                 </tr>
             </tbody>
         );
     }
-
     return (
         <>
             <tbody>

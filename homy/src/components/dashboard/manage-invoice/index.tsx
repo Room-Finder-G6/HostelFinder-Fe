@@ -1,6 +1,6 @@
 "use client";
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne";
-import SavedSearchBody from "./SavedSearchBody";
+import SavedSearchBody from "./InvoiceBody";
 import { useState } from "react";
 
 const DashboardSavedSearch = () => {

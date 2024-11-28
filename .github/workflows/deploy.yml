@@ -1,4 +1,4 @@
-name: Deploy Frontend to AWS ECS
+name: Deploy Frontend to VPS using Docker (SSH Password)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Frontend to AWS ECS
+    name: Deploy Frontend to VPS using Docker (SSH Password)
     runs-on: ubuntu-latest
 
     steps:
@@ -26,34 +26,44 @@ jobs:
         working-directory: homy
         run: npm install
 
+      - name: Create .env file
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > homy/.env
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> homy/.env
+          echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> homy/.env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_MAPTILES_KEY=${{ secrets.NEXT_PUBLIC_GOONG_MAPTILES_KEY }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_API_KEY=${{ secrets.NEXT_PUBLIC_GOONG_API_KEY }}" >> homy/.env
+          
       # Step 4: Build the application
       - name: Build the application
         working-directory: homy
         run: npm run build
 
-      # Step 5: Configure AWS credentials
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      # Step 6: Log in to Amazon ECR
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
-
-      # Step 7: Build, tag, and push Docker image
-      - name: Build and push Docker image
+      # Step 5: Build Docker image
+      - name: Build Docker image
         id: build-image
         run: |
-          docker build -t ${{ secrets.ECR_REPOSITORY }} homy
-          docker tag ${{ secrets.ECR_REPOSITORY }}:latest ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
-          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest homy
 
-      # Step 8: Update ECS service to use the new image
-      - name: Deploy to ECS
+      # Step 7: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 8: Push Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
         run: |
-          aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER }} --service ${{ secrets.ECS_SERVICE }} --force-new-deployment
+          docker push ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+
+      # Step 9: SSH into VPS and pull the image from Docker Hub
+      - name: Deploy Docker container on VPS
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << 'EOF'
+            docker pull ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+            docker stop hostelfe || true
+            docker rm hostelfe || true
+            docker run -d --name hostelfe -p 4000:3000 ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+          EOF
