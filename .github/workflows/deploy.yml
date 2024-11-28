@@ -40,12 +40,12 @@ jobs:
       # Step 6: Push Docker image to VPS (using SSH with password)
       - name: Push Docker image to VPS
         run: |
-          docker save hostelfe:latest | bzip2 | sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no user@${{ secrets.VPS_IP }} 'bunzip2 | docker load'
+          docker save hostelfe:latest | bzip2 | sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} 'bunzip2 | docker load'
 
       # Step 7: SSH into VPS and deploy the Docker container
       - name: Deploy Docker container on VPS
         run: |
-          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no user@${{ secrets.VPS_IP }} << 'EOF'
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << 'EOF'
             docker stop hostelfe || true
             docker rm hostelfe || true
             docker run -d --name hostelfe -p 4000:3000 hostelfe:latest
