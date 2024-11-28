@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import apiInstance from '@/utils/apiInstance';
-import Loading from "@/components/Loading";
-import { FaInfoCircle, FaEdit, FaTrash, FaFileContract, FaFileInvoice, FaEllipsisV } from 'react-icons/fa';
-import CreateContractModal from './CreateContractModal';
-import RoomDetailsModal from './RoomDetailsModal';
-import { TfiWrite } from "react-icons/tfi";
 import { Dropdown } from 'react-bootstrap';
+import { FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import { TfiWrite } from 'react-icons/tfi';
 
+import apiInstance from '@/utils/apiInstance';
+import Loading from '@/components/Loading';
+import CreateContractModal from './popup-modal/CreateContractModal';
+import RoomDetailsModal from './popup-modal/RoomDetailsModal';
+import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
+import MeterReadingForm from './popup-modal/MeterReadingModal';
 interface Room {
     id: string;
     roomName: string;
@@ -26,6 +28,7 @@ interface RoomTableBodyProps {
 }
 
 const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh }) => {
+    // State hooks
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -33,7 +36,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [selectedRoomId, setSelectedRoomId] = useState<string>('');
     const [isRoomDetailsModalOpen, setIsRoomDetailsModalOpen] = useState<boolean>(false);
     const [roomDetailsId, setRoomDetailsId] = useState<string>('');
+    const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState<boolean>(false);
+    const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
+    const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
 
+    // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
         if (!selectedHostel) return;
 
@@ -46,7 +53,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 }
                 const response = await apiInstance.get(url);
                 if (response.data.succeeded) {
-                    setRooms(response.data.data);
+                    setRooms(response.data.data || []);
                 } else {
                     setError('Không thể tải danh sách phòng');
                 }
@@ -60,6 +67,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         fetchRooms();
     }, [selectedHostel, selectedFloor, refresh]);
 
+    // Handler functions
     const handleEdit = (roomId: string) => {
         console.log(`Edit Room ID: ${roomId}`);
     };
@@ -74,9 +82,21 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     };
 
     const handleCreateInvoice = (roomId: string) => {
-        console.log(`Create Invoice for Room ID: ${roomId}`);
+        setInvoiceRoomId(roomId);
+        setIsInvoiceModalOpen(true);
     };
 
+    const handleViewRoomDetails = (roomId: string) => {
+        setRoomDetailsId(roomId);
+        setIsRoomDetailsModalOpen(true);
+    };
+
+    const handleMeterReading = (roomId: string) => {
+        setSelectedRoomId(roomId);
+        setIsMeterReadingModalOpen(true);
+    }
+
+    // Modal close handlers
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedRoomId('');
@@ -87,16 +107,16 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         setSelectedRoomId('');
     };
 
-    const handleViewRoomDetails = (roomId: string) => {
-        setRoomDetailsId(roomId);
-        setIsRoomDetailsModalOpen(true);
-    };
-
     const handleCloseRoomDetailsModal = () => {
         setIsRoomDetailsModalOpen(false);
         setRoomDetailsId('');
     };
+    const handleCloseMeterReadingModal = () => {
+        setIsMeterReadingModalOpen(false);
+        setSelectedRoomId('');
+    };
 
+    // Render loading, error, or rooms
     if (loading) {
         return (
             <tbody>
@@ -109,17 +129,6 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         );
     }
 
-    if (error) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={5} className="text-danger text-center py-3">
-                        Lỗi: {error}
-                    </td>
-                </tr>
-            </tbody>
-        );
-    }
 
     if (rooms.length === 0) {
         return (
@@ -129,13 +138,12 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                         colSpan={5}
                         className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
                     >
-                        Không có phòng nào trong nhà trọ này.
+                        Hiện tại chưa có phòng trọ nào
                     </td>
                 </tr>
             </tbody>
         );
     }
-
     return (
         <>
             <tbody>
@@ -161,11 +169,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                         <td className="py-3 px-4">{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
                         <td className="py-3 px-4">
                             {room.isAvailable ? (
-                                <span className="badge bg-light text-success rounded-pill">
+                                <span className="property-status Active">
                                     Còn trống
                                 </span>
                             ) : (
-                                <span className="badge bg-light text-dark rounded-pill">
+                                <span className="property-status pending">
                                     Đã thuê
                                 </span>
                             )}
@@ -197,7 +205,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                                         <FaFileInvoice className="me-2" />
                                         Tạo hóa đơn
                                     </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                    <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
                                         <TfiWrite className="me-2" />
                                         Ghi số dịch vụ
                                     </Dropdown.Item>
@@ -218,6 +226,21 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 isOpen={isRoomDetailsModalOpen}
                 onClose={handleCloseRoomDetailsModal}
                 roomId={roomDetailsId}
+            />
+            <CreateInvoiceModal
+                isOpen={isInvoiceModalOpen}
+                hostelId={selectedHostel}
+                onClose={() => {
+                    setIsInvoiceModalOpen(false);
+                    setInvoiceRoomId('');
+                }}
+                roomId={invoiceRoomId}
+            />
+            <MeterReadingForm
+                hostelId={selectedHostel}
+                roomId={selectedRoomId}
+                isOpen={isMeterReadingModalOpen}
+                onClose={handleCloseMeterReadingModal}
             />
         </>
     );

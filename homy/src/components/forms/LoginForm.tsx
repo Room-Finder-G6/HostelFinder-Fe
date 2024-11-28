@@ -23,6 +23,7 @@ interface FormData {
 const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   const router = useRouter();
   const [isPasswordVisible, setPasswordVisibility] = useState(false);
+  const [loading, setLoading] = useState(false);  // Trạng thái loading
 
   const togglePasswordVisibility = () => {
     setPasswordVisibility((prev) => !prev);
@@ -42,6 +43,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
   } = useForm<FormData>({ resolver: yupResolver(schema) });
 
   const onSubmit = async (data: FormData) => {
+    setLoading(true); // Bắt đầu loading
     try {
       const res = await apiInstance.post("auth/login", data);
       if (res.status === 200 && res.data.succeeded) {
@@ -54,10 +56,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         backdrops.forEach(backdrop => backdrop.remove());
 
         if (responseData.role === "User") {
-          router.push("/");
-        } else if (responseData.role === "Admin" || responseData.role === "Landlord") {
-          const modal =
-            router.push("/dashboard/dashboard-index");
+          window.location.href = '/';
+        } else if (responseData.role === "Landlord") {
+          router.push("/dashboard/dashboard-index");
+        }
+        else if (responseData.role === "Admin") {
+          router.push("/admin/admin-index");
         }
       }
     } catch (error: any) {
@@ -66,6 +70,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
       } else {
         toast.error(error.message, { position: "top-center" });
       }
+    } finally {
+      setLoading(false); // Kết thúc loading
     }
   };
 
@@ -123,8 +129,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
             <button
               type="submit"
               className="btn-two w-100 text-uppercase d-block mt-20"
+              disabled={loading} // Vô hiệu hóa nút khi đang loading
             >
-              Login
+              {loading ? (
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> // Spinner
+              ) : (
+                "Login"
+              )}
             </button>
           </div>
         </div>

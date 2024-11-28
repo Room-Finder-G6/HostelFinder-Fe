@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { Modal, Button, Table } from "react-bootstrap"
 import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
+import "./../rentralContract.css";
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -22,47 +23,60 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     onSuccess,
 }) => {
     const { register, handleSubmit, reset, watch, formState: { errors }, setValue } = useForm();
-    const [services, setServices] = useState([]);
+    const [services, setServices] = useState<any[]>([]);
     const [showDetails, setShowDetails] = useState(false);
     const [previewImages, setPreviewImages] = useState<Record<string, string>>({});
     const [roomData, setRoomData] = useState<any>(null);
-    const [monthlyRentFormatted, setMonthlyRentFormatted] = useState("");
-    const [depositAmountFormatted, setDepositAmountFormatted] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (roomId && isOpen) {
             fetchRoomData();
+            fetchServiceData();
         }
-    }, [roomId, isOpen])
+    }, [roomId, isOpen]);
 
-    //fetch của phòng
+    // Hàm reset form và các state liên quan
+    const resetForm = () => {
+        reset();
+        setShowDetails(false);
+        setPreviewImages({});
+    };
+
+    // Hàm xử lý khi đóng modal
+    const handleClose = () => {
+        resetForm();
+        onClose();
+    };
+
+    // Fetch dữ liệu phòng
     const fetchRoomData = async () => {
         try {
             const response = await apiInstance.get(`/rooms/${roomId}`);
             if (response.data.succeeded) {
                 setRoomData(response.data.data);
                 setValue('monthlyRentNow', response.data.data.monthlyRentCost);
-                setValue('monthlyRent', response.data.data.monthlyRentCost)
-                setValue('depositAmount', response.data.data.monthlyRentCost)
-
+                setValue('monthlyRent', response.data.data.monthlyRentCost);
+                setValue('depositAmount', response.data.data.monthlyRentCost);
             }
         } catch (error: any) {
-            toast.error(error.message, { position: "top-center" })
+            toast.error(error.message, { position: "top-center" });
         }
-    }
+    };
+
     // Fetch danh sách dịch vụ
-    useEffect(() => {
-        if (hostelId) {
-            apiInstance
-                .get(`/ServiceCost/hostels?hostelId=${hostelId}`)
-                .then((response) => {
-                    setServices(response.data.data || []);
-                })
-                .catch((error) => {
-                    console.error("Error fetching services:", error);
-                });
+    const fetchServiceData = async () => {
+        try {
+            const response = await apiInstance.get(`/meterReadings/${hostelId}/${roomId}`);
+            if (response.data.succeeded) {
+                setServices(response.data.data || []);
+            }
+        } catch (error: any) {
+            console.error("Error fetching service data:", error);
+            toast.error("Failed to fetch service data", { position: "top-center" });
         }
-    }, [hostelId]);
+    };
+
 
     const onFileChange = (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
         const file = e.target.files?.[0];
@@ -76,6 +90,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     };
 
     const onSubmit = async (data: any) => {
+        setIsLoading(true);
         const formData = new FormData();
 
         // Thông tin hợp đồng
@@ -116,40 +131,58 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                 data.tenant.temporaryResidenceStatus || ""
             );
         }
+        // Collect meter readings
+        const meterReadings = services.map((service: any, index: number) => ({
+            roomId,
+            serviceId: service.serviceId,
+            currentReading: data[`reading_${service.serviceId}`], // Get reading from form data
+            billingMonth: new Date(data.startDate).getMonth() + 1, // Use start date month
+            billingYear: new Date(data.startDate).getFullYear(), // Use start date year
+        }));
 
-        // Ghi số liệu dịch vụ
-        data.services.forEach((service: any, index: number) => {
-            formData.append(
-                `AddMeterReadingServiceDto[${index}].ServiceId`,
-                service.serviceId
-            );
-            formData.append(
-                `AddMeterReadingServiceDto[${index}].Reading`,
-                service.reading
-            );
-        });
+        try {
+            const response = await apiInstance.post(`/meterReadings/list`, meterReadings, {
+                headers: { "Content-Type": "application/json" },
+            });
+            if (response.status === 200 && response.data.succeeded) {
+            }
+        } catch (error: any) {
+            console.error("Error creating contract:", error.response?.data || error);
+            toast.error(error.response?.data.message);
+        }
 
         try {
             const response = await apiInstance.post(`/rental-contracts`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            toast.success(response.data.data.message);
-            onSuccess();
-            reset();
-            onClose();
+            if (response.status === 200 && response.data.succeeded) {
+                toast.success(response.data.message);
+                onSuccess();
+                resetForm(); // Reset form sau khi tạo thành công
+                onClose();   // Đóng modal
+            }
         } catch (error: any) {
             console.error("Error creating contract:", error.response?.data || error);
-            alert(error.response?.data.message);
+            toast.error(error.response?.data.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <Modal show={isOpen} onHide={onClose} size="lg" centered>
+        <Modal show={isOpen} onHide={handleClose} size="lg" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Tạo Hợp Đồng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Tạo Hợp Đồng</Modal.Title>
             </Modal.Header>
             <form onSubmit={handleSubmit(onSubmit)}>
                 <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                    {isLoading && (
+                        <div className="loading-overlay">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    )}
                     {/* Thông tin hợp đồng */}
                     <section className="mb-4">
                         <h5>Thông tin hợp đồng</h5>
@@ -206,6 +239,9 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 onValueChange={(value) => setValue('depositAmount', value)}
                                 required
                             />
+                            <div className="alert alert-warning mt-2" role="alert">
+                                Chú ý: Đây là số tiền cọc ở phòng trọ và sẽ không được tính vào hóa đơn.
+                            </div>
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Kỳ thanh toán (ngày) *</label>
@@ -276,7 +312,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             <label className="form-label">CCCD *</label>
                             <input
                                 type="text"
-                                {...register("tenant.IdentityCardNumber")}
+                                {...register("tenant.identityCard")}
                                 className="form-control"
                                 required
                             />
@@ -317,7 +353,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             )}
                         </div>
                     </section>
-                    {/* Thêm nút để hiển thị trường chi tiết */}
+                    {/* Nút hiển thị trường chi tiết */}
                     <Button
                         variant="link"
                         onClick={() => setShowDetails(!showDetails)}
@@ -379,47 +415,43 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                     <th>Tên Dịch Vụ</th>
                                     <th>Giá Đơn Vị</th>
                                     <th>Đơn Vị</th>
-                                    <th>Ngày Hiệu Lực</th>
+                                    <th>Chỉ Số Cũ</th>
                                     <th>Nhập Số Liệu</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {services.map((service: any, index: number) => {
-                                    return (
-                                        <tr key={service.serviceId}>
-                                            <td>{service.serviceName}</td>
-                                            <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
-                                            <td>{service.unit || "N/A"}</td>
-                                            <td>
-                                                {service.effectiveFrom
-                                                    ? new Date(service.effectiveFrom).toLocaleDateString("vi-VN")
-                                                    : "N/A"}
-                                            </td>
-                                            <td>
-                                                <input
-                                                    type="number"
-                                                    placeholder="Nhập số liệu"
-                                                    {...register(`services.${index}.reading`)}
-                                                    className="form-control"
-                                                />
-                                                <input
-                                                    type="hidden"
-                                                    defaultValue={service.serviceId}
-                                                    {...register(`services.${index}.serviceId`)}
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {services.map((service: any) => (
+                                    <tr key={service.serviceId}>
+                                        <td>{service.serviceName}</td>
+                                        <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
+                                        <td>{service.unit || "N/A"}</td>
+                                        <td>{service.previousReading}</td>
+                                        <td>
+                                            <input
+                                                type="number"
+                                                {...register(`reading_${service.serviceId}`)} // Register dynamic field
+                                                className="form-control"
+                                                defaultValue={service.previousReading}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </Table>
                     </section>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" type="submit">
-                        Lưu
+                    <Button variant="primary" type="submit" disabled={isLoading}>
+                        {isLoading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                {' '}Đang lưu...
+                            </>
+                        ) : (
+                            'Lưu'
+                        )}
                     </Button>
-                    <Button variant="secondary" onClick={onClose}>
+                    <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
                         Thoát
                     </Button>
                 </Modal.Footer>

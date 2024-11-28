@@ -11,3 +11,8 @@ export interface Hostel {
     coordinates: string;
     createdOn: string;
 }
+
+export enum SortDirection {
+    Ascending = "Ascending",
+    Descending = "Descending",
+  }

@@ -15,8 +15,8 @@ const MembershipGrid = () => {
   
   if (error) return <p className="error-message">{error}</p>;
 
-  // Sort memberships by price (ascending)
-  const sortedMemberships = memberships.sort((a, b) => a.price - b.price);
+    // Sort memberships by price (ascending)
+    const sortedMemberships = memberships.sort((a, b) => a.price - b.price);
 
   return (
     <div className={styles.container}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import './serviceCost.css';
+import './../serviceCost.css';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;

@@ -1,8 +1,6 @@
 import NiceSelect from "@/ui/NiceSelect";
 import React, { useEffect, useState } from "react";
 import { FilterPostData } from "@/models/filterPostData";
-import Link from "next/link";
-import ListingDropdownModal from "@/modals/ListingDropdownModal";
 
 interface DropdownTwoProps {
     filterData: FilterPostData;
@@ -21,7 +19,7 @@ interface SizeRange {
 }
 
 const PRICE_RANGES: Record<string, PriceRange> = {
-    "0": { min: 0, max: 0 }, // Tất cả mức giá
+    "0": { min: 0, max: Number.MAX_SAFE_INTEGER }, // Tất cả mức giá
     "1": { min: 0, max: 2000000 },
     "2": { min: 2000000, max: 4000000 },
     "3": { min: 4000000, max: 6000000 },
@@ -30,7 +28,7 @@ const PRICE_RANGES: Record<string, PriceRange> = {
 };
 
 const SIZE_RANGES: Record<string, SizeRange> = {
-    "0": { min: 0, max: 0 }, // Tất cả diện tích
+    "0": { min: 0, max: Number.MAX_SAFE_INTEGER }, // Tất cả diện tích
     "1": { min: 0, max: 30 },
     "2": { min: 30, max: 50 },
     "3": { min: 50, max: 80 },
@@ -82,7 +80,7 @@ const DropdownTwo = ({ filterData, onFilterChange, onSearch }: DropdownTwoProps)
         const selectedProvince = provinces.find((p) => p.value === e.target.value);
         onFilterChange({
             ...filterData,
-            province: selectedProvince?.text || "",
+            province: selectedProvince?.text ?? "",
             district: "",
         });
 

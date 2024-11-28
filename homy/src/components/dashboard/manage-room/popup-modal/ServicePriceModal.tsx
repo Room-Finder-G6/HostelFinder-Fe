@@ -15,7 +15,7 @@ interface ServicePrice {
     serviceId: string;
     serviceName: string;
     unitCost: number;
-    unit: string;
+    unit: number;
     effectiveFrom: string;
     effectiveTo: string | null;
 }
@@ -37,6 +37,28 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
     });
     const [isEditing, setIsEditing] = useState(false);
     const [editingServicePrice, setEditingServicePrice] = useState<ServicePrice | null>(null);
+    const [isFree, setIsFree] = useState(false);
+
+    // Define UnitType options
+    const unitOptions = [
+        { value: '0', label: 'Không có đơn vị' },
+        { value: '1', label: 'kWh' },
+        { value: '2', label: 'Khối' },
+        { value: '3', label: 'Theo người' },
+        { value: '4', label: 'Theo tháng' },
+    ];
+
+    const unitLabels: { [key: number]: string } = {
+        0: 'Không có đơn vị',
+        1: 'kWh',
+        2: 'Khối',
+        3: 'Theo người',
+        4: 'Theo tháng',
+    };
+
+    const getUnitLabel = (unitValue: number) => {
+        return unitLabels[unitValue] || '';
+    };
 
     useEffect(() => {
         if (isOpen) {
@@ -50,14 +72,9 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             const response = await apiInstance.get(`/services/hostels/${hostelId}`);
             if (response.data.succeeded && response.status === 200) {
                 setAvailableServices(response.data.data);
-                console.log(response.data.data);
             }
         } catch (error: any) {
-            if (error.response && error.response.status === 400) {
-                // toast.error(error.response.data.message);
-            } else {
-                // toast.error('An error occurred while fetching available services');
-            }
+            toast.error('Lỗi khi tải danh sách dịch vụ');
         }
     };
 
@@ -67,17 +84,34 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             if (response.data.succeeded) {
                 setServicePrices(response.data.data);
             } else {
-                toast.error('Failed to fetch service prices');
             }
         } catch (error) {
-            toast.error('An error occurred while fetching service prices');
+
         }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value,
+            [name]: value,
+        });
+        if (name === 'unitCost') {
+            if (value === '0') {
+                setIsFree(true);
+            } else {
+                setIsFree(false);
+            }
+        }
+    };
+
+    const handleIsFreeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const checked = e.target.checked;
+        setIsFree(checked);
+        setFormData({
+            ...formData,
+            unitCost: checked ? '0' : '',
+            unit: checked ? '0' : formData.unit,
         });
     };
 
@@ -88,25 +122,21 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                 hostelId: hostelId,
                 serviceId: formData.serviceId,
                 unitCost: parseFloat(formData.unitCost),
-                unit: formData.unit,
+                unit: parseInt(formData.unit),
                 effectiveFrom: formData.effectiveFrom,
             };
 
-            console.log(data);
-
             if (isEditing && editingServicePrice) {
-                // Update existing service price
                 const response = await apiInstance.put(`/ServiceCost/${editingServicePrice.id}`, data);
                 if (response.data.succeeded) {
-                    toast.success('Service price updated successfully');
+                    toast.success(response.data.message);
                 } else {
                     toast.error(response.data.message || 'Failed to update service price');
                 }
             } else {
-                // Add new service price
                 const response = await apiInstance.post('/ServiceCost', data);
                 if (response.data.succeeded) {
-                    toast.success('Service price added successfully');
+                    toast.success(response.data.message);
                 } else {
                     toast.error(response.data.message || 'Failed to add service price');
                 }
@@ -121,8 +151,9 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             });
             setIsEditing(false);
             setEditingServicePrice(null);
+            setIsFree(false);
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || 'An error occurred');
         }
     };
 
@@ -135,6 +166,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             unit: servicePrice.unit.toString(),
             effectiveFrom: servicePrice.effectiveFrom.split('T')[0],
         });
+        setIsFree(servicePrice.unitCost === 0);
     };
 
     const handleDeleteServicePrice = async (servicePriceId: string) => {
@@ -162,47 +194,71 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
             unit: '',
             effectiveFrom: '',
         });
+        setIsFree(false);
+    };
+
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
     return (
         <ServiceModal isOpen={isOpen} onClose={onClose} title=" Quản lý giá dịch vụ">
             {/* Display current service prices */}
-            <table className="table">
+            <div className="alert alert-warning mt-2" role="alert">
+                <div>
+                    <i className="bi-exclamation-triangle-fill me-2"></i>Chú ý:
+                </div>
+                Nếu bạn sửa giá của 1 dịch vụ đang áp dụng, giá sẽ được áp dụng cho các hoá đơn được tạo ra sau lần sửa này. Các hoá đơn cũ không thay đổi.
+            </div>
+            <table className="table table-striped table-hover">
                 <thead>
                     <tr>
-                        <th>Dịch vụ</th>
-                        <th>Đơn giá</th>
+                        <th scope='col'>Dịch vụ</th>
+                        <th className="text-end">Đơn giá</th>
                         <th>Đơn vị</th>
                         <th>Hiệu lực từ</th>
                         <th>Hiệu lực đến</th>
-                        <th>Hành động</th>
+                        <th className="text-center">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     {servicePrices.length > 0 ? (
-                        servicePrices.map((servicePrice: ServicePrice) => (
-                            <tr key={servicePrice.id}>
-                                <td>{servicePrice.serviceName}</td>
-                                <td>{servicePrice.unitCost}</td>
-                                <td>{servicePrice.unit}</td>
-                                <td>{new Date(servicePrice.effectiveFrom).toLocaleDateString()}</td>
-                                <td>{servicePrice.effectiveTo ? new Date(servicePrice.effectiveTo).toLocaleDateString() : 'N/A'}</td>
-                                <td>
-                                    <button
-                                        className="btn btn-sm btn-primary me-2"
-                                        onClick={() => handleEditButtonClick(servicePrice)}
-                                    >
-                                        Sửa
-                                    </button>
-                                    <button
-                                        className="btn btn-sm btn-danger"
-                                        onClick={() => handleDeleteServicePrice(servicePrice.id)}
-                                    >
-                                        Xóa
-                                    </button>
-                                </td>
-                            </tr>
-                        ))
+                        servicePrices.map((servicePrice: ServicePrice) => {
+                            const formattedUnitCost = new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND',
+                            }).format(servicePrice.unitCost);
+
+                            return (
+                                <tr key={servicePrice.id}>
+                                    <td>{servicePrice.serviceName}</td>
+                                    <td className="text-end">
+                                        {servicePrice.unitCost === 0
+                                            ? 'Miễn phí'
+                                            : formattedUnitCost}
+                                    </td>
+                                    <td>{servicePrice.unitCost === 0 ? 'N/A' : getUnitLabel(servicePrice.unit)}</td>
+                                    <td>{formatDate(servicePrice.effectiveFrom)}</td>
+                                    <td>{servicePrice.effectiveTo ? formatDate(servicePrice.effectiveTo) : 'N/A'}</td>
+                                    <td className="text-center">
+                                        <button
+                                            className="btn btn-sm btn-outline-primary me-2"
+                                            onClick={() => handleEditButtonClick(servicePrice)}
+                                            title="Chỉnh sửa"
+                                        >
+                                            <i className="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button
+                                            className="btn btn-sm btn-outline-danger"
+                                            onClick={() => handleDeleteServicePrice(servicePrice.id)}
+                                            title="Xóa"
+                                        >
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })
                     ) : (
                         <tr>
                             <td colSpan={6} style={{ textAlign: 'center' }}>
@@ -212,7 +268,6 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                     )}
                 </tbody>
             </table>
-
             {/* Form to add or edit service price */}
             <h4>{isEditing ? 'Cập nhật giá dịch vụ' : 'Thêm giá dịch vụ mới'}</h4>
             <form onSubmit={handleFormSubmit}>
@@ -239,28 +294,51 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                     </select>
                 </div>
                 <div className="form-group">
-                    <label>Đơn giá</label>
-                    <input
-                        type="number"
-                        name="unitCost"
-                        value={formData.unitCost}
-                        onChange={handleInputChange}
-                        className="form-control"
-                        required
-                        min="0"
-                    />
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isFree}
+                            onChange={handleIsFreeChange}
+                            className="me-2"
+                        />
+                        Miễn phí
+                    </label>
                 </div>
                 <div className="form-group">
-                    <label>Đơn vị</label>
-                    <input
-                        type="string"
-                        name="unit"
-                        value={formData.unit}
-                        onChange={handleInputChange}
-                        className="form-control"
-                        required
-                    />
+                    <label>Đơn giá</label>
+                    {isFree ? (
+                        <p className="form-control-static">Miễn phí</p>
+                    ) : (
+                        <input
+                            type="number"
+                            name="unitCost"
+                            value={formData.unitCost}
+                            onChange={handleInputChange}
+                            className="form-control"
+                            required
+                            min="0"
+                        />
+                    )}
                 </div>
+                {!isFree && (
+                    <div className="form-group">
+                        <label>Đơn vị</label>
+                        <select
+                            name="unit"
+                            value={formData.unit}
+                            onChange={handleInputChange}
+                            className="form-control"
+                            required
+                        >
+                            <option value="">Chọn đơn vị</option>
+                            {unitOptions.map((unit) => (
+                                <option key={unit.value} value={unit.value}>
+                                    {unit.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
                 <div className="form-group">
                     <label>Hiệu lực từ</label>
                     <input

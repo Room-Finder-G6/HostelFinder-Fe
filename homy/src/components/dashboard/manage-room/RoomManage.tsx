@@ -8,7 +8,7 @@ import HostelSelector from "./HostelSelector";
 import { jwtDecode } from "jwt-decode";
 import RoomForm from "./RoomForm";
 import RoomTableBody from "./RoomTableBody";
-import ServicePriceModal from "./ServicePriceModal";
+import ServicePriceModal from "./popup-modal/ServicePriceModal";
 import { useSearchParams } from "next/navigation";
 
 import {
@@ -82,7 +82,7 @@ const RoomManagement = () => {
 
    const toggleServicePriceModal = () => {
       if (!selectedHostel) {
-         toast.error("Vui lòng chọn nhà trọ trước khi muốn quản lí dịch vụ", { position: "top-center" });
+         toast.warning("Vui lòng chọn nhà trọ trước khi muốn quản lí dịch vụ", { position: "top-center" });
          return;
       }
       setIsServicePriceModalOpen(!isServicePriceModalOpen);
@@ -145,14 +145,17 @@ const RoomManagement = () => {
                const rooms = response.data.data as Room[];
                const uniqueFloors = Array.from(new Set(rooms.map((room) => room.floor).filter((floor) => floor !== null))) as number[];
                setFloors(uniqueFloors.sort((a, b) => a - b));
+            } else {
+               setFloors([]);
             }
          }
          catch (error: any) {
             if (error.response && error.response.status === 400) {
-               toast.error(error.response.data.message, { position: "top-center" });
+               // toast.error(error.response.data.message, { position: "top-center" });
                setFloors([]);
             } else {
-               toast.error("Something went wrong!", { position: "top-center" })
+               // toast.error("Something went wrong!", { position: "top-center" })
+               setFloors([]);
             }
 
          }
@@ -184,7 +187,7 @@ const RoomManagement = () => {
    const handleAddRoomSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!roomFormData.hostelId) {
-         toast.error("Vui lòng chọn nhà trọ", { position: "top-center" });
+         toast.warning("Vui lòng chọn nhà trọ", { position: "top-center" });
          return;
       }
 
@@ -325,7 +328,7 @@ const RoomManagement = () => {
             </div>
 
             {/* Floor Buttons */}
-            {floors.length > 0 && (
+            {Array.isArray(floors) && floors.length > 0 && (
                <div className="d-flex flex-wrap align-items-center gap-2 mb-4">
                   <button
                      className={`btn btn-sm ${selectedFloor === null ? 'btn-primary fw-bold' : 'btn-secondary'} d-flex align-items-center`}

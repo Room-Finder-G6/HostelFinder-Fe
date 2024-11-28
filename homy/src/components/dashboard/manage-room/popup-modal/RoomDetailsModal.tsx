@@ -127,7 +127,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     return (
         <Modal show={isOpen} onHide={onClose} size="xl" centered>
             <Modal.Header closeButton>
-                <Modal.Title>Thông tin phòng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Thông tin phòng</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {loading ? (
@@ -178,7 +178,10 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     {roomDetails.infomationTenacy.length > 0 ? (
                                         <div className="list-group">
                                             {roomDetails.infomationTenacy.map((tenant, index) => (
-                                                <div key={index} className="list-group-item d-flex align-items-center">
+                                                <div
+                                                    key={index}
+                                                    className={`list-group-item d-flex align-items-center ${index === 0 ? 'bg-white text-black' : ''}`}
+                                                >
                                                     <img
                                                         src={tenant.avatarUrl}
                                                         alt={tenant.fullName}
@@ -193,6 +196,14 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                         <p><strong>Số CMND:</strong> {tenant.identityCardNumber}</p>
                                                         <p><strong>Ngày vào:</strong> {new Date(tenant.moveInDate).toLocaleDateString()}</p>
                                                         {tenant.description && <p><strong>Mô tả:</strong> {tenant.description}</p>}
+
+                                                        {/* Dấu hiệu người đại diện hợp đồng và người liên hệ */}
+                                                        {index === 0 && (
+                                                            <div>
+                                                                <span className="badge bg-success me-2">Người đại diện hợp đồng</span>
+                                                                <span className="badge bg-info">Người liên hệ</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ))}
@@ -201,6 +212,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                         <p>Không có khách thuê trọ.</p>
                                     )}
                                 </section>
+
                             </Tab>
                             <Tab eventKey="invoices" title={<span><FaFileInvoiceDollar className="me-2" />Lịch sử hóa đơn</span>}>
                                 {/* Lịch sử hóa đơn */}
@@ -208,38 +220,62 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     <h5>Lịch sử hóa đơn</h5>
                                     {roomDetails.invoiceDetailInRoom ? (
                                         <div>
-                                            <p><strong>Mã hóa đơn:</strong> {roomDetails.invoiceDetailInRoom.id}</p>
-                                            <p><strong>Tháng/Năm:</strong> {roomDetails.invoiceDetailInRoom.billingMonth}/{roomDetails.invoiceDetailInRoom.billingYear}</p>
-                                            <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.invoiceDetailInRoom.totalAmount)} đ</p>
-                                            <p><strong>Trạng thái:</strong> {roomDetails.invoiceDetailInRoom.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}</p>
+                                            <div className="card">
+                                                <div className="card-header">
+                                                    <strong>Thông tin hóa đơn</strong>
+                                                </div>
+                                                <div className="card-body">
+                                                    <p>
+                                                        <strong>Mã hóa đơn:</strong> {roomDetails.invoiceDetailInRoom.id}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Tháng/Năm:</strong> {roomDetails.invoiceDetailInRoom.billingMonth}/{roomDetails.invoiceDetailInRoom.billingYear}
+                                                    </p>
+                                                    <p>
+                                                        <strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.invoiceDetailInRoom.totalAmount)} đ
+                                                    </p>
+                                                    <p>
+                                                        <strong>Trạng thái:</strong>
+                                                        <span className={`badge ${roomDetails.invoiceDetailInRoom.isPaid ? "bg-success" : "bg-danger"} ms-2`}>
+                                                            {roomDetails.invoiceDetailInRoom.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
+                                                        </span>
+                                                    </p>
+                                                </div>
+                                            </div>
+
 
                                             {/* Chi tiết hóa đơn */}
-                                            <Table striped bordered hover>
-                                                <thead>
-                                                    <tr>
-                                                        <th>Dịch vụ</th>
-                                                        <th>Đơn giá</th>
-                                                        <th>Chi phí thực tế</th>
-                                                        <th>Số lượng khách</th>
-                                                        <th>Chỉ số trước</th>
-                                                        <th>Chỉ số hiện tại</th>
-                                                        <th>Ngày lập</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {roomDetails.invoiceDetailInRoom.invoiceDetails.map((detail, index) => (
-                                                        <tr key={index}>
-                                                            <td>{detail.serviceName}</td>
-                                                            <td>{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
-                                                            <td>{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
-                                                            <td>{detail.numberOfCustomer}</td>
-                                                            <td>{detail.previousReading}</td>
-                                                            <td>{detail.currentReading}</td>
-                                                            <td>{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                            <div className="table-responsive">
+                                                <Table striped bordered hover className="align-middle">
+                                                    <caption className="caption-top">
+                                                        <strong>Chi tiết dịch vụ hóa đơn</strong>
+                                                    </caption>
+                                                    <thead className="table-primary">
+                                                        <tr>
+                                                            <th>Dịch vụ</th>
+                                                            <th className="text-center">Đơn giá</th>
+                                                            <th className="text-center">Chi phí thực tế</th>
+                                                            <th className="text-center">Số lượng khách</th>
+                                                            <th className="text-center">Chỉ số trước</th>
+                                                            <th className="text-center">Chỉ số hiện tại</th>
+                                                            <th className="text-center">Ngày lập</th>
                                                         </tr>
-                                                    ))}
-                                                </tbody>
-                                            </Table>
+                                                    </thead>
+                                                    <tbody>
+                                                        {roomDetails.invoiceDetailInRoom.invoiceDetails.map((detail, index) => (
+                                                            <tr key={index}>
+                                                                <td>{detail.serviceName}</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                                                <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                                                <td className="text-center">{detail.numberOfCustomer}</td>
+                                                                <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
+                                                                <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
+                                                                <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                                            </tr>
+                                                        ))}
+                                                    </tbody>
+                                                </Table>
+                                            </div>
                                         </div>
                                     ) : (
                                         <p>Không có lịch sử hóa đơn.</p>
