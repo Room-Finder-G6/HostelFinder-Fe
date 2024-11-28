@@ -38,7 +38,7 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect, initialSel
 
     useEffect(() => {
         setSelectedServices(initialSelectedServices);
-    }, [initialSelectedServices]);
+    }, []);
 
     const handleServiceChange = (serviceId: string) => {
         setSelectedServices((prevSelected) => {
