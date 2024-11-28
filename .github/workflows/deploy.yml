@@ -44,7 +44,7 @@ jobs:
       - name: Build Docker image
         id: build-image
         run: |
-          docker build -t hostelfe:latest homy
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest homy
 
       # Step 7: Log in to Docker Hub
       - name: Log in to Docker Hub
