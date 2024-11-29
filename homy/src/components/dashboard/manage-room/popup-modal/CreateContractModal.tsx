@@ -7,6 +7,7 @@ import { Modal, Button, Table } from "react-bootstrap"
 import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
 import "./../rentralContract.css";
+import { useRouter } from "next/navigation";
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -28,6 +29,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     const [previewImages, setPreviewImages] = useState<Record<string, string>>({});
     const [roomData, setRoomData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (roomId && isOpen) {
@@ -160,6 +162,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                 onSuccess();
                 resetForm(); // Reset form sau khi tạo thành công
                 onClose();   // Đóng modal
+                router.replace(`/dashboard/manage-room?hostelId=${hostelId}`);
             }
         } catch (error: any) {
             console.error("Error creating contract:", error.response?.data || error);
@@ -201,7 +204,6 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 type="date"
                                 {...register("endDate")}
                                 className="form-control"
-                                required
                             />
                         </div>
                         <div className="mb-3">

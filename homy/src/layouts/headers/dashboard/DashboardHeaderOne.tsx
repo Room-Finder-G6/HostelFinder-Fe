@@ -114,10 +114,10 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
             title: "Listing",
             items: [
                 {
-                    href: "/dashboard/properties-list",
+                    href: "/dashboard/reports",
                     activeIcon: dashboardIconActive_6,
                     inactiveIcon: dashboardIcon_6,
-                    label: "List Room"
+                    label: "Thống kê"
                 },
                 {
                     href: "/dashboard/manage-hostels",
@@ -226,9 +226,9 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             <div className="nav-title">Listing</div>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/properties-list" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/properties-list' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/properties-list' ? dashboardIconActive_6 : dashboardIcon_6} alt="List Room" />
-                                <span>List Room</span>
+                            <Link href="/dashboard/reports" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6} alt="List Room" />
+                                <span>Thống kê</span>
                             </Link>
                         </li>
                         <li className="plr">

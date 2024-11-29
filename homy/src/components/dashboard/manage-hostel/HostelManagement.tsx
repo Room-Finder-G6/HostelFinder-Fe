@@ -1,10 +1,10 @@
-import { useEffect, useState, ChangeEvent } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import NiceSelect from "@/ui/NiceSelect";
-import Link from "next/link";
-import { toast } from "react-toastify";
 import { SortDirection } from "@/models/hostel";
+import Link from "next/link";
+import { ChangeEvent, useEffect, useState } from "react";
 import PropertyTableHostel from "./PropertyTableHostel";
+import icon_1 from "@/assets/images/icon/icon_46.svg";
+import Image from "next/image";
 
 const HostelManagement = () => {
    const [isClient, setIsClient] = useState<boolean>(false);
@@ -12,7 +12,10 @@ const HostelManagement = () => {
    const [pageNumber, setPageNumber] = useState<number>(1);
    const [pageSize, setPageSize] = useState<number>(10);
    const [sortBy, setSortBy] = useState<string | null>("CreatedOn");
-   const [sortDirection, setSortDirection] = useState<SortDirection>(SortDirection.Ascending);
+   const [sortDirection, setSortDirection] = useState<SortDirection>(
+      SortDirection.Ascending
+   );
+   const [totalPages, setTotalPages] = useState<number>(1);
 
    useEffect(() => {
       setIsClient(true);
@@ -31,11 +34,21 @@ const HostelManagement = () => {
    const handleSortChange = (e: ChangeEvent<HTMLSelectElement>) => {
       const [field, direction] = e.target.value.split(":");
       setSortBy(field);
-      setSortDirection(direction === "Ascending" ? SortDirection.Ascending : SortDirection.Descending);
+      setSortDirection(
+         direction === "Ascending"
+            ? SortDirection.Ascending
+            : SortDirection.Descending
+      );
    };
 
    const handlePagination = (page: number) => {
       setPageNumber(page);
+   };
+
+   const handlePageChange = (newPageIndex: number) => {
+      if (newPageIndex >= 1 && newPageIndex <= totalPages) {
+         setPageNumber(newPageIndex);
+      }
    };
 
    if (!isClient) {
@@ -46,7 +59,7 @@ const HostelManagement = () => {
       <div className="dashboard-body">
          <div className="position-relative">
             <DashboardHeaderTwo title="My Properties" />
-            <h2 className="main-title d-block d-lg-none">My Properties</h2>
+            <h2 className="main-title d-block d-lg-none">Quản lý nhà trọ</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                <div className="d-flex ms-auto xs-mt-30">
                   <div className="fs-16 me-2">Sort by:</div>
@@ -77,28 +90,80 @@ const HostelManagement = () => {
                         </tr>
                      </thead>
                      <PropertyTableHostel
+                        pageNumber={pageNumber}
+                        pageSize={pageSize}
                      />
                   </table>
                </div>
                <div className="pagination-container">
-                  <select
-                     className="form-select"
-                     value={pageSize}
-                     onChange={handlePageSizeChange}
-                  >
-                     <option value="5">5</option>
-                     <option value="10">10</option>
-                     <option value="15">15</option>
-                     <option value="25">25</option>
-                  </select>
+                  <ul style={{ marginLeft: "15px" }} className="pagination-one d-flex align-items-center style-none pt-40">
+                     {/* Previous Button */}
+                     <li className="me-3">
+                        <Link
+                           href="#"
+                           onClick={(e) => {
+                              e.preventDefault();
+                              if (pageNumber > 1) {
+                                 handlePagination(pageNumber - 1);
+                              }
+                           }}
+                           className={pageNumber <= 1 ? "disabled" : ""}
+                        >
+                           Trang trước
+                        </Link>
+                     </li>
 
-                  {/* Pagination Controls */}
-                  <button onClick={() => handlePagination(pageNumber - 1)} disabled={pageNumber === 1}>
-                     Prev
-                  </button>
-                  <button onClick={() => handlePagination(pageNumber + 1)} disabled={pageNumber === 1}>
-                     Next
-                  </button>
+                     {/* Page Numbers */}
+                     {[...Array(totalPages)].map((_, index) => (
+                        <li key={index} className={pageNumber === index + 1 ? "selected" : ""}>
+                           <Link
+                              href="#"
+                              onClick={(e) => {
+                                 e.preventDefault();
+                                 handlePageChange(index + 1);
+                              }}
+                           >
+                              {index + 1}
+                           </Link>
+                        </li>
+                     ))}
+
+                     {/* Ellipsis if more than 5 pages */}
+                     {totalPages > 5 && <li>....</li>}
+
+                     {/* Last Button */}
+                     <li className="ms-3">
+                        <Link
+                           href="#"
+                           className="d-flex align-items-center"
+                           onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(pageNumber + 1);
+                           }}
+                           style={{ minWidth: '140px' }}
+                        >
+                           Trang sau
+                           <Image src={icon_1} alt="" className="ms-2" />
+                        </Link>
+                     </li>
+
+                     {/* Page Size Dropdown */}
+                     <div className="d-flex align-items-center ms-auto">
+                        <div style={{ marginRight: '10px' }}>Số trang</div>
+                        <select
+                           className="form-select form-select-sm"
+                           value={pageSize}
+                           onChange={handlePageSizeChange}
+                           style={{ width: "80px" }}
+                        >
+                           <option value="5">5</option>
+                           <option value="10">10</option>
+                           <option value="15">15</option>
+                           <option value="25">25</option>
+                        </select>
+                        <div style={{ marginLeft: '10px' }}>trang</div>
+                     </div>
+                  </ul>
                </div>
             </div>
          </div>
