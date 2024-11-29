@@ -75,7 +75,7 @@ const MembershipGrid = () => {
               </h6>
               {membership.membershipServices.map((service, idx) => (
                 <ul key={idx} className={styles.serviceList}>
-                  <li className={styles.serviceItem}>
+                  <li className={styles.serviceItem}  style={{fontWeight: "bold"}}>
                     <span className={styles.icon}></span>
                     <span>{service.serviceName}</span>
                   </li>
