@@ -33,7 +33,7 @@ const NavMenu = () => {
         <ul className="navbar-nav align-items-lg-center">
             <li className="d-block d-lg-none"><div className="logo"><Link href="/" className="d-block"><Image src={logo} alt="" /></Link></div></li>
             <li className="nav-item dashboard-menu">
-                <Link className="nav-link" href="/dashboard/dashboard-index" >Quản lí</Link>
+                <Link className="nav-link" href="/dashboard/manage-hostels" >Quản lí</Link>
             </li>
             <li className="nav-item admin-menu">
                 <Link className="nav-link" href="/admin/admin-index" >Admin</Link>
