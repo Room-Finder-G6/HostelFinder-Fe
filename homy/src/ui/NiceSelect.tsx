@@ -1,13 +1,13 @@
 "use client";
-import React, {useState, useCallback, useRef, useEffect, FC, ChangeEvent} from "react";
-import {useClickAway} from "react-use";
+import React, { useState, useCallback, useRef, useEffect, FC, ChangeEvent } from "react";
+import { useClickAway } from "react-use";
 
 interface Option {
     value: string;
     text: string;
 }
 
-type NiceSelectProps = {
+interface NiceSelectProps {
     options: Option[];
     defaultCurrent?: number;
     placeholder: string;
@@ -16,7 +16,8 @@ type NiceSelectProps = {
     name: string;
     required?: boolean;
     disabled?: boolean;
-};
+    value?: string;
+}
 
 const NiceSelect: FC<NiceSelectProps> = ({
                                              options,
@@ -27,7 +28,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
                                              name,
                                              required,
                                              disabled,
-
+                                             value
                                          }) => {
     const [open, setOpen] = useState(false);
     const [current, setCurrent] = useState<Option | undefined>(
@@ -35,21 +36,26 @@ const NiceSelect: FC<NiceSelectProps> = ({
     );
     const ref = useRef<HTMLDivElement | null>(null);
 
+    useEffect(() => {
+        if (value) {
+            const selectedOption = options.find(option => option.value === value);
+            if (selectedOption) {
+                setCurrent(selectedOption);
+            }
+        } else {
+            setCurrent(undefined);
+        }
+    }, [value]);
+
     const onClose = useCallback(() => {
         setOpen(false);
     }, []);
 
     useClickAway(ref, onClose);
 
-   /* useEffect(() => {
-        // Cập nhật `current` nếu `currentValue` thay đổi
-        const matchedOption = options.find((option) => option.value === currentValue);
-        setCurrent(matchedOption);
-    }, [currentValue]);*/
-
     const currentHandler = (item: Option) => {
         setCurrent(item);
-        onChange({target: {value: item.value}} as ChangeEvent<HTMLSelectElement>);
+        onChange({ target: { name, value: item.value } } as ChangeEvent<HTMLSelectElement>);
         onClose();
     };
 
@@ -68,9 +74,7 @@ const NiceSelect: FC<NiceSelectProps> = ({
             }}
             ref={ref}
         >
-            {/* Hiển thị giá trị hiện tại hoặc placeholder */}
             <span className="current">{current?.text || placeholder}</span>
-            {/* Dropdown danh sách lựa chọn */}
             {open && (
                 <ul
                     className="list"

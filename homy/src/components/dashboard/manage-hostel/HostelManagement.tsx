@@ -171,4 +171,6 @@ const HostelManagement = () => {
    );
 };
 
+
+
 export default HostelManagement;

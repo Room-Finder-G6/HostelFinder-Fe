@@ -86,7 +86,7 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
           style={{ minWidth: "160px", maxHeight: "40px" }}
           disabled={hostels.length === 0}
         >
-          <option value="">Chọn nhà trọ</option>
+          <option value="0">Chọn nhà trọ</option>
           {hostels.map((hostel) => (
             <option key={hostel.id} value={hostel.id}>
               {hostel.hostelName}
