@@ -69,7 +69,6 @@ const UserPostManagement = () => {
             prevSortOptionRef.current = sortOption;
         }
     }, [pageIndex, sortOption, fetchPostsByUser]);
-    }, [pageIndex, sortOption, fetchPostsByUser]);
 
     const sortPosts = useCallback(() => {
         const sortedPosts = [...posts];
@@ -96,7 +95,7 @@ const UserPostManagement = () => {
                             className="nice-select"
                             value={sortOption}
                             onChange={selectHandler}
-                            placeholder="Mới nhất"
+                        
                             name="sortOption"  
                         />
 
