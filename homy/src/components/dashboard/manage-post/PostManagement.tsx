@@ -20,11 +20,10 @@ const UserPostManagement = () => {
 
     const selectHandler = (e: any) => {
         const selectedValue = e.target.value;
-        setSortOption(selectedValue); 
+        setSortOption(selectedValue);
     };
-    
 
-    // Hàm xử lý xóa bài viết
+
     const handleDeletePost = async () => {
         if (!selectedPostId) return;
 
@@ -42,7 +41,7 @@ const UserPostManagement = () => {
             }
 
             alert("Xóa bài viết thành công!");
-            await fetchPostsByUser(pageIndex, sortOption); 
+            await fetchPostsByUser(pageIndex, sortOption);
 
         } catch (error) {
             console.error("Error deleting post:", error);
@@ -67,7 +66,7 @@ const UserPostManagement = () => {
             prevPageIndexRef.current = pageIndex;
             prevSortOptionRef.current = sortOption;
         }
-    }, [pageIndex, sortOption, fetchPostsByUser]);  
+    }, [pageIndex, sortOption, fetchPostsByUser]);
 
     const sortPosts = useCallback(() => {
         const sortedPosts = [...posts];
@@ -80,7 +79,7 @@ const UserPostManagement = () => {
         return sortedPosts;
     }, [posts, sortOption]);
     const sortedPosts = sortPosts();
-    
+
 
     return (
         <div className="dashboard-body">
@@ -98,7 +97,9 @@ const UserPostManagement = () => {
                             value={sortOption}
                             onChange={selectHandler}
                             placeholder="Mới nhất"
+                            name="sortOption"  
                         />
+
                     </div>
 
                     <Link href="/dashboard/create-post" className="btn-two">
