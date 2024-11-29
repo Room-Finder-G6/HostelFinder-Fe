@@ -24,7 +24,7 @@ const UserPostManagement = () => {
     };
 
 
-    // Hàm xử lý xóa bài viết
+
     const handleDeletePost = async () => {
         if (!selectedPostId) return;
 
