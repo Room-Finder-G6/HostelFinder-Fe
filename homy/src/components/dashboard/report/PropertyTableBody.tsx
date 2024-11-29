@@ -29,6 +29,11 @@ interface ApiResponse {
 interface JwtPayload {
    UserId: string;
 }
+interface RevenueParams {
+   hostelId: string;
+   year: number;
+   month: number;
+}
 
 const PropertyTableBody = () => {
    const [yearlyRevenue, setYearlyRevenue] = useState<ReportData | null>(null);
@@ -81,45 +86,43 @@ const PropertyTableBody = () => {
    useEffect(() => {
       setIsClient(true);
    }, []);
+   const fetchRevenue = async () => {
+      try {
+         let url = '';
+         const params: RevenueParams = { hostelId: selectedHostel, year: selectedYear, month: selectedMonth };
 
+         if (viewMode === "year") {
+            url = `/reports/yearly-revenue`;
+         } else {
+            url = `/reports/monthly-revenue`;
+         }
+
+         const response = await apiInstance.get<ApiResponse>(url, { params });
+
+         if (response.data.succeeded && response.data.data) {
+            if (viewMode === "year") {
+               setYearlyRevenue(response.data.data);
+               setMonthlyRevenue(null);
+               const yearsFromData = response.data.data.roomRevenueDetail
+                  .map((item) => item.year)
+                  .filter((value, index, self) => self.indexOf(value) === index);
+               setYears(yearsFromData);
+            } else {
+               setMonthlyRevenue(response.data.data);
+               setYearlyRevenue(null);
+            }
+         } else {
+            console.error("Failed to load revenue data", response.data.errors);
+         }
+      } catch (error) {
+         console.error("Error fetching revenue data:", error);
+      }
+   };
    // Lấy dữ liệu doanh thu theo hostelId, năm và tháng
    useEffect(() => {
       if (!selectedHostel) return; // Nếu chưa chọn hostel, không gọi API
 
-      const fetchRevenue = async () => {
-         try {
-            let url = '';
-            const params = { hostelId: selectedHostel, year: selectedYear, month: selectedMonth };
-
-            if (viewMode === "year") {
-               url = `https://localhost:5000/yearly-revenue`;
-            } else {
-               url = `https://localhost:5000/monthly-revenue`;
-            }
-
-            const response = await apiInstance.get<ApiResponse>(url, { params });
-
-            if (response.data.succeeded) {
-               if (viewMode === "year") {
-                  setYearlyRevenue(response.data.data);
-                  setMonthlyRevenue(null); // Reset monthly revenue
-                  // Lấy tất cả các năm từ dữ liệu trả về và cập nhật danh sách
-                  const yearsFromData = response.data.data.roomRevenueDetail
-                     .map((item) => item.year)
-                     .filter((value, index, self) => self.indexOf(value) === index); // Lọc các năm duy nhất
-                  setYears(yearsFromData);
-               } else {
-                  setMonthlyRevenue(response.data.data);
-                  setYearlyRevenue(null); // Reset yearly revenue
-               }
-            } else {
-               console.error("Failed to load revenue data");
-            }
-         } catch (error) {
-            console.error("Error fetching revenue data:", error);
-         }
-      };
-
+      const params: RevenueParams = { hostelId: selectedHostel, year: selectedYear, month: selectedMonth };
       fetchRevenue();
    }, [selectedHostel, selectedYear, selectedMonth, viewMode]);
 
