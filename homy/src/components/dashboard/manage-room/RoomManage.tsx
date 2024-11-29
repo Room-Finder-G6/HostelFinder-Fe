@@ -73,8 +73,9 @@ const RoomManagement = () => {
    };
 
    const toggleAddRoomModal = () => {
-      if (!roomFormData.hostelId) {
-         toast.error("Vui lòng chọn nhà trọ trước khi thêm phòng trọ", { position: "top-center" });
+      console.log(selectedHostel)
+      if (!selectedHostel) {
+         toast.warning("Vui lòng chọn nhà trọ trước khi thêm phòng trọ", { position: "top-center" });
          return;
       }
       setIsAddRoomModalOpen(!isAddRoomModalOpen);
@@ -87,6 +88,7 @@ const RoomManagement = () => {
       }
       setIsServicePriceModalOpen(!isServicePriceModalOpen);
    }
+
 
    const handleRoomInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
@@ -153,6 +155,7 @@ const RoomManagement = () => {
             if (error.response && error.response.status === 400) {
                // toast.error(error.response.data.message, { position: "top-center" });
                setFloors([]);
+               toast.warning("Vui lòng chọn nhà trọ để quản lý.")
             } else {
                // toast.error("Something went wrong!", { position: "top-center" })
                setFloors([]);
@@ -247,11 +250,10 @@ const RoomManagement = () => {
          if (response.status === 200 || response.data.succeeded) {
             toast.success("Thêm phòng thành công", { position: "top-center" });
             setIsAddRoomModalOpen(false);
-
             setRefreshRooms(prev => prev + 1);
             // Reset form 
             setRoomFormData({
-               hostelId: "",
+               hostelId: selectedHostel,
                roomName: "",
                floor: "",
                maxRenters: "",
@@ -264,12 +266,35 @@ const RoomManagement = () => {
                images: [],
             });
             setSelectedAmenities([]);
-         } else {
-            toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
+            const fetchRooms = async () => {
+               try {
+                  let url = `/rooms/hostels/${selectedHostel}`;
+                  console.log(selectedHostel)
+                  if (selectedFloor) {
+                     url += `?floor=${selectedFloor}`;
+                  }
+                  const response = await apiInstance.get(url);
+                  if (response.data.succeeded) {
+                     const rooms = response.data.data as Room[];
+                     const uniqueFloors = Array.from(new Set(rooms.map((room) => room.floor).filter((floor) => floor !== null))) as number[];
+                     setFloors(uniqueFloors.sort((a, b) => a - b));
+                  } else {
+                     setFloors([]);
+                  }
+               } catch (err: any) {
+                  setError(err.message || 'Có lỗi xảy ra khi tải danh sách phòng');
+               }
+            };
+
+            fetchRooms();
+
+         }
+         if (response.status === 400 || response.data.succeeded == false) {
+            toast.error(response.data.data.mesasge);
+            console.log(response);
          }
       } catch (error: any) {
-         console.error("Error adding room:", error);
-         toast.error("Có lỗi xảy ra khi thêm phòng", { position: "top-center" });
+         toast.error(error.response.data.message);
       }
    };
 

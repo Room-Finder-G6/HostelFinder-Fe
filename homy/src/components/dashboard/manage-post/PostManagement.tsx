@@ -20,9 +20,9 @@ const UserPostManagement = () => {
 
     const selectHandler = (e: any) => {
         const selectedValue = e.target.value;
-        setSortOption(selectedValue); 
+        setSortOption(selectedValue);
     };
-    
+
 
     // Hàm xử lý xóa bài viết
     const handleDeletePost = async () => {
@@ -42,7 +42,7 @@ const UserPostManagement = () => {
             }
 
             alert("Xóa bài viết thành công!");
-            await fetchPostsByUser(pageIndex, sortOption); 
+            await fetchPostsByUser(pageIndex, sortOption);
 
         } catch (error) {
             console.error("Error deleting post:", error);
@@ -67,7 +67,7 @@ const UserPostManagement = () => {
             prevPageIndexRef.current = pageIndex;
             prevSortOptionRef.current = sortOption;
         }
-    }, [pageIndex, sortOption, fetchPostsByUser]);  
+    }, [pageIndex, sortOption, fetchPostsByUser]);
 
     const sortPosts = useCallback(() => {
         const sortedPosts = [...posts];
@@ -80,7 +80,7 @@ const UserPostManagement = () => {
         return sortedPosts;
     }, [posts, sortOption]);
     const sortedPosts = sortPosts();
-    
+
 
     return (
         <div className="dashboard-body">
@@ -89,16 +89,14 @@ const UserPostManagement = () => {
                 <div className="d-flex align-items-center ms-auto">
                     <div className="short-filter d-flex align-items-center me-3">
                         <div className="fs-16 me-2">Sắp xếp theo:</div>
-                        <NiceSelect
+                        <select
                             className="nice-select"
-                            options={[
-                                { value: "1", text: "Mới nhất" },
-                                { value: "2", text: "Cũ nhất" },
-                            ]}
                             value={sortOption}
                             onChange={selectHandler}
-                            placeholder="Mới nhất"
-                        />
+                        >
+                            <option value="1">Mới nhất</option>
+                            <option value="2">Cũ nhất</option>
+                        </select>
                     </div>
 
                     <Link href="/dashboard/create-post" className="btn-two">

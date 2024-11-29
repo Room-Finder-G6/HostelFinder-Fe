@@ -291,9 +291,7 @@ const AddHostelForm: React.FC = () => {
             if (response.status === 200 || response.data.succeeded) {
                 const { message } = response.data;
                 toast.success(message, { position: "top-center" });
-                setTimeout(() => {
-                    router.push("/dashboard/manage-hostels");
-                }, 3000);
+                window.location.href = '/dashboard/manage-hostels';
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {

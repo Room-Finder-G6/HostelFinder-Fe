@@ -1,4 +1,4 @@
-import PropertyList from "@/components/dashboard/properties-list";
+import PropertyList from "@/components/dashboard/report";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
