@@ -48,6 +48,10 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
             setLoading(true);
             try {
                 let url = `/rooms/hostels/${selectedHostel}`;
+                console.log(selectedHostel)
+                if (selectedHostel === "") {
+                    setRooms([]);
+                }
                 if (selectedFloor) {
                     url += `?floor=${selectedFloor}`;
                 }
@@ -59,6 +63,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 }
             } catch (err: any) {
                 setError(err.message || 'Có lỗi xảy ra khi tải danh sách phòng');
+                setRooms([]);
             } finally {
                 setLoading(false);
             }

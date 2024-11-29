@@ -70,6 +70,7 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
     return <p className="text-red-500">{error}</p>;
   }
 
+
   return (
     <div className="mb-2">
       {loading ? (

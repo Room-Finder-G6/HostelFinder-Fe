@@ -24,6 +24,7 @@ const UserPostManagement = () => {
     };
 
 
+
     const handleDeletePost = async () => {
         if (!selectedPostId) return;
 
@@ -41,6 +42,7 @@ const UserPostManagement = () => {
             }
 
             alert("Xóa bài viết thành công!");
+            await fetchPostsByUser(pageIndex, sortOption);
             await fetchPostsByUser(pageIndex, sortOption);
 
         } catch (error) {
@@ -67,6 +69,7 @@ const UserPostManagement = () => {
             prevSortOptionRef.current = sortOption;
         }
     }, [pageIndex, sortOption, fetchPostsByUser]);
+    }, [pageIndex, sortOption, fetchPostsByUser]);
 
     const sortPosts = useCallback(() => {
         const sortedPosts = [...posts];
@@ -81,6 +84,7 @@ const UserPostManagement = () => {
     const sortedPosts = sortPosts();
 
 
+
     return (
         <div className="dashboard-body">
             <DashboardHeaderTwo title="My Posts" />
@@ -88,12 +92,8 @@ const UserPostManagement = () => {
                 <div className="d-flex align-items-center ms-auto">
                     <div className="short-filter d-flex align-items-center me-3">
                         <div className="fs-16 me-2">Sắp xếp theo:</div>
-                        <NiceSelect
+                        <select
                             className="nice-select"
-                            options={[
-                                { value: "1", text: "Mới nhất" },
-                                { value: "2", text: "Cũ nhất" },
-                            ]}
                             value={sortOption}
                             onChange={selectHandler}
                             placeholder="Mới nhất"
