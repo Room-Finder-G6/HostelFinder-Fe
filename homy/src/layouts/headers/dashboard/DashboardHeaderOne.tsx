@@ -187,18 +187,18 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 {/* Navigation Section */}
                 <nav className="dasboard-main-nav pt-30 bottom-line">
                     <ul className="style-none">
-                        <li className="plr">
+                        {/* <li className="plr">
                             <Link href="/dashboard/dashboard-index" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/dashboard-index' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/dashboard-index' ? dashboardIconActive_1 : dashboardIcon_1} alt="Dashboard" />
                                 <span>Dashboard</span>
                             </Link>
-                        </li>
-                        <li className="plr">
+                        </li> */}
+                        {/* <li className="plr">
                             <Link href="/dashboard/message" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/message' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/message' ? dashboardIconActive_2 : dashboardIcon_2} alt="Message" />
                                 <span>Message</span>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
                             <div className="nav-title">Profile</div>
@@ -249,24 +249,24 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <span>Quản Lý Bài Đăng</span>
                             </Link>
                         </li>
-                        <li className="plr">
+                        {/* <li className="plr">
                             <Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/favourites' ? dashboardIconActive_8 : dashboardIcon_8} alt="Favourites" />
                                 <span>Favourites</span>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="plr">
                             <Link href="/dashboard/saved-search" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/saved-search' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/saved-search' ? dashboardIconActive_9 : dashboardIcon_10} alt="Saved Search" />
                                 <span>Quản lí hóa đơn</span>
                             </Link>
                         </li>
-                        <li className="plr">
+                        {/* <li className="plr">
                             <Link href="/dashboard/review" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/review' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/review' ? dashboardIconActive_10 : dashboardIcon_10} alt="Reviews" />
                                 <span>Reviews</span>
                             </Link>
-                        </li>
+                        </li> */}
                     </ul>
                 </nav>
 
@@ -286,10 +286,10 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         className="d-flex w-100 align-items-center logout-btn"
                         prefetch={false}
                     >
-                        <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
+                        {/* <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
                             <Image src={dashboardIcon_11} alt="Logout" priority={false} />
                         </div>
-                        <span>Logout</span>
+                        <span>Logout</span> */}
                     </Link>
                 </div>
             </div>
