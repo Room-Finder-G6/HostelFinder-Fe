@@ -66,6 +66,12 @@ const HostelSelector: React.FC<HostelSelectorProps> = ({ selectedHostel, onHoste
     fetchHostels();
   }, [getUserIdFromToken]);
 
+  // useEffect(() => {
+  //   if (hostels.length > 0 && !selectedHostel) {
+  //     onHostelChange({ target: { value: hostels[0].id } } as React.ChangeEvent<HTMLSelectElement>);
+  //   }
+  // }, [hostels, selectedHostel, onHostelChange]);
+
   if (error) {
     return <p className="text-red-500">{error}</p>;
   }
