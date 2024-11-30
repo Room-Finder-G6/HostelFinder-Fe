@@ -23,9 +23,9 @@ const FooterOne = ({ style }: any) => {
                                  <Image src={style ? footerLogo_2 : footerLogo_1} alt="" />
                               </Link>
                            </div>
-                           <p className="mb-60 lg-mb-40 md-mb-20">11910 Clyde Rapid Suite 70, Willyand, Virginia, United States</p>
-                           <h6>CONTACT</h6>
-                           <Link href="#" className={`email tran3s mb-70 lg-mb-50 ${style ? "font-garamond" : "fs-24 text-decoration-underline"}`}>homyreal@demo.com</Link>
+                           <p className="mb-60 lg-mb-40 md-mb-20">Khu CNC Hòa Lạc, Thạch Thất, Hà Nội</p>
+                           <h6>LIÊN HỆ</h6>
+                           <Link href="#" className={`email tran3s mb-70 lg-mb-50 ${style ? "font-garamond" : "fs-24 text-decoration-underline"}`}>phongtro247@gmail.com</Link>
                            <ul className="style-none d-flex align-items-center social-icon">
                               {icon_1.map((icon, i) => (
                                  <li key={i}><Link href="#"><i className={`fa-brands fa${style ? "" : "-square"}-${icon}`}></i></Link></li>
