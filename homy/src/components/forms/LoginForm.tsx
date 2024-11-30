@@ -58,7 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         if (responseData.role === "User") {
           window.location.href = '/';
         } else if (responseData.role === "Landlord") {
-          router.push("/dashboard/dashboard-index");
+          router.push("/dashboard/manage-hostels");
         }
         else if (responseData.role === "Admin") {
           router.push("/admin/admin-index");
@@ -81,7 +81,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         <div className="row">
           <div className="col-12">
             <div className="input-group-meta position-relative mb-25">
-              <label>UserName*</label>
+              <label>Tên đăng nhập*</label>
               <input
                 type="text"
                 {...register("userName")}
@@ -92,7 +92,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
           </div>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-20">
-              <label>Password*</label>
+              <label>Mật khẩu*</label>
               <input
                 type={isPasswordVisible ? "text" : "password"}
                 {...register("password")}
@@ -117,11 +117,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
             <div className="agreement-checkbox d-flex justify-content-between align-items-center">
               <div>
                 <input type="checkbox" id="remember" />
-                <label htmlFor="remember">Keep me logged in</label>
+                <label htmlFor="remember">Lưu thông tin đăng nhập</label>
               </div>
 
               <Link href="#" onClick={() => setShowForgotPassword(true)}>
-                Forgot Password?
+                Quên mật khẩu?
               </Link>
             </div>
           </div>
@@ -134,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
               {loading ? (
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> // Spinner
               ) : (
-                "Login"
+                "Đăng nhập"
               )}
             </button>
           </div>
