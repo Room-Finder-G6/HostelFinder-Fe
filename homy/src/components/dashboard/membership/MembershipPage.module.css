@@ -75,3 +75,14 @@
   font-size: 1.2rem;
   line-height: 1;
 }
+.Toastify__toast--success {
+  background-color: green; /* Xác định màu cho thành công */
+}
+
+.Toastify__toast--error {
+  background-color: red; /* Xác định màu cho lỗi */
+}
+
+.Toastify__toast--warning {
+  background-color: yellow; /* Xác định màu cho cảnh báo */
+}

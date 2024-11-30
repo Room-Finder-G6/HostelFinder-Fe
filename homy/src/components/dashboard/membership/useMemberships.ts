@@ -25,13 +25,12 @@ const useMemberships = () => {
   const [memberships, setMemberships] = useState<MembershipData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]); // Lưu danh sách các membership đã mua
+  const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]);
 
-  // Fetch danh sách gói membership từ API
   const fetchMemberships = async () => {
     setLoading(true);
     try {
-      const response = await apiInstance.get("/Membership/GetListMembership"); // API lấy danh sách gói membership
+      const response = await apiInstance.get("/Membership/GetListMembership");
       if (response.data && response.data.succeeded) {
         const transformedData = response.data.data.map((item: any) => ({
           id: item.id,
@@ -58,21 +57,6 @@ const useMemberships = () => {
     }
   };
 
-  const fetchOwnedMemberships = async (userId: string) => {
-    try {
-      const response = await apiInstance.get(`/Membership/MembershipServices?userId=${userId}`);
-      if (response.data && response.data.succeeded) {
-        const memberships = response.data.data.map((item: any) => item.membershipId);
-        setOwnedMemberships(memberships); // Lưu danh sách các gói đã mua
-      } else {
-        toast.error("Không thể lấy thông tin gói đã mua.");
-      }
-    } catch (error: any) {
-      toast.error("Đã xảy ra lỗi khi lấy thông tin gói đã mua.");
-    }
-  };
-
-  // Mua membership
   const buyMembership = async (membershipId: string) => {
     const userId = getUserIdFromToken();
 
@@ -85,10 +69,6 @@ const useMemberships = () => {
       toast.error("Không có thông tin gói membership.");
       return;
     }
-    if (ownedMemberships.includes(membershipId)) {
-      toast.warning("Bạn đã mua gói này rồi! Muốn gia hạn thêm?");
-      return; 
-    }
 
     try {
       console.log("User ID:", userId);
@@ -96,30 +76,50 @@ const useMemberships = () => {
 
       const apiUrl = `/users/BuyMembership?userId=${userId}&membershipId=${membershipId}`;
       console.log("API URL:", apiUrl);
+
       const response = await apiInstance.post(
         apiUrl,
         {},
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, 
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
+      // Log phản hồi từ backend
+      console.log("API Response:", response.data);
+
       if (response.data.success) {
-        toast.success("Mua membership thành công!");
+        toast.success("Mua membership thành công!"); // Thành công thì dùng toast.success
       } else {
-        toast.error(response.data.message || "Đã xảy ra lỗi khi mua membership.");
+        const errorMessage = response.data.message;
+        console.log("Backend error message:", errorMessage);
+      
+        if (errorMessage && errorMessage.includes("Số dư")) {
+          toast.error("Số dư không đủ! Vui lòng nạp tiền thêm vào ví.");
+        } else if (errorMessage && errorMessage.includes("Bạn đã sử dụng gói người dùng thử này và chưa hết hạn.")) {
+          toast.warning("Bạn đã sử dụng gói người dùng thử này và chưa hết hạn.");
+        } else if (errorMessage) {
+          toast.error(errorMessage || "Đã xảy ra lỗi khi mua membership.");
+        } else {
+          toast.error("Đã xảy ra lỗi không xác định.");
+        }
       }
+      
     } catch (error: any) {
-      // Kiểm tra lỗi cụ thể
+      // Log chi tiết lỗi
+      console.log("Error Response:", error.response);
+
       if (error.response) {
+        const errorMessage = error.response.data?.message || "Có lỗi xảy ra khi mua membership.";
+        console.log("Error message from backend:", errorMessage); // Log thông báo lỗi từ backend
         if (error.response.status === 400) {
-          toast.error("Bạn đang sử dụng gói thành viên này. Không thể mua thêm!");
+          toast.error(errorMessage); // Hiển thị thông báo lỗi từ backend
         } else if (error.response.status === 500) {
           toast.error("Lỗi server. Vui lòng thử lại sau.");
         } else {
-          toast.error("Có lỗi xảy ra khi mua membership.");
+          toast.error(errorMessage);
         }
       } else if (error.request) {
         toast.error("Không thể kết nối đến server.");
@@ -130,11 +130,8 @@ const useMemberships = () => {
   };
 
   useEffect(() => {
-    const userId = getUserIdFromToken(); // Lấy userId từ token
-    if (userId) {
-      fetchOwnedMemberships(userId); // Lấy danh sách các gói đã mua
-    }
-    fetchMemberships(); // Lấy danh sách gói có sẵn
+    const userId = getUserIdFromToken();
+    fetchMemberships();
   }, []);
 
   return { memberships, loading, error, buyMembership };
