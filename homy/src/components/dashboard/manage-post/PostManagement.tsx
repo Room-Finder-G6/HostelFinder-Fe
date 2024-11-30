@@ -43,7 +43,6 @@ const UserPostManagement = () => {
 
             alert("Xóa bài viết thành công!");
             await fetchPostsByUser(pageIndex, sortOption);
-            await fetchPostsByUser(pageIndex, sortOption);
 
         } catch (error) {
             console.error("Error deleting post:", error);
@@ -83,7 +82,6 @@ const UserPostManagement = () => {
     const sortedPosts = sortPosts();
 
 
-
     return (
         <div className="dashboard-body">
             <DashboardHeaderTwo title="My Posts" />
@@ -95,6 +93,10 @@ const UserPostManagement = () => {
                             className="nice-select"
                             value={sortOption}
                             onChange={selectHandler}
+                        >
+                            <option value="1">Mới nhất</option>
+                            <option value="2">Cũ nhất</option>
+                        </select>
                         
                             name="sortOption"  
                         />
