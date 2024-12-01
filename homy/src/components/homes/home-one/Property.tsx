@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import apiInstance from "@/utils/apiInstance";
 import titleShape from "@/assets/images/shape/title_shape_03.svg";
+import Loading from "@/components/Loading";
 
 interface RoomData {
     id: string;
@@ -35,7 +36,7 @@ const Property = () => {
     }, []);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <Loading/>
     }
 
     return (

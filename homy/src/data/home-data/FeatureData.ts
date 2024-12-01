@@ -52,7 +52,7 @@ const feature_data: DataType[] = [
       icon: featureIcon_1,
       title: "Mua nhà",
       btn:"Find Home",
-      desc: "Ở đây có các căn nhà phù hợp lý tưởng của bạn.",
+      desc: "Ở đây có các phòng trọ và chung cư lý tưởng dành cho bạn.",
    },
    {
       id: 2,
@@ -60,15 +60,15 @@ const feature_data: DataType[] = [
       icon: featureIcon_2,
       title: "Thuê phòng",
       btn:"Rent Home",
-      desc: "Khám phá nơi cho thuê mà bạn sẽ thích trên NhaTro24/7.",
+      desc: "Khám phá nơi cho thuê mà bạn sẽ thích trên PhongTro24/7.",
    },
    {
       id: 3,
       page: "home_1_feature_1",
       icon: featureIcon_3,
-      title: "Bán Nhà",
+      title: "Quản lý",
       btn:"Sell Property",
-      desc: "...",
+      desc: "Quản lý nhà trọ của bạn một cách dễ dàng và nhanh chóng.",
    },
 
    // home_1_feature_2
