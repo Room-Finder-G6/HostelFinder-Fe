@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Table, Spinner } from 'react-bootstrap';
+import { Modal, Button, Form, Table, Spinner, Alert } from 'react-bootstrap';
 import apiInstance from '@/utils/apiInstance';
 import { toast } from 'react-toastify';
 
@@ -97,8 +97,14 @@ const MeterReadingForm: React.FC<MeterReadingFormProps> = ({ isOpen, onClose, ro
 
     return (
         <Modal show={isOpen} onHide={onClose} centered size="lg">
+            <Alert variant="success">
+                <strong>Lưu ý!</strong> Nếu số liệu của tháng trước không có thì sẽ lấy số liệu mới nhất được cập nhật
+            </Alert>
+            <Alert variant="warning">
+                <strong>Chú ý!</strong> Nếu số liệu đã được ghi thì bạn chỉ cho thể chỉnh sửa
+            </Alert>
             <Modal.Header closeButton>
-                <Modal.Title className="text-dark fw-bold">Ghi Dịch Vụ</Modal.Title>
+                <Modal.Title className="text-dark fw-bold">Ghi số liệu</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 {/* Billing Month and Year form fields */}
@@ -160,6 +166,7 @@ const MeterReadingForm: React.FC<MeterReadingFormProps> = ({ isOpen, onClose, ro
                                             }
                                             placeholder="Nhập số liệu"
                                             min={0}
+                                            disabled={meterReadings.find(reading => reading.serviceId === service.serviceId)?.currentReading !== 0}
                                         />
                                     </td>
                                 </tr>

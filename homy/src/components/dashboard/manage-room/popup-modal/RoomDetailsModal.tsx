@@ -351,14 +351,14 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                     <Modal.Title style={{ color: 'black' }}>Xác nhận</Modal.Title>
                                                 </Modal.Header>
                                                 <Modal.Body>
-                                                    <p>Bạn có chắc chắn muốn kết thúc hợp đồng này không?</p>
+                                                    <p>Bạn có chắc chắn muốn thanh lý hợp đồng này không?</p>
                                                 </Modal.Body>
                                                 <Modal.Footer>
                                                     <Button variant="secondary" onClick={handleCloseConfirmModal}>
                                                         Hủy
                                                     </Button>
                                                     <Button variant="danger" onClick={handleEndContract} disabled={loading}>
-                                                        {loading ? "Đang xử lý..." : "Kết thúc hợp đồng"}
+                                                        {loading ? "Đang xử lý..." : "Thanh lý hợp đồng"}
                                                     </Button>
                                                 </Modal.Footer>
                                             </Modal>
