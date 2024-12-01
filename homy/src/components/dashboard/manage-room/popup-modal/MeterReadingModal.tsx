@@ -164,9 +164,7 @@ const MeterReadingForm: React.FC<MeterReadingFormProps> = ({ isOpen, onClose, ro
                                             onChange={(e) =>
                                                 handleReadingChange(service.serviceId, parseInt(e.target.value))
                                             }
-                                            placeholder="Nhập số liệu"
                                             min={0}
-                                            disabled={meterReadings.find(reading => reading.serviceId === service.serviceId)?.currentReading !== 0}
                                         />
                                     </td>
                                 </tr>
