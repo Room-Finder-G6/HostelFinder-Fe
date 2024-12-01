@@ -59,6 +59,7 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
     const [coordinates, setCoordinates] = useState<[number, number]>([105.83991, 21.02800]);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
+    const [markerFix, setMarkerFix] = useState<boolean>(true);
 
     const [formData, setFormData] = useState<FormData>({
         hostelName: "",
@@ -216,6 +217,11 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                 toast.error("Đã xảy ra lỗi khi cập nhật", {position: "top-center"});
             }
         }
+    };
+
+    const handleToggleMarkerDrag = (e: React.MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault(); // Prevent form submission
+        setMarkerFix(prev => !prev); // Toggle the state
     };
 
     const handleCancel = (): void => {
@@ -402,18 +408,39 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
                     <div className="map-frame mb-10">
                         <div className="dash-input-wrapper mb-10">
                             <label>Tọa độ</label>
-                            <input
-                                className="w-25"
-                                type="text"
-                                readOnly
-                                name="coordinates"
-                                value={coordinates.join(", ")}
-                            />
+                            <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                                <input
+                                    className="w-25"
+                                    type="text"
+                                    readOnly
+                                    name="coordinates"
+                                    value={coordinates.join(", ")}
+                                />
+                                <button
+                                    onClick={handleToggleMarkerDrag}
+                                    className={`btn ${markerFix ? 'btn-danger' : 'btn-primary'}`}
+                                    style={{minWidth: '120px'}}
+                                >
+                                    {!markerFix ? (
+                                        <>
+                                            <i className="bi bi-lock-fill me-2"></i>
+                                            Khóa vị trí
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="bi bi-unlock-fill me-2"></i>
+                                            Chỉnh sửa vị trí
+                                        </>
+                                    )}
+                                </button>
+                            </div>
                         </div>
                         <GoongMap
+                            key={markerFix ? 'fixed' : 'draggable'}
                             selectedLocation={coordinates}
                             onCoordinatesChange={handleCoordinatesChange}
                             showSearch={true}
+                            isMarkerFixed={markerFix}
                         />
                     </div>
                 </div>
