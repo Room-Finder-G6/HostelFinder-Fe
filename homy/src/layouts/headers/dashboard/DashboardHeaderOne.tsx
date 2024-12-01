@@ -193,12 +193,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <span>Dashboard</span>
                             </Link>
                         </li> */}
-                        {/* <li className="plr">
-                            <Link href="/dashboard/message" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/message' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/message' ? dashboardIconActive_2 : dashboardIcon_2} alt="Message" />
-                                <span>Message</span>
-                            </Link>
-                        </li> */}
+                        
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
                             <div className="nav-title">Profile</div>
@@ -207,6 +202,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             <Link href="/dashboard/profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3} alt="Profile" />
                                 <span>Profile</span>
+                            </Link>
+                        </li>
+                        <li className="plr">
+                            <Link href="/dashboard/deposit" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/deposit' ? dashboardIconActive_7 : dashboardIcon_7} alt="Deposit" />
+                                <span>Nạp tiền</span>
                             </Link>
                         </li>
                         <li className="plr">
@@ -256,9 +257,15 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             </Link>
                         </li> */}
                         <li className="plr">
-                            <Link href="/dashboard/saved-search" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/saved-search' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/saved-search' ? dashboardIconActive_9 : dashboardIcon_10} alt="Saved Search" />
+                            <Link href="/dashboard/invoices" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_9 : dashboardIcon_10} alt="Manage Invoices" />
                                 <span>Quản lí hóa đơn</span>
+                            </Link>
+                        </li>
+                        <li className="plr">
+                            <Link href="/dashboard/manage-rental-contract" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/manage-rental-contract' ? dashboardIconActive_9 : dashboardIcon_10} alt="Manage Rental Contract" />
+                                <span>Quản lí hợp đồng</span>
                             </Link>
                         </li>
                         {/* <li className="plr">

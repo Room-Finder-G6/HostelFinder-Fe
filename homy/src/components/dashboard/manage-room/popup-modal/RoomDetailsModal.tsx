@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Table } from 'react-bootstrap';
+import { Modal, Tabs, Tab, Table, Button } from 'react-bootstrap';
 import { FaClipboardList, FaFileInvoiceDollar, FaTimes, FaUser, FaWrench } from "react-icons/fa";
 import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
@@ -55,6 +55,7 @@ interface InvoiceDetail {
 }
 
 interface ContractDetail {
+    id: string | null;
     startDate: string;
     endDate: string;
     monthlyRent: number;
@@ -81,11 +82,22 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<string>("general");
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [contractIdToTerminate, setContractIdToTerminate] = useState<string | null>(null);
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();
         }
     }, [isOpen, roomId]);
+    const handleShowConfirmModal = (id: string) => {
+        setContractIdToTerminate(id);
+        setShowConfirmModal(true);
+    };
+    const handleCloseConfirmModal = () => {
+        setShowConfirmModal(false);
+        setContractIdToTerminate(null);
+    };
+
 
     const fetchRoomDetails = async () => {
         setLoading(true);
@@ -123,6 +135,33 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                 return "Không xác định";
         }
     }
+    const handleEndContract = async () => {
+        if (!contractIdToTerminate) return;
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await apiInstance.post(
+                "/rental-contracts/termination-of-contract",
+                { contractId: contractIdToTerminate }
+            );
+
+            if (response.data.succeeded) {
+                toast.success(response.data.mesage, { position: "top-center" });
+                // Cập nhật lại state hoặc thực hiện các hành động cần thiết sau khi kết thúc hợp đồng
+                fetchRoomDetails();
+            } else {
+                toast.error("Kết thúc hợp đồng thất bại!", { position: "top-center" });
+            }
+        } catch (error: any) {
+            toast.error(error.response.data.message, { position: "top-center" });
+        } finally {
+            setLoading(false);
+            handleCloseConfirmModal();
+        }
+    };
+
 
     return (
         <Modal show={isOpen} onHide={onClose} size="xl" centered>
@@ -288,17 +327,51 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     <h5>Lịch sử hợp đồng</h5>
                                     {roomDetails.contractDetailInRoom ? (
                                         <div>
+                                            <p hidden><strong>Id:</strong> {roomDetails.contractDetailInRoom.id}</p>
                                             <p><strong>Ngày bắt đầu:</strong> {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString()}</p>
-                                            <p><strong>Ngày kết thúc:</strong> {new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString()}</p>
+                                            <p><strong>Ngày kết thúc:</strong> {roomDetails.contractDetailInRoom.endDate ? new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString() : "N/A"}</p>
                                             <p><strong>Tiền thuê hàng tháng:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.monthlyRent)} đ</p>
                                             <p><strong>Số tiền đặt cọc:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.depositAmount)} đ</p>
                                             <p><strong>Chu kỳ thanh toán (ngày):</strong> {roomDetails.contractDetailInRoom.paymentCycleDays}</p>
                                             {roomDetails.contractDetailInRoom.contractTerms && (
                                                 <p><strong>Điều khoản hợp đồng:</strong> {roomDetails.contractDetailInRoom.contractTerms}</p>
                                             )}
+                                            {roomDetails?.contractDetailInRoom?.id && (
+                                                <button
+                                                    className="btn btn-danger me-2"
+                                                    onClick={() => handleShowConfirmModal(roomDetails.contractDetailInRoom!.id!)}
+                                                >
+                                                    Kết thúc hợp đồng
+                                                </button>
+                                            )}
+
+                                            {/* Modal xác nhận */}
+                                            <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
+                                                <Modal.Header closeButton style={{ backgroundColor: 'white' }}>
+                                                    <Modal.Title style={{ color: 'black' }}>Xác nhận</Modal.Title>
+                                                </Modal.Header>
+                                                <Modal.Body>
+                                                    <p>Bạn có chắc chắn muốn thanh lý hợp đồng này không?</p>
+                                                </Modal.Body>
+                                                <Modal.Footer>
+                                                    <Button variant="secondary" onClick={handleCloseConfirmModal}>
+                                                        Hủy
+                                                    </Button>
+                                                    <Button variant="danger" onClick={handleEndContract} disabled={loading}>
+                                                        {loading ? "Đang xử lý..." : "Thanh lý hợp đồng"}
+                                                    </Button>
+                                                </Modal.Footer>
+                                            </Modal>
+                                            {/* Button Gia hạn hợp đồng */}
+                                            {/* <button
+                                                className="btn btn-success"
+                                                onClick={() => handleExtendContract(roomDetails.contractDetailInRoom.id)}
+                                            >
+                                                Gia hạn hợp đồng
+                                            </button> */}
                                         </div>
                                     ) : (
-                                        <p>Không có lịch sử hợp đồng.</p>
+                                        <p>Không có lịch sử hợp đồng hoặc hợp đồng đã hết hạn.</p>
                                     )}
                                 </section>
                             </Tab>
