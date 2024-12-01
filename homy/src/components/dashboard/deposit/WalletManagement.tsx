@@ -72,26 +72,28 @@ const WalletManagement = () => {
     }, [userId, fetchUserProfile]);
 
     const handleDeposit = async () => {
+        // Kiểm tra nếu depositAmount <= 0, thông báo lỗi cho người dùng
         if (depositAmount <= 0) {
             toast.error("Số tiền nạp phải lớn hơn 0.");
             return;
         }
-
+    
         setIsLoading(true);
         setError(null);
-
+    
         try {
             // Tạo FormData
             const formData = new FormData();
             formData.append('UserId', userId ?? '');
             formData.append('Amount', depositAmount.toString());  // Chuyển Amount thành string
-
+    
             const response = await apiInstance.post(`/Membership/Deposit`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-
+    
+            // Kiểm tra kết quả trả về
             if (response.data.succeeded) {
                 // Hiển thị thông báo thành công và payment URL
                 toast.success("Nạp tiền thành công!");
@@ -108,7 +110,7 @@ const WalletManagement = () => {
             setIsLoading(false);
         }
     };
-
+    
     const formatCurrency = (amount: number) => {
         return amount.toLocaleString();
     };
