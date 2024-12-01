@@ -17,7 +17,7 @@ const WalletManagement = () => {
     const [fullName, setFullName] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [paymentUrl, setPaymentUrl] = useState<string | null>(null);  // Lưu payment URL
+    const [paymentUrl, setPaymentUrl] = useState<string | null>(null);
 
     const getUserIdFromToken = useCallback(() => {
         const token = window.localStorage.getItem("token");
@@ -72,34 +72,35 @@ const WalletManagement = () => {
     }, [userId, fetchUserProfile]);
 
     const handleDeposit = async () => {
-        // Kiểm tra nếu depositAmount <= 0, thông báo lỗi cho người dùng
         if (depositAmount <= 0) {
             toast.error("Số tiền nạp phải lớn hơn 0.");
             return;
         }
-    
+
         setIsLoading(true);
         setError(null);
-    
+
         try {
-            // Tạo FormData
             const formData = new FormData();
             formData.append('UserId', userId ?? '');
-            formData.append('Amount', depositAmount.toString());  // Chuyển Amount thành string
-    
+            formData.append('Amount', depositAmount.toString());
+
             const response = await apiInstance.post(`/Membership/Deposit`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-    
-            // Kiểm tra kết quả trả về
+
             if (response.data.succeeded) {
-                // Hiển thị thông báo thành công và payment URL
                 toast.success("Nạp tiền thành công!");
+
+                // Set payment URL và chuyển hướng
                 setPaymentUrl(response.data.data.paymentUrl);
                 setBalance((prevBalance) => (prevBalance ?? 0) + depositAmount);
                 setDepositAmount(0);
+
+                // Tự động chuyển hướng người dùng tới trang thanh toán
+                window.location.href = response.data.data.paymentUrl;
             } else {
                 toast.error(response.data.message || "Nạp tiền thất bại.");
             }
@@ -110,12 +111,11 @@ const WalletManagement = () => {
             setIsLoading(false);
         }
     };
-    
+
     const formatCurrency = (amount: number) => {
         return amount.toLocaleString();
     };
 
-    // Set depositAmount khi người dùng chọn một mốc tiền
     const handleSelectAmount = (amount: number) => {
         setDepositAmount(amount);
     };
@@ -127,7 +127,6 @@ const WalletManagement = () => {
     return (
         <div className="dashboard-body">
             <DashboardHeaderTwo title="Quản lý ví" />
-
             <div className="dashboard-container">
                 {fullName && (
                     <div className="user-name">
@@ -163,7 +162,7 @@ const WalletManagement = () => {
                     />
                     <button className="deposit-button" onClick={handleDeposit}>Nạp tiền</button>
 
-                    {/* Hiển thị Payment URL nếu có */}
+                    {/* Nếu paymentUrl có sẵn, hiển thị liên kết thanh toán */}
                     {paymentUrl && (
                         <div className="payment-url">
                             <p>Vui lòng thanh toán qua liên kết dưới đây:</p>
