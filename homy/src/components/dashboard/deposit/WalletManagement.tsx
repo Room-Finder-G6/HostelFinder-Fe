@@ -17,6 +17,7 @@ const WalletManagement = () => {
     const [fullName, setFullName] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [paymentUrl, setPaymentUrl] = useState<string | null>(null);  // Lưu payment URL
 
     const getUserIdFromToken = useCallback(() => {
         const token = window.localStorage.getItem("token");
@@ -80,13 +81,21 @@ const WalletManagement = () => {
         setError(null);
 
         try {
-            const response = await apiInstance.post(`/Membership/Deposit`, {
-                userId,
-                amount: depositAmount,
+            // Tạo FormData
+            const formData = new FormData();
+            formData.append('UserId', userId ?? '');
+            formData.append('Amount', depositAmount.toString());  // Chuyển Amount thành string
+
+            const response = await apiInstance.post(`/Membership/Deposit`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
             });
 
             if (response.data.succeeded) {
+                // Hiển thị thông báo thành công và payment URL
                 toast.success("Nạp tiền thành công!");
+                setPaymentUrl(response.data.data.paymentUrl);
                 setBalance((prevBalance) => (prevBalance ?? 0) + depositAmount);
                 setDepositAmount(0);
             } else {
@@ -94,7 +103,6 @@ const WalletManagement = () => {
             }
         } catch (error) {
             console.error("Error depositing money:", error);
-    
             toast.error("Đã xảy ra lỗi khi nạp tiền.");
         } finally {
             setIsLoading(false);
@@ -116,10 +124,8 @@ const WalletManagement = () => {
 
     return (
         <div className="dashboard-body">
-
             <DashboardHeaderTwo title="Quản lý ví" />
 
-            {/* Tạo khoảng cách cho wallet-container */}
             <div className="dashboard-container">
                 {fullName && (
                     <div className="user-name">
@@ -138,11 +144,10 @@ const WalletManagement = () => {
                 <div className="deposit-card">
                     <h4 className="deposit-header">Nạp tiền vào tài khoản</h4>
                     <div className="amount-selection">
-                        {/* Các mốc tiền có sẵn */}
                         <button className="amount-button" onClick={() => handleSelectAmount(10000)}>10,000 VND</button>
                         <button className="amount-button" onClick={() => handleSelectAmount(50000)}>50,000 VND</button>
                         <button className="amount-button" onClick={() => handleSelectAmount(100000)}>100,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(100000)}>200,000 VND</button>
+                        <button className="amount-button" onClick={() => handleSelectAmount(200000)}>200,000 VND</button>
                         <button className="amount-button" onClick={() => handleSelectAmount(500000)}>500,000 VND</button>
                         <button className="amount-button" onClick={() => handleSelectAmount(1000000)}>1,000,000 VND</button>
                     </div>
@@ -155,10 +160,17 @@ const WalletManagement = () => {
                         placeholder="Số tiền muốn nạp"
                     />
                     <button className="deposit-button" onClick={handleDeposit}>Nạp tiền</button>
+
+                    {/* Hiển thị Payment URL nếu có */}
+                    {paymentUrl && (
+                        <div className="payment-url">
+                            <p>Vui lòng thanh toán qua liên kết dưới đây:</p>
+                            <a href={paymentUrl} target="_blank" rel="noopener noreferrer">Thanh toán ngay</a>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
-
     );
 };
 
