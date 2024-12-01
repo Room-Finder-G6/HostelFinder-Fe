@@ -76,35 +76,31 @@ const WalletManagement = () => {
             toast.error("Số tiền nạp phải lớn hơn 0.");
             return;
         }
-    
+
         setIsLoading(true);
         setError(null);
-    
+
         try {
             const formData = new FormData();
             formData.append('UserId', userId ?? '');
             formData.append('Amount', depositAmount.toString());
-    
+
             // Gửi yêu cầu nạp tiền
             const response = await apiInstance.post(`/Membership/Deposit`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 }
             });
-    
+
             if (response.data.succeeded) {
                 toast.success("Nạp tiền yêu cầu thành công! Vui lòng hoàn tất thanh toán.");
-    
+
                 // Lưu payment URL
                 const paymentUrl = response.data.data.paymentUrl;
                 setPaymentUrl(paymentUrl);
-    
-                // Chuyển hướng người dùng đến trang thanh toán
+
+                // Chuyển hướng người dùng đến trang thanh toán ngay lập tức
                 window.location.href = paymentUrl;
-    
-                // Đợi thanh toán hoàn tất (có thể sử dụng một API callback hoặc webhook)
-                // Lưu ý: Đây là cách bạn có thể gọi API xác nhận trạng thái thanh toán trong một thời điểm sau khi thanh toán hoàn tất.
-                await checkPaymentStatus();  // Hàm để kiểm tra trạng thái thanh toán sau khi chuyển hướng
             } else {
                 toast.error(response.data.message || "Nạp tiền thất bại.");
             }
@@ -115,28 +111,7 @@ const WalletManagement = () => {
             setIsLoading(false);
         }
     };
-    
-    // Hàm kiểm tra trạng thái thanh toán (bạn có thể dùng để gọi API hoặc webhook)
-    const checkPaymentStatus = async () => {
-        // Thực hiện API hoặc webhook để kiểm tra trạng thái thanh toán
-        // Ví dụ: bạn có thể gọi API để kiểm tra trạng thái thanh toán sau khi chuyển hướng
-    
-        try {
-            // Giả sử bạn có API kiểm tra thanh toán
-            const response = await apiInstance.get(`/Membership/PaymentStatus`, { params: { userId, depositAmount } });
-    
-            if (response.data.succeeded) {
-                toast.success("Thanh toán thành công! Tiền đã được cộng vào tài khoản.");
-                setBalance((prevBalance) => (prevBalance ?? 0) + depositAmount);
-            } else {
-                toast.error("Thanh toán không thành công.");
-            }
-        } catch (error) {
-            console.error("Error checking payment status:", error);
-            toast.error("Đã xảy ra lỗi khi kiểm tra thanh toán.");
-        }
-    };
-    
+
     const formatCurrency = (amount: number) => {
         return amount.toLocaleString();
     };
@@ -186,14 +161,6 @@ const WalletManagement = () => {
                         placeholder="Số tiền muốn nạp"
                     />
                     <button className="deposit-button" onClick={handleDeposit}>Nạp tiền</button>
-
-                    {/* Nếu paymentUrl có sẵn, hiển thị liên kết thanh toán */}
-                    {paymentUrl && (
-                        <div className="payment-url">
-                            <p>Vui lòng thanh toán qua liên kết dưới đây:</p>
-                            <a href={paymentUrl} target="_blank" rel="noopener noreferrer">Thanh toán ngay</a>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>
