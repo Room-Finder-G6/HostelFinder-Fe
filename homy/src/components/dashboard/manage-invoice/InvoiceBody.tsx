@@ -78,8 +78,6 @@ const InvoiceBody = () => {
 
    const fetchInvoices = async () => {
       if (!selectedHostel) {
-         setInvoices([]); // Reset danh sách hóa đơn nếu không có phòng trọ được chọn
-         toast.warning("Vui lòng chọn nhà trọ bạn muốn xem hóa đơn!");
          setInvoices([]);
          return;
       }
@@ -96,7 +94,6 @@ const InvoiceBody = () => {
          }
       } catch (error) {
          console.error("Error fetching invoices:", error);
-         toast.warning("Vui lòng chọn nhà trọ để xem hóa đơn");
          setInvoices([]);
       }
    };
