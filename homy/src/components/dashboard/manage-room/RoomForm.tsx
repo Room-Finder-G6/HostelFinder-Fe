@@ -35,8 +35,9 @@ const RoomForm: React.FC<RoomFormProps> = ({
 }) => {
   // Formatter for VND currency
   const formatter = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+    style: 'decimal',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   });
 
   // Handle deposit input change with formatting
