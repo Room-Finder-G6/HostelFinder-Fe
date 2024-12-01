@@ -22,40 +22,6 @@ const MembershipGrid = () => {
     <div className={styles.container}>
       {/* Membership Cards */}
       <div className={styles.grid}>
-        {/* Render gói miễn phí */}
-        <div key="free" className={styles.card}>
-          <div className={styles.iconWrapper}>
-            <i className="fas fa-crown"></i> {/* Icon vương miện */}
-          </div>
-          <h3>Gói Free</h3>
-          <p className={styles.description} style={{ fontSize: "15px" }}>
-            Gói miễn phí với các tính năng cơ bản.
-          </p>
-
-          <p className={styles.price}>
-            Miễn phí
-          </p>
-          <ul>
-            <h6 style={{ fontSize: "17px", fontWeight: "bold", marginRight: "35px" }}>
-              Dịch vụ
-            </h6>
-            <ul className={styles.serviceList}>
-              <li className={styles.serviceItem}>
-                <span className={styles.icon}>✔</span>
-                <span>Số bài đăng: 5</span>
-              </li>
-              <li className={styles.serviceItem}>
-                <span className={styles.icon}>✔</span>
-                <span>Số lượt đẩy: 2</span>
-              </li>
-            </ul>
-          </ul>
-
-          {/* Hành động */}
-          <div className={styles.actions}>
-            <button onClick={() => buyMembership("free-id")}>Đăng ký ngay</button>
-          </div>
-        </div>
 
         {sortedMemberships.map((membership) => (
           <div key={membership.id} className={styles.card}>
