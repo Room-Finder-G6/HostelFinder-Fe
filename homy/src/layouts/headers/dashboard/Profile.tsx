@@ -25,12 +25,6 @@ const Profile: React.FC = () => {
                   </Link>
                </li>
                <li>
-                  <Link className="dropdown-item d-flex align-items-center" href="/account-settings">
-                     <Image src={profileIcon_2} alt="Account Settings Icon" className="lazy-img" />
-                     <span className="ms-2 ps-1">Account Settings</span>
-                  </Link>
-               </li>
-               <li>
                   <button
                      type="button"
                      className="dropdown-item d-flex align-items-center"

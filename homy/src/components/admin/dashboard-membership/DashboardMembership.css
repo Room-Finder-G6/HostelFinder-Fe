@@ -1,0 +1,242 @@
+Tổng thể cấu trúc giao diện
+.dashboard {
+  font-family: 'Arial', sans-serif;
+  padding: 30px;
+  background-color: #f4f7fb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Tiêu đề của bảng thống kê */
+h2 {
+  text-align: center;
+  color: #333;
+  font-size: 29px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+/* Phần lựa chọn thời gian */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* Button cho các khoảng thời gian */
+/* Button cho các khoảng thời gian */
+.filters button {
+  background-color: #899fbb; /* Màu nền ban đầu */
+  color: white;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Hiệu ứng chuyển màu nền và phóng to khi hover */
+}
+
+/* Hover effect khi di chuột qua các button */
+.filters button:hover {
+  background-color: #72a1f7; /* Màu xanh lá khi hover */
+  transform: scale(1.05); /* Phóng to button một chút */
+}
+
+/* Focus effect khi button được focus (nhấn vào) */
+.filters button:focus {
+  outline: none;
+  background-color: #72a1f7; /* Màu khi focus */
+  box-shadow: 0 0 0 4px rgba(72, 182, 100, 0.5); /* Hiệu ứng viền sáng khi focus */
+}
+
+/* Active effect khi button được nhấn */
+.filters button:active {
+  background-color: #2d6a33; /* Màu khi nhấn */
+  transform: scale(0.98); /* Thu nhỏ button một chút */
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in-out; /* Thêm hiệu ứng fade-in */
+}
+
+/* Nội dung của popup */
+.popup-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* Thêm bóng mờ */
+  width: 400px;
+  max-width: 100%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Hiệu ứng slide-up */
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Các trường input cho ngày */
+.popup-content input {
+  padding: 10px;
+  font-size: 16px;
+  margin: 10px 0;
+  width: calc(100% - 20px); /* Đảm bảo input chiếm toàn bộ chiều rộng */
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  transition: border-color 0.3s ease;
+  margin-bottom: 20px;
+}
+
+/* Hiệu ứng khi focus vào input */
+.popup-content input:focus {
+  border-color: #72a1f7; /* Màu xanh lá khi focus */
+  outline: none;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Style cho các nút xác nhận và đóng */
+.popup-content button {
+  background-color: #72a1f7; /* Nút xác nhận */
+  color: white;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin: 10px 5px;
+  display: inline-block; /* Để các nút nằm ngang */
+}
+
+/* Hover effect khi di chuột qua các button */
+.popup-content button:hover {
+  background-color: #45a049;
+  transform: scale(1.05); /* Zoom nhẹ khi hover */
+}
+
+/* Active effect khi button được nhấn */
+.popup-content button:active {
+  background-color: #2d6a33;
+  transform: scale(0.98);
+}
+
+/* Nút đóng với màu đỏ */
+.popup-content button.close-btn {
+  background-color: #f44336; /* Nút đóng màu đỏ */
+}
+
+/* Các thông báo lỗi trong popup */
+.popup-content .error {
+  color: red;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+/* Phần hiển thị các thông số thống kê */
+.statistics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+/* Mỗi box thống kê */
+.stat {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width: 30%;
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+/* Hover effect cho các box thống kê */
+.stat:hover {
+  transform: translateY(-5px);
+}
+
+/* Tiêu đề của mỗi box thống kê */
+.stat h3 {
+  color: #444;
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  font-weight: 400;
+}
+
+/* Dữ liệu thống kê */
+.stat p {
+  font-size: 18px;
+  font-weight: 700;
+  color: #5b7dec;
+  margin: 0;
+}
+
+/* Section chi tiết các gói Membership */
+.membership-details {
+  width: 100%;
+  margin-top: 40px;
+}
+.membership-details h3 {
+  color: #444;
+  font-size: 25px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Chi tiết mỗi gói Membership */
+.membership-item {
+  background-color: #fff;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Tiêu đề của mỗi gói */
+.membership-item p strong {
+  font-size: 18px;
+  color: #333;
+}
+
+/* Các thông tin khác của gói */
+.membership-item p {
+  font-size: 16px;
+  color: #555;
+  margin: 5px 0;
+}
+
+/* Thông báo lỗi */
+.error {
+  color: red;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 30px;
+}

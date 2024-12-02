@@ -90,10 +90,10 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
             title: "Listing",
             items: [
                 {
-                    href: "/admin/manager-services",
+                    href: "/admin/dashboard-membership",
                     activeIcon: dashboardIconActive_4,
                     inactiveIcon: dashboardIcon_4,
-                    label: "Quản Lý Services"
+                    label: "Thống Kê Gói Người Dùng"
                 },
                 {
                     href: "/admin/manager-membership",
