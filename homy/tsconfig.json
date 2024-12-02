@@ -23,6 +23,6 @@
       "@/assets/*": ["./public/assets/*"],
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/add-hostel/AddHostelForm.tsx", "src/components/dashboard/add-hostel/index.tsx", "src/app/dashboard/edit-hostel/page.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/dashboard/add-hostel/AddHostelForm.tsx", "src/components/dashboard/add-hostel/index.tsx", "src/app/dashboard/edit-hostel/page.js", "src/components/admin/dashboard-membership/DashboardMembership.module"],
   "exclude": ["node_modules"]
 }
