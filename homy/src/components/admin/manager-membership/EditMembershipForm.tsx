@@ -68,7 +68,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
            
             <div style={{ marginBottom: "15px" }}>
     <label htmlFor="name" style={{ display: "block", fontWeight: "bold" }}>
-        Tên Thành Viên:
+        Tên Gói Thành Viên:
     </label>
     <input
         id="name"

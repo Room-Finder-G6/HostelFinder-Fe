@@ -10,7 +10,7 @@ import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
 import EditMembershipForm from "./EditMembershipForm";
-
+import { toast } from 'react-toastify'; // Import toast
 import styles from "./styles.module.scss";
 
 const MembershipManagement = () => {
@@ -35,6 +35,9 @@ const MembershipManagement = () => {
         setEditingMembership(null); // Đóng form mà không lưu
     };
 
+    
+    
+
     return (
         <div className="dashboard-body membership-management">
             <AdminHeaderTwo title="Quản lý Gói Thành Viên" />
@@ -48,7 +51,7 @@ const MembershipManagement = () => {
                 <>
                     <div className="d-sm-flex align-items-center justify-content-between mb-25">
                         <div className="short-filter d-flex align-items-center ms-sm-auto">
-                            <NiceSelect
+                             {/* <NiceSelect
                                 className="nice-select"
                                 options={[
                                     { value: "1", text: "Mới nhất" },
@@ -57,13 +60,13 @@ const MembershipManagement = () => {
                                 ]}
                                 defaultCurrent={0}
                                 onChange={selectHandler}
-                                name="sortOptions"
-                                placeholder="Sắp xếp Thành Viên"
-                            />
+                                placeholder="Sắp xếp" // Passing the placeholder here
+                                name="membershipFilter" // Adding the name here
+                            /> */}
                         </div>
                         <li className="d-none d-md-inline-block ms-3">
-                            <Link href="/dashboard/create-membership" className="btn-two" target="_blank">
-                                <span>Thêm Thành Viên</span>
+                            <Link href="/dashboard/add-membership" className="btn-two" target="_blank">
+                                <span>Thêm Gói Thành Viên</span>
                             </Link>
                         </li>
                     </div>
@@ -71,11 +74,11 @@ const MembershipManagement = () => {
                         <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                             <table className="table property-list-table">
                                 <thead>
-                                    <tr>
-                                        <th scope="col">Tên Thành Viên</th>
+                                    <tr style={{ fontSize: "10px" }}>
+                                        <th scope="col">Gói Thành Viên</th>
                                         <th scope="col">Miêu tả</th>
                                         <th scope="col">Giá</th>
-                                        <th scope="col">Khoảng Thời Gian</th>
+                                        <th scope="col">Thời Gian</th>
                                         <th scope="col">Hành Động</th>
                                     </tr>
                                 </thead>

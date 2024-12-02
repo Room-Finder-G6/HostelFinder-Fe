@@ -1,20 +1,18 @@
 /* Tổng thể Layout */
-.dashboard-body {
+.dashboard-container {
     background-color: #ffffff;  /* Nền trắng sáng hoàn toàn */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #333;
-    display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 100vh;
+    width: 100%;
 }
 
 /* Tiêu đề chính */
 .dashboard-header {
     font-size: 28px;
     font-weight: 700;
-    color: rgba(87, 92, 98, 0.8);  /* Màu xám nhạt, dễ nhìn nhưng không quá đậm */
-    margin-bottom: 40px;
+    color: rgba(87, 92, 98, 0.8); 
     padding-bottom: 15px;
     border-bottom: 3px solid rgba(0, 0, 0, 0.1);  /* Đường chia mỏng, nhẹ */
 }
