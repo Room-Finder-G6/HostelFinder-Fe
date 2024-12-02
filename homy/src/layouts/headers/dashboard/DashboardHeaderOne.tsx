@@ -263,15 +263,9 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-rental-contract" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-rental-contract' ? dashboardIconActive_9 : dashboardIcon_10} alt="Manage Rental Contract" />
-                                <span>Quản lí hợp đồng</span>
-                            </Link>
-                        </li>
-                        {/* <li className="plr">
-                            <Link href="/dashboard/review" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/review' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/review' ? dashboardIconActive_10 : dashboardIcon_10} alt="Reviews" />
-                                <span>Reviews</span>
+                            <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
+                                <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_10 : dashboardIcon_10} alt="Reviews" />
+                                <span>Quản lí dịch vụ</span>
                             </Link>
                         </li>
                     </ul>
