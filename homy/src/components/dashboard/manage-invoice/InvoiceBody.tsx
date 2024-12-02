@@ -78,8 +78,6 @@ const InvoiceBody = () => {
 
    const fetchInvoices = async () => {
       if (!selectedHostel) {
-         setInvoices([]); // Reset danh sách hóa đơn nếu không có phòng trọ được chọn
-         toast.warning("Vui lòng chọn nhà trọ bạn muốn xem hóa đơn!");
          setInvoices([]);
          return;
       }
@@ -96,7 +94,6 @@ const InvoiceBody = () => {
          }
       } catch (error) {
          console.error("Error fetching invoices:", error);
-         toast.warning("Vui lòng chọn nhà trọ để xem hóa đơn");
          setInvoices([]);
       }
    };
@@ -169,10 +166,12 @@ const InvoiceBody = () => {
             dateOfSubmit, // Gửi ngày thanh toán
          });
 
-         if (response.data.succeeded) {
+         if (response.data.succeeded && response.status === 200) {
             toast.success(response.data.message);
-            setShowModal(false);  // Đóng modal
             fetchInvoices();
+            fetchInvoiceDetails(invoiceDetails.id);
+            setShowCollectMoneyModal(false);
+            setShowModal(false);
          } else {
             toast.error(response.data.message || "Thanh toán thất bại");
          }
@@ -439,19 +438,22 @@ const InvoiceBody = () => {
                   </Link>
                </li>
 
-               {[...Array(totalPages)].map((_, index) => (
-                  <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
-                     <Link
-                        href="#"
-                        onClick={(e) => {
-                           e.preventDefault();
-                           handlePageChange(index + 1);
-                        }}
-                     >
-                        {index + 1}
-                     </Link>
-                  </li>
-               ))}
+               {[...Array(totalPages)].map((_, index) => {
+                  const page = index + 1;
+                  return (
+                     <li key={page} className={pageIndex === page ? "selected" : ""}>
+                        <Link
+                           href="#"
+                           onClick={(e) => {
+                              e.preventDefault();
+                              handlePageChange(page);
+                           }}
+                        >
+                           {page}
+                        </Link>
+                     </li>
+                  );
+               })}
 
                {totalPages > 5 && <li>....</li>}
 

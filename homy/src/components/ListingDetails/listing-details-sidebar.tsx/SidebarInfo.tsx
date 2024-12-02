@@ -18,7 +18,7 @@ const SidebarInfo = () => {
     return (
         <>
             <Image src={user.avatarUrl} alt="User Avatar" className="lazy-img rounded-circle ms-auto me-auto mt-3 avatar"
-                   width={100} height={100}  style={{ objectFit: "cover"}}/>
+                width={100} height={100} style={{ objectFit: "cover" }} />
             <div className="text-center mt-25">
                 <h6 className="name">{user.fullName}</h6>
                 <p className="fs-16">Chủ bất động sản</p>

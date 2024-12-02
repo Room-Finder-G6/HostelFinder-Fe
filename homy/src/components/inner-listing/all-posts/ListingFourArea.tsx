@@ -27,6 +27,14 @@ const ListingFourArea = () => {
         Vàng: "#e1c009",
     };
 
+    const formatDate = (dateString: any) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
     const handleSearch = async () => {
         setIsLoading(true);
         try {
@@ -143,6 +151,7 @@ const ListingFourArea = () => {
                                         <span className={"mt-10"}>
                                             <strong>{item.size}</strong> <span>m<sup>2</sup></span>
                                         </span>
+                                        <span className={"mt-10"}>Ngày đăng: {formatDate(item.createdOn)}</span>
                                     </div>
                                     <div className="style-none d-flex action-icons on-top">
                                         <Link href="#">

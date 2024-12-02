@@ -4,7 +4,8 @@ import debounce from 'lodash/debounce';
 interface GoongMapProps {
     selectedLocation: [number, number];
     onCoordinatesChange: (coordinates: string) => void;
-    showSearch?: boolean; // Thêm prop boolean để điều khiển tìm kiếm
+    showSearch?: boolean;
+    isMarkerFixed?: boolean;
 }
 
 declare global {
@@ -16,7 +17,12 @@ declare global {
 const GOONG_MAP_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js';
 const GOONG_CSS_URL = 'https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css';
 
-const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChange, showSearch = true }) => {
+const GoongMap: React.FC<GoongMapProps> = ({
+                                               selectedLocation,
+                                               onCoordinatesChange,
+                                               showSearch = true,
+                                               isMarkerFixed = true // Default to false to maintain existing behavior
+                                           }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markerRef = useRef<any>(null);
@@ -40,6 +46,28 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChan
             }
         };
     }, []);
+
+    // Add effect to update marker position when selectedLocation changes and marker is fixed
+    useEffect(() => {
+        if (isMarkerFixed && markerRef.current) {
+            markerRef.current.setLngLat(selectedLocation);
+            if (mapRef.current) {
+                mapRef.current.flyTo({ center: selectedLocation });
+            }
+        }
+    }, [selectedLocation, isMarkerFixed]);
+
+    useEffect(() => {
+        if (markerRef.current) {
+            if (isMarkerFixed) {
+                // Khóa vị trí, có thể tắt sự kiện di chuyển
+                mapRef.current.off('move', handleMapMoveEnd);
+            } else {
+                // Mở khóa vị trí, bật sự kiện di chuyển
+                mapRef.current.on('move', handleMapMoveEnd);
+            }
+        }
+    }, [isMarkerFixed]);
 
     const loadGoongJS = () => {
         const script = document.createElement('script');
@@ -68,10 +96,15 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChan
 
         markerRef.current = new window.goongjs.Marker().setLngLat(selectedLocation).addTo(mapRef.current);
 
-        mapRef.current.on('move', handleMapMoveEnd);
+        // Only add move event listener if marker is not fixed
+        if (!isMarkerFixed) {
+            mapRef.current.on('move', handleMapMoveEnd);
+        }
     };
 
     const handleMapMoveEnd = () => {
+        if (isMarkerFixed) return; // Don't update if marker is fixed
+
         const center = mapRef.current.getCenter();
         if (isProgrammaticMoveRef.current) {
             isProgrammaticMoveRef.current = false;
@@ -108,6 +141,8 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChan
     }, [searchQuery, fetchSuggestions]);
 
     const handleSuggestionSelect = async (suggestion: any) => {
+        if (isMarkerFixed) return; // Don't handle selection if marker is fixed
+
         setSearchQuery(suggestion.description);
         setSuggestions([]);
         setSuggestionSelected(true);
@@ -136,6 +171,7 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChan
 
     const updateMap = (newCoordinates: [number, number]) => {
         if (!mapRef.current || !markerRef.current) return console.error('Map or marker is not initialized');
+        if (isMarkerFixed) return; // Don't update if marker is fixed
 
         isProgrammaticMoveRef.current = true;
         mapRef.current.flyTo({ center: newCoordinates, zoom: 15 });
@@ -148,7 +184,7 @@ const GoongMap: React.FC<GoongMapProps> = ({ selectedLocation, onCoordinatesChan
 
     return (
         <div>
-            {showSearch && ( // Hiển thị khối tìm kiếm nếu showSearch là true
+            {showSearch && ( // Hide search if marker is fixed
                 <div className="dash-input-wrapper" style={{ position: 'relative', marginBottom: '15px' }}>
                     <label style={{ display: 'block', marginBottom: '5px' }}>Tìm kiếm địa điểm</label>
                     <input

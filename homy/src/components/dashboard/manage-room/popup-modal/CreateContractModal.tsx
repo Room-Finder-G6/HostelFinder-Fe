@@ -98,7 +98,11 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         // Thông tin hợp đồng
         formData.append("RoomId", roomId);
         formData.append("StartDate", data.startDate);
-        formData.append("EndDate", data.endDate);
+        if (data.endDate) {
+            formData.append("EndDate", data.endDate);
+        } else {
+            formData.append("EndDate", "");
+        }
         formData.append("MonthlyRent", data.monthlyRent);
         formData.append("DepositAmount", data.depositAmount);
         formData.append("PaymentCycleDays", data.paymentCycleDays);
@@ -190,7 +194,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                     <section className="mb-4">
                         <h5>Thông tin hợp đồng</h5>
                         <div className="mb-3">
-                            <label className="form-label">Ngày bắt đầu *</label>
+                            <label className="form-label">Ngày bắt đầu <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="date"
                                 {...register("startDate")}
@@ -199,7 +203,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Ngày kết thúc *</label>
+                            <label className="form-label">Ngày kết thúc</label>
                             <input
                                 type="date"
                                 {...register("endDate")}
@@ -246,7 +250,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Kỳ thanh toán (ngày) *</label>
+                            <label className="form-label">Kỳ thanh toán (tháng)<span style={{color:'red'}}>*</span></label>
                             <input
                                 type="number"
                                 {...register("paymentCycleDays")}

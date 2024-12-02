@@ -243,18 +243,18 @@ const ProfileBody: React.FC = () => {
                 <div className="bg-white card-box border-20">
                     <div className="user-avatar-setting d-flex align-items-center mb-30">
                         <div className="avatar-wrapper position-relative"
-                             style={{width: "100px", height: "100px", borderRadius: "50%", overflow: "hidden"}}>
+                            style={{ width: "100px", height: "100px", borderRadius: "50%", overflow: "hidden" }}>
                             <Image
                                 src={profileData.avatarUrl}
                                 alt="User Avatar"
                                 className="lazy-img"
                                 width={100}
                                 height={100}
-                                style={{width: "100%", height: "100%", objectFit: "cover"}}
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
                             />
                             {isLoading && (
                                 <div className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-light bg-opacity-50">
-                                    <Loading/>
+                                    <Loading />
                                 </div>
                             )}
                         </div>
