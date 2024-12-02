@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash } from 'react-icons/fa';
 import { TfiWrite } from 'react-icons/tfi';
-
+import { toast } from "react-toastify";
 import apiInstance from '@/utils/apiInstance';
 import Loading from '@/components/Loading';
 import CreateContractModal from './popup-modal/CreateContractModal';
@@ -25,9 +25,10 @@ interface RoomTableBodyProps {
     selectedHostel: string;
     selectedFloor: string | null;
     refresh: number;
+    setRefreshRooms: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh }) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh, setRefreshRooms }) => {
     // State hooks
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -77,8 +78,28 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         console.log(`Edit Room ID: ${roomId}`);
     };
 
-    const handleDelete = (roomId: string) => {
-        console.log(`Delete Room ID: ${roomId}`);
+    const handleDelete = async (roomId: string) => {
+        try {
+            const checkResponse = await apiInstance.get(`/rooms/check-delete-room?roomId=${roomId}`);
+            console.log(checkResponse.data)
+            console.log(checkResponse.data)
+            if (checkResponse.data.succeeded && checkResponse.status === 200 && checkResponse.data.data === false) {
+                toast.error(checkResponse.data.message);
+                return;
+            }
+            const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
+            if (confirmDelete) {
+                const deleteResponse = await apiInstance.delete(`/rooms/${roomId}`);
+                if (deleteResponse.data.succeeded) {
+                    alert("Phòng đã được xóa thành công.");
+                    setRefreshRooms(prev => prev + 1);
+                } else {
+                    alert("Có lỗi xảy ra khi xóa phòng.");
+                }
+            }
+        } catch {
+            alert();
+        }
     };
 
     const handleCreateContract = (roomId: string) => {
@@ -109,6 +130,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
 
     const handleSuccessCreateContract = () => {
         setIsModalOpen(false);
+        setRefreshRooms(prev => prev + 1);
         setSelectedRoomId('');
     };
 
