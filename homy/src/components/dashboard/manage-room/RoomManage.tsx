@@ -388,7 +388,7 @@ const RoomManagement = () => {
                            <th scope="col"></th>
                         </tr>
                      </thead>
-                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} refresh={refreshRooms} />
+                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} refresh={refreshRooms} setRefreshRooms={setRefreshRooms}  />
                   </table>
                </div>
             </div>

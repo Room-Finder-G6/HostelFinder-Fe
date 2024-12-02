@@ -1,9 +1,9 @@
 "use client";
 import menu_data from "@/data/home-data/MenuData";
 import Link from "next/link.js";
-import {usePathname} from "next/navigation";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
-import {useState} from "react";
+import { useState } from "react";
 import logo from "@/assets/images/logo/logo_01.svg";
 import '@/styles/index.scss'; // File chứa các thiết lập CSS
 
@@ -32,10 +32,10 @@ const NavMenu = () => {
     return (
         <ul className="navbar-nav align-items-lg-center">
             <li className="d-block d-lg-none">
-                <div className="logo"><Link href="/" className="d-block"><Image src={logo} alt=""/></Link></div>
+                <div className="logo"><Link href="/" className="d-block"><Image src={logo} alt="" /></Link></div>
             </li>
             <li className="nav-item dashboard-menu">
-                <Link className="nav-link" href="/dashboard/dashboard-index">Quản lý</Link>
+                <Link className="nav-link" href="/dashboard/manage-hostels">Quản lý</Link>
             </li>
             <li className="nav-item admin-menu">
                 <Link className="nav-link" href="/admin/admin-index">Admin</Link>
