@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './DashboardMembership.css';
-
+import apiInstance from "@/utils/apiInstance";
 const DashboardMembership = () => {
     const [statistics, setStatistics] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -23,7 +23,9 @@ const DashboardMembership = () => {
                 params.customEndDate = endDate.toISOString();
             }
 
-            const response = await axios.get('https://localhost:5000/api/UserMembership/statistics', { params });
+            const response = await apiInstance.get('/UserMembership/statistics', {
+                params: { timeRange },
+              });
 
             if (response.data && response.data.data) {
                 setStatistics(response.data.data);
@@ -37,7 +39,7 @@ const DashboardMembership = () => {
             }
         } catch (error) {
             console.error('Error fetching statistics', error);
-            setErrorMessage('Có lỗi xảy ra khi lấy dữ liệu. Vui lòng thử lại.');
+            setErrorMessage('Không có dữ liệu.');
         } finally {
             setLoading(false);
         }

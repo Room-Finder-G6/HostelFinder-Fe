@@ -1,5 +1,6 @@
 import React from 'react';
 import PropertyTableBody from "../manage-hostel/PropertyTableBody";
+import HostelSelector from "./HostelSelector";  // Import HostelSelector component
 
 const RoomTable: React.FC = () => {
   return (
@@ -8,9 +9,8 @@ const RoomTable: React.FC = () => {
         <table className="table property-list-table">
           <thead>
             <tr>
-              <th scope="col">Phòng</th>
+              <th scope="col">Nhà trọ</th>
               <th scope="col">Ngày tạo</th>
-              <th scope="col">Giá phòng/tháng</th>
               <th scope="col">Trạng thái</th>
               <th scope="col"></th>
             </tr>
