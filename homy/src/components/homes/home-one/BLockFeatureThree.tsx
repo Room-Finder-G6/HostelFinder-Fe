@@ -60,7 +60,7 @@ const BLockFeatureThree = () => {
     <div className="block-feature-three mt-150 xl-mt-120">
       <div className="container">
         <div className="title-one text-center mb-75 xl-mb-50 md-mb-30 wow fadeInUp">
-          <h3 style={{ fontFamily: 'Arial, sans-serif'}}>Khám phá các <span>địa điểm <Image src={titleShape} alt="" className="lazy-img" /></span></h3>
+          <h3 style={{ fontFamily: 'Arial, sans-serif'}}>Khám phá các <span>địa điểm<Image src={titleShape} alt="" className="lazy-img" /></span> phổ biến</h3>
           <p className="fs-22" style={{ fontFamily: 'Arial, sans-serif'}}>Khám phá danh sách các nhà trọ mới nhất ở các nơi khác nhau</p>
         </div>
 

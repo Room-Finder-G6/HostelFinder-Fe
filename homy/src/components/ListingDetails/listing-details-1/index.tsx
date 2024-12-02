@@ -3,10 +3,6 @@ import ListingDetailsOneArea from "./ListingDetailsOneArea"
 import FancyBanner from "@/components/common/FancyBanner"
 import FooterFour from "@/layouts/footers/FooterFour"
 
-interface props {
-    roomId: string;
-}
-
 const ListingDetailsOne = () => {
     return (
         <>
