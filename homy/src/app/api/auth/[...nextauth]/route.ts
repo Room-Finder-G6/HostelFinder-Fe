@@ -1,8 +1,8 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { AuthOptions } from "next-auth";
 import { pages } from "next/dist/build/templates/app-page";
-
+import { DefaultJWT } from "next-auth/jwt";
 // Configure NextAuth options
 const authOptions: AuthOptions = {
   providers: [
@@ -12,10 +12,23 @@ const authOptions: AuthOptions = {
     }),
     
   ],
-  // Thêm các tùy chọn khác nếu cần
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account) {
+        token.accessToken = account.access_token;
+        token.id = account.id_token!; 
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.idToken = token.id as string; 
+      }
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
 
-// Export các handler cho HTTP methods
 export { handler as GET, handler as POST };

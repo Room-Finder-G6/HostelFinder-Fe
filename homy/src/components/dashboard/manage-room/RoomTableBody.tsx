@@ -9,6 +9,7 @@ import CreateContractModal from './popup-modal/CreateContractModal';
 import RoomDetailsModal from './popup-modal/RoomDetailsModal';
 import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
 import MeterReadingForm from './popup-modal/MeterReadingModal';
+import EditRoomModal from './popup-modal/EditRoomModal';
 interface Room {
     id: string;
     roomName: string;
@@ -40,7 +41,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState<boolean>(false);
     const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
     const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
-
+    const [isEditRoomModalOpen, setIsEditRoomModalOpen] = useState<boolean>(false);
     // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
         if (!selectedHostel) return;
@@ -75,7 +76,8 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
 
     // Handler functions
     const handleEdit = (roomId: string) => {
-        console.log(`Edit Room ID: ${roomId}`);
+        setSelectedRoomId(roomId);
+        setIsEditRoomModalOpen(true);
     };
 
     const handleDelete = async (roomId: string) => {
@@ -268,6 +270,14 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 roomId={selectedRoomId}
                 isOpen={isMeterReadingModalOpen}
                 onClose={handleCloseMeterReadingModal}
+            />
+            <EditRoomModal
+                roomId={selectedRoomId}
+                isOpen={isEditRoomModalOpen}
+                onClose={() => setIsEditRoomModalOpen(false)}
+                onSuccess={(updatedRoom) => {
+                    setRefreshRooms(prev => prev + 1);
+                }}
             />
         </>
     );
