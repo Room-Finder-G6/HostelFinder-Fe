@@ -1,18 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/components/forms/LoginForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import loginIcon_1 from "@/assets/images/icon/google.png";
 import loginIcon_2 from "@/assets/images/icon/facebook.png";
 import RegisterForm from "@/components/forms/RegisterForm";
 import ForgotPassword from "@/components/forms/ForgotPassword";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import apiInstance from "@/utils/apiInstance";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const tabTitle: string[] = ["Login", "Signup"];
 
 const LoginModal = ({ loginModal, setLoginModal }: any) => {
+   const router = useRouter();
    const [activeTab, setActiveTab] = useState(0);
    const [showForgotPassword, setShowForgotPassword] = useState(false);
+   const { data: session, status } = useSession();
+
 
    const handleTabClick = (index: number) => {
       setActiveTab(index);
@@ -22,6 +28,47 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
    const handleGoogleSign = () => {
       signIn("google");
    }
+   useEffect(() => {
+      const sendIdTokenToBackend = async () => {
+         if (session?.user?.idToken) {
+            try {
+               const response = await apiInstance.post('/auth/google-login', {
+                  idToken: session.user.idToken,
+               });
+               if (response.status === 200 && response.data.succeeded) {
+                  const { message, data: responseData } = response.data;
+                  localStorage.setItem("token", responseData.token);
+                  localStorage.setItem("userName", responseData.userName);
+                  // toast.success(message, { position: "top-center" });
+
+                  // Loại bỏ modal backdrop
+                  const backdrops = document.querySelectorAll('.modal-backdrop');
+                  backdrops.forEach(backdrop => backdrop.remove());
+
+                  // Điều hướng dựa trên vai trò người dùng
+                  if (responseData.role === "User") {
+                     // window.location.href = '/';
+                  } else if (responseData.role === "Landlord") {
+                     router.push("/dashboard/manage-hostels");
+                  }
+                  else if (responseData.role === "Admin") {
+                     router.push("/admin/admin-index");
+                  }
+               }
+            } catch (error: any) {
+               if (error.response?.status === 400) {
+                  toast.error(error.response.data.message, { position: "top-center" });
+               } else {
+                  toast.error(error.message, { position: "top-center" });
+               }
+            }
+         }
+      };
+
+      if (status === "authenticated") {
+         sendIdTokenToBackend();
+      }
+   }, [session, status, router]);
 
    return (
       <>
@@ -84,7 +131,7 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                                  className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
                               >
                                  <Image src={loginIcon_1} alt="Google Icon" />
-                                 <span className="ps-3">Sign in with Google</span>
+                                 <span className="ps-3">Đăng nhập với google</span>
                               </button>
                            </div>
                            {/* <div className="col-sm-6">
