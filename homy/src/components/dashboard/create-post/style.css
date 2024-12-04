@@ -1,0 +1,8 @@
+.btn-secondary {
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #6c757d;
+    transform: scale(1.05);
+}

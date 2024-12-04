@@ -250,7 +250,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Kỳ thanh toán (ngày) *</label>
+                            <label className="form-label">Kỳ thanh toán (tháng)<span style={{color:'red'}}>*</span></label>
                             <input
                                 type="number"
                                 {...register("paymentCycleDays")}

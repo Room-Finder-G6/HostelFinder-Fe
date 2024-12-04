@@ -1,0 +1,267 @@
+
+  
+  .main-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  /* Hostel Selector */
+  .hostel-selector {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    margin-top: 200px;
+  }
+  
+  .hostel-selector select {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    width: 200px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+  }
+  
+  .hostel-selector select:hover {
+    border-color: #007bff;
+    background-color: #e6f7ff;
+  }
+  
+  /* Buttons */
+  button.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  button.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  button.btn-success {
+    background-color: #28a745;
+    color: white;
+    border: none;
+  }
+  
+  button.btn-success:hover {
+    background-color: #218838;
+  }
+  
+  button.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+  }
+  
+  button.btn-danger:hover {
+    background-color: #c82333;
+  }
+  
+  /* Service List */
+  .service-list {
+    margin-top: 20px;
+  }
+  
+  .service-list h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .service-list ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+ }
+ .service-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .service-list li span {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .service-list li span:first-child {
+    font-weight: 600;
+  }
+  .service-list span {
+    flex: 1; /* Giúp các phần tử chiếm không gian đều */
+ }
+ .service-list button {
+    margin-left: 10px; /* Khoảng cách giữa nút và các phần tử khác */
+ }
+  /* Modal */
+  .modal-content {
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #007bff;
+  }
+  
+  .modal-header button {
+    font-size: 1.25rem;
+    color: #333;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .modal-header button:hover {
+    color: #007bff;
+  }
+  
+  .modal-dialog {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .modal.show {
+    display: block;
+  }
+  
+  .modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  @media (max-width: 768px) {
+    .hostel-selector {
+      flex-direction: column;
+    }
+  
+    .hostel-selector select {
+      width: 100%;
+    }
+  
+    .service-list {
+      margin-top: 20px;
+    }
+  }
+  /* Cấu trúc tổng thể của modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Màu nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Đảm bảo modal hiển thị trên cùng */
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Cửa sổ modal */
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Tiêu đề modal */
+.modal-content h5 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+/* Các trường nhập thông tin */
+.modal-content input,
+.modal-content select {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Nút bấm */
+.modal-content button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 16px;
+}
+
+.modal-content button:hover {
+  background-color: #0056b3;
+}
+
+/* Nút đóng */
+.modal-content .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.3s;
+}
+
+.modal-content .close-btn:hover {
+  color: #333;
+}
+
+/* Animation cho modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
