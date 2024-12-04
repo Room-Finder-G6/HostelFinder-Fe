@@ -6,7 +6,6 @@ import icon_1 from "@/assets/images/icon/icon_46.svg";
 import usePostsByUser from "./usePost";
 import UserPostsBody from "./PropertyTableBodyPost";
 import DeleteModal from "@/modals/DeleteModal";
-import NiceSelect from "@/ui/NiceSelect";
 
 
 const UserPostManagement = () => {
