@@ -4,14 +4,18 @@ import { useRouter } from "next/navigation"; // Sử dụng useRouter trong Next
 import profileIcon_1 from "@/assets/images/dashboard/icon/icon_23.svg";
 import profileIcon_2 from "@/assets/images/dashboard/icon/icon_24.svg";
 import profileIcon_3 from "@/assets/images/dashboard/icon/icon_25.svg";
+import { signOut } from "next-auth/react";
 
 const Profile: React.FC = () => {
    const router = useRouter();
 
    const handleLogout = () => {
       localStorage.removeItem("token");
+      localStorage.removeItem("userName");
       router.refresh();
-      window.location.href = '/';
+      signOut({
+         callbackUrl: "/",
+      });
    };
 
    return (
@@ -28,7 +32,7 @@ const Profile: React.FC = () => {
                   <button
                      type="button"
                      className="dropdown-item d-flex align-items-center"
-                     onClick={handleLogout} 
+                     onClick={handleLogout}
                   >
                      <Image src={profileIcon_3} alt="Logout Icon" className="lazy-img" />
                      <span className="ms-2 ps-1">Đăng xuất</span>
