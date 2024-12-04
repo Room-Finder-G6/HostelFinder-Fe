@@ -18,17 +18,26 @@ const DashboardMembership = () => {
         setErrorMessage('');
         try {
             const params: any = { timeRange };
+
+            // Nếu timeRange là 'custom' và người dùng đã chọn ngày bắt đầu và kết thúc
             if (timeRange === 'custom' && startDate && endDate) {
+                // Nếu ngày bắt đầu lớn hơn ngày kết thúc, thì trả về lỗi
+                if (startDate > endDate) {
+                    setErrorMessage('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
+                    return;
+                }
                 params.customStartDate = startDate.toISOString();
                 params.customEndDate = endDate.toISOString();
             }
 
+            // Gửi request API
             const response = await apiInstance.get('/UserMembership/statistics', {
-                params: { timeRange },
-              });
+                params: { ...params }
+            });
 
             if (response.data && response.data.data) {
                 setStatistics(response.data.data);
+                // Nếu là thời gian tùy chỉnh, cập nhật thông tin khoảng thời gian
                 if (timeRange === 'custom') {
                     setDateRangeText(`Từ ${startDate?.toLocaleDateString()} đến ${endDate?.toLocaleDateString()}`);
                 } else {
@@ -44,6 +53,7 @@ const DashboardMembership = () => {
             setLoading(false);
         }
     };
+
 
     const handleTimeRangeChange = (range: string) => {
         let timeLabel = '';
@@ -73,19 +83,26 @@ const DashboardMembership = () => {
     };
 
     const handleCustomDateChange = () => {
+        // Kiểm tra xem người dùng có chọn ngày bắt đầu và kết thúc không
         if (customDates.start && customDates.end) {
             fetchStatistics('custom', customDates.start, customDates.end);
             setIsPopupVisible(false);
+        } else {
+            // Nếu chưa chọn ngày, chọn ngày hiện tại
+            const currentDate = new Date();
+            setCustomDates({ start: currentDate, end: currentDate });
+            fetchStatistics('custom', currentDate, currentDate);
+            setIsPopupVisible(false);
         }
     };
+
+
 
     const togglePopup = () => setIsPopupVisible(!isPopupVisible);
 
     useEffect(() => {
         fetchStatistics(timeRange);
     }, [timeRange]);
-
-    // Lấy ngày hiện tại dưới dạng chuỗi yyyy-mm-dd
     const currentDate = new Date().toISOString().split('T')[0];
 
     return (
@@ -96,7 +113,6 @@ const DashboardMembership = () => {
                 <button onClick={() => handleTimeRangeChange('today')}>Hôm Nay</button>
                 <button onClick={() => handleTimeRangeChange('thisweek')}>Tuần Này</button>
                 <button onClick={() => handleTimeRangeChange('thismonth')}>Tháng Này</button>
-                <button onClick={() => handleTimeRangeChange('lastmonth')}>Tháng Trước</button>
                 <button onClick={() => handleTimeRangeChange('thisyear')}>Năm Này</button>
                 <button onClick={togglePopup}>Tùy Chỉnh</button>
             </div>
@@ -108,17 +124,19 @@ const DashboardMembership = () => {
                             type="date"
                             value={customDates.start?.toISOString().split('T')[0] || ''}
                             onChange={handleStartDateChange}
-                            max={currentDate} // Giới hạn ngày bắt đầu không được quá ngày hiện tại
+                            max={currentDate} // Giới hạn ngày bắt đầu không quá ngày hiện tại
                         />
+
                         <input
                             type="date"
                             value={customDates.end?.toISOString().split('T')[0] || ''}
                             onChange={handleEndDateChange}
-                            max={currentDate} // Giới hạn ngày kết thúc không được quá ngày hiện tại
+                            max={currentDate} // Giới hạn ngày kết thúc không quá ngày hiện tại
                         />
-                         <button onClick={togglePopup}>Đóng</button>
+
+                        <button onClick={togglePopup}>Đóng</button>
                         <button onClick={handleCustomDateChange}>Xác Nhận</button>
-                       
+
                     </div>
                 </div>
             )}
@@ -130,11 +148,12 @@ const DashboardMembership = () => {
             ) : (
                 <div className="statistics">
                     <div className="stat">
-                        <h3>Tổng Doanh Thu {selectedTimeRange} {dateRangeText && <span>({dateRangeText})</span>}</h3>
+                        <h3>Tổng Doanh Thu  {dateRangeText && <span>({dateRangeText})</span>}</h3>
                         <p>{statistics?.totalPrice?.toLocaleString()} VND</p>
                     </div>
+
                     <div className="stat">
-                        <h3>Tổng Gói {selectedTimeRange} {dateRangeText && <span>({dateRangeText})</span>}</h3>
+                        <h3>Tổng Gói  {dateRangeText && <span>({dateRangeText})</span>}</h3>
                         <p>{statistics?.totalMemberships}</p>
                     </div>
                     <div className="stat">
@@ -146,7 +165,7 @@ const DashboardMembership = () => {
                         <p>{statistics?.totalPostsUsed}</p>
                     </div>
                     <div className="stat">
-                        <h3>Tổng Lượt Push Top Sử Dụng</h3>
+                        <h3>Tổng Lượt Đẩy Bài Sử Dụng</h3>
                         <p>{statistics?.totalPushTopUsed}</p>
                     </div>
 
@@ -155,7 +174,7 @@ const DashboardMembership = () => {
                         {statistics?.membershipDetails?.map((membership: any, index: number) => (
                             <div key={index} className="membership-item">
                                 <p><strong>{membership.membershipName}</strong></p>
-                                <p>Giá: {membership.totalPrice?.toLocaleString()} VND</p>
+                                <p>Doanh Thu: {membership.totalPrice?.toLocaleString()} VND</p>
                                 <p>Số Người: {membership.totalUsers}</p>
                             </div>
                         ))}
