@@ -7,7 +7,7 @@ import featureShape_2 from "@/assets/images/shape/shape_08.svg";
 
 const BLockFeatureFive = ({ style }: any) => {
    return (
-      <div className={`block-feature-five position-relative z-1 pb-130 xl-pb-100 lg-pb-80 ${style ? " pt-170 xl-pt-120" : "bg-pink pt-100 lg-pt-80 mt-225 xl-mt-200 lg-mt-150"}`}>
+      <div className={`block-feature-five position-relative z-1 pb-130 xl-pb-100 lg-pb-80 ${style ? " pt-150 xl-pt-100" : "bg-pink pt-100 lg-pt-80 mt-225 xl-mt-200 lg-mt-150"}`}>
          <div className="container">
             <div className="row">
                <div className="col-xl-8 m-auto">

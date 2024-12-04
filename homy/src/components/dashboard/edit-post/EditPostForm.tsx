@@ -1,25 +1,31 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Overview from "./Overview";
 import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import UploadImage from "@/components/UploadImage";
-import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading"; // Import component Loading
 
-export interface PostData {
+interface PostData {
+    id: string;
     hostelId: string;
     roomId: string;
     title: string;
     description: string;
     status: boolean;
-    imageUrls: File[];
+    imageUrls: string[];
     dateAvailable: string;
     membershipServiceId: string;
 }
 
-interface DecodedToken {
-    UserId: string;
+interface UpdatePostData {
+    hostelId: string;
+    roomId: string;
+    title: string;
+    description: string;
+    status: boolean;
+    dateAvailable: string;
 }
 
 interface EditPostFormProps {
@@ -27,8 +33,8 @@ interface EditPostFormProps {
 }
 
 const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
-
     const [postData, setPostData] = useState<PostData>({
+        id: '',
         hostelId: '',
         roomId: '',
         title: '',
@@ -39,12 +45,23 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
         membershipServiceId: ''
     });
 
+    const router = useRouter();
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [imageUrls, setImageUrls] = useState<string[]>([]);
+    const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false); // State for loading
+
     useEffect(() => {
         const fetchPostData = async () => {
             try {
                 const response = await apiInstance.get(`posts/${postId}`);
                 if (response.status === 200) {
-                    setPostData(response.data.data);
+                    const data = response.data.data;
+                    setPostData({
+                        ...data,
+                        dateAvailable: new Date(data.dateAvailable).toISOString().slice(0, 10)
+                    });
+                    setImageUrls(data.imageUrls);
                 }
             } catch (error: any) {
                 toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, { position: "top-center" });
@@ -57,94 +74,92 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
     }, [postId]);
 
     const handleData = (data: Partial<PostData>) => {
-        setPostData((prevData) => ({
+        setPostData(prevData => ({
             ...prevData,
             ...data,
         }));
     };
 
-    const handleImageUpload = (files: File[]) => {
-        handleData({ imageUrls: files });
-    };
-
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-    const validateFileSize = (file: File): boolean => {
-        if (file.size > MAX_FILE_SIZE) {
-            toast.error(`File ${file.name} vượt quá kích thước cho phép (5MB)`);
-            return false;
-        }
-        return true;
+    const handleImageUpload = (files: File[], newImageUrls: string[], deletedImageUrls: string[]) => {
+        setSelectedFiles(files);
+        setImageUrls(newImageUrls);
+        setDeletedImageUrls(deletedImageUrls);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.error("Token không tìm thấy", { position: "top-center" });
-            return;
-        }
+        setLoading(true); // Show loading spinner
 
-        let userId = "";
-        try {
-            const decodedToken: DecodedToken = jwtDecode(token);
-            userId = decodedToken.UserId;
-            if (!userId) {
-                toast.error("Không tìm thấy User ID trong token", { position: "top-center" });
-                return;
-            }
-        } catch (error) {
-            toast.error("Token không hợp lệ", { position: "top-center" });
-            return;
-        }
-
-        for (const image of postData.imageUrls) {
-            if (!validateFileSize(image)) {
-                return;
-            }
-        }
-
-        const formData = new FormData();
-        formData.append("hostelId", postData.hostelId);
-        formData.append("roomId", postData.roomId);
-        formData.append("title", postData.title);
-        formData.append("status", postData.status ? "true" : "false");
-        formData.append("description", postData.description);
-        formData.append("dateAvailable", postData.dateAvailable);
-
-        postData.imageUrls.forEach((image) => {
-            formData.append("images", image);
-        });
+        const updateData: UpdatePostData = {
+            hostelId: postData.hostelId,
+            roomId: postData.roomId,
+            title: postData.title,
+            description: postData.description,
+            status: postData.status,
+            dateAvailable: new Date(postData.dateAvailable).toISOString()
+        };
 
         try {
-            await apiInstance.put(`/posts/${postId}`, formData);
-            toast.success("Cập nhật bài đăng thành công", { position: "top-center" });
+            const formData = new FormData();
+
+            Object.entries(updateData).forEach(([key, value]) => {
+                formData.append(key, value.toString());
+            });
+
+            if (selectedFiles.length > 0) {
+                selectedFiles.forEach(file => {
+                    formData.append('images', file);
+                });
+            }
+
+            if (imageUrls && imageUrls.length > 0) {
+                imageUrls.forEach(url => {
+                    if (!url.startsWith("blob:")) {
+                        formData.append('imageUrls', url);
+                    }
+                });
+            }
+
+            if (deletedImageUrls && deletedImageUrls.length > 0) {
+                deletedImageUrls.forEach(url => formData.append('deletedImageUrls', url));
+            }
+
+            const response = await apiInstance.put(`posts/${postData.id}`, formData);
+            if (response.status === 200) {
+                toast.success('Post updated successfully!', { position: "top-center" });
+                router.push("/dashboard/manage-post");
+            }
         } catch (error: any) {
-            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, { position: "top-center" });
+            toast.error(`Error updating post: ${error.response?.data?.message || error.message}`, { position: "top-center" });
+        } finally {
+            setLoading(false); // Hide loading spinner once done
         }
     };
 
     return (
-        <div>
-            <DashboardHeaderTwo title="Chỉnh sửa bài cho thuê" />
-            <h2 className="main-title d-block d-lg-none">Chỉnh sửa bài cho thuê</h2>
+        <div className="dashboard-form-container">
+            <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
+
             <Overview onDataChange={handleData} postData={postData} />
 
+            {loading && <Loading />} {/* Show loading overlay if loading is true */}
+
             <div className="bg-white card-box border-20 mt-40">
-                <h4 className="dash-title-three">Hình ảnh</h4>
-                <UploadImage onImageUpload={handleImageUpload}
+                <h4 className="dash-title-three">Thêm ảnh</h4>
+                <UploadImage
+                    onImageUpload={handleImageUpload}
                     multiple={true}
-                // existingImages={postData.imageUrls}
+                    existingImages={postData.imageUrls}
                 />
             </div>
 
             <form onSubmit={handleSubmit}>
                 <div className="button-group d-inline-flex align-items-center mt-30">
-                    <button type="submit" className="dash-btn-two tran3s me-3">
-                        Cập nhật bài
+                    <button type="submit" className="dash-btn-two tran3s me-3" disabled={loading}>
+                        {loading ? 'Đang cập nhật...' : 'Cập nhật'} {/* Show loading text while submitting */}
                     </button>
-                    <button type="button" className="dash-cancel-btn tran3s">
+                    <button onClick={() => router.push("/dashboard/manage-post")} type="button" className="dash-cancel-btn tran3s">
                         Hủy
                     </button>
                 </div>

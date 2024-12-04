@@ -5,13 +5,13 @@ import EditHostelForm from "@/components/dashboard/edit-hostel/EditHostelForm";
 import {useParams} from "next/navigation";
 
 const EditHostelBody = () => {
-    const { hostelId } = useParams();
-    
+    const {hostelId} = useParams();
+
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Sửa thông tin nhà trọ" />
-                <EditHostelForm hostelId={hostelId as string} />
+                <DashboardHeaderTwo title="Sửa thông tin nhà trọ"/>
+                <EditHostelForm hostelId={hostelId as string}/>
             </div>
         </div>
     );
