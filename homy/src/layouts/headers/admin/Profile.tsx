@@ -12,8 +12,9 @@ const Profile: React.FC = () => {
    const handleLogout = () => {
       localStorage.removeItem("userName");
       localStorage.removeItem("token");
+      const callbackUrl = process.env.NODE_ENV === 'production' ? 'http://46.250.224.140:4000/' : 'http://localhost:3000/';
       signOut({
-         callbackUrl: "/",
+         callbackUrl: callbackUrl,
       });
    };
 

@@ -9,7 +9,8 @@ import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import HostelSelector from "../manage-room/HostelSelector";
 import { toast } from "react-toastify";
-import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner } from "react-bootstrap";
+import { MdEmail } from 'react-icons/md';
 
 interface Invoice {
    id: string;
@@ -53,6 +54,11 @@ const InvoiceBody = () => {
    const [formOfTransfer, setFormOfTransfer] = useState<string>("");
    const [dateOfSubmit, setDateOfSubmit] = useState<string>("");
    const [loading, setLoading] = useState<boolean>(false);
+
+   // State mới cho việc gửi email
+   const [sendingEmail, setSendingEmail] = useState(false);
+   const [emailMessage, setEmailMessage] = useState(null);
+   const [emailError, setEmailError] = useState(null);
 
    const getUserIdFromToken = useCallback((): string | null => {
       const token = window.localStorage.getItem("token");
@@ -183,6 +189,27 @@ const InvoiceBody = () => {
       }
    };
 
+   // Hàm xử lý gửi email
+   const handleSendEmail = async () => {
+      setSendingEmail(true);
+      setEmailMessage(null);
+      setEmailError(null);
+      try {
+         const response = await apiInstance.post(`/invoices/send-email`, null, {
+            params: { invoiceId: invoiceDetails.id },
+         });
+
+         if (response.data.succeeded) {
+            setEmailMessage(response.data.message || "Gửi email thành công!");
+         } else {
+            setEmailError(response.data.message || "Gửi email thất bại!");
+         }
+      } catch (error: any) {
+         setEmailError(error.response?.data?.message || "Gửi email thất bại do lỗi máy chủ.");
+      }
+      setSendingEmail(false);
+   };
+
    return (
       <div className="dashboard-body">
          <div className="position-relative">
@@ -218,7 +245,7 @@ const InvoiceBody = () => {
                   <table className="table saved-search-table">
                      <thead>
                         <tr>
-                           <th scope="col">Mã hóa đơn</th>
+                           {/* <th scope="col">Mã hóa đơn</th> */}
                            <th scope="col">Tên phòng</th>
                            <th scope="col">Thời gian</th>
                            <th scope="col">Số tiền</th>
@@ -229,7 +256,7 @@ const InvoiceBody = () => {
                      <tbody className="border-0">
                         {invoices.map((invoice) => (
                            <tr key={invoice.id}>
-                              <td>{invoice.id}</td>
+                              {/* <td>{invoice.id}</td> */}
                               <td>
                                  <Link href="#" className="property-name tran3s color-dark fw-500">
                                     {invoice.roomName}
@@ -264,7 +291,7 @@ const InvoiceBody = () => {
             {/* Modal Thanh toán */}
             <Modal show={showCollectMoneyModal} onHide={() => setShowCollectMoneyModal(false)} size="lg">
                <Modal.Header closeButton>
-                  <Modal.Title>Chi tiết hóa đơn</Modal.Title>
+                  <Modal.Title style={{ color: 'black' }}>Chi tiết hóa đơn</Modal.Title>
                </Modal.Header>
                <Modal.Body>
                   <div className="modal-content-row">
@@ -273,7 +300,7 @@ const InvoiceBody = () => {
                         {invoiceDetails ? (
                            <div>
                               <h5>Thông tin hóa đơn</h5>
-                              <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p>
+                              {/* <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p> */}
                               <p><strong>Tháng/Năm:</strong> {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}</p>
                               <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ</p>
                               <p><strong>Trạng thái:</strong>
@@ -281,6 +308,23 @@ const InvoiceBody = () => {
                                     {invoiceDetails.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
                                  </span>
                               </p>
+                              <Button
+                                 onClick={handleSendEmail}
+                                 disabled={sendingEmail}
+                                 className="d-flex align-items-center custom-button"
+                              >
+                                 {sendingEmail ? (
+                                    <>
+                                       <Spinner animation="border" size="sm" className="me-2" />
+                                       Đang gửi email...
+                                    </>
+                                 ) : (
+                                    <>
+                                       <MdEmail className="me-2" />
+                                       Gửi email thông báo hóa đơn
+                                    </>
+                                 )}
+                              </Button>
 
                               {/* Chi tiết dịch vụ hóa đơn */}
                               <Table striped bordered hover>
@@ -367,6 +411,7 @@ const InvoiceBody = () => {
                   >
                      {loading ? "Đang thanh toán..." : "Thanh toán"}
                   </Button>
+
                </Modal.Footer>
             </Modal>
 
@@ -380,7 +425,7 @@ const InvoiceBody = () => {
                   {invoiceDetails ? (
                      <div>
                         <h5>Thông tin hóa đơn</h5>
-                        <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p>
+                        {/* <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p> */}
                         <p><strong>Tháng/Năm:</strong> {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}</p>
                         <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ</p>
                         <p><strong>Trạng thái:</strong>
@@ -388,7 +433,25 @@ const InvoiceBody = () => {
                               {invoiceDetails.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
                            </span>
                         </p>
-
+                        <p><strong>Hình thức chuyển khoản:</strong> {invoiceDetails.formOfTransfer}</p>
+                        <p><strong>Số tiền đã thu:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.amountPaid)} đ</p>
+                        <Button
+                           onClick={handleSendEmail}
+                           disabled={sendingEmail}
+                           className="d-flex align-items-center custom-button"
+                        >
+                           {sendingEmail ? (
+                              <>
+                                 <Spinner animation="border" size="sm" className="me-2" />
+                                 Đang gửi email...
+                              </>
+                           ) : (
+                              <>
+                                 <MdEmail className="me-2" />
+                                 Gửi email thông báo hóa đơn
+                              </>
+                           )}
+                        </Button>
                         {/* Chi tiết dịch vụ hóa đơn */}
                         <Table striped bordered hover>
                            <thead>
