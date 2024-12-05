@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Tabs, Tab, Table, Button } from 'react-bootstrap';
+import { Modal, Tabs, Tab, Table, Button, Form } from 'react-bootstrap';
 import { FaClipboardList, FaFileInvoiceDollar, FaTimes, FaUser, FaWrench } from "react-icons/fa";
 import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import Loading from "@/components/Loading";
-
+import DatePicker from 'react-datepicker';
 interface RoomDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -84,6 +84,8 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [activeTab, setActiveTab] = useState<string>("general");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [contractIdToTerminate, setContractIdToTerminate] = useState<string | null>(null);
+    const [showExtendModal, setShowExtendModal] = useState(false);
+    const [newEndDate, setNewEndDate] = useState<Date | null>(null);
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();
@@ -96,6 +98,14 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const handleCloseConfirmModal = () => {
         setShowConfirmModal(false);
         setContractIdToTerminate(null);
+    };
+    const handleExtendContract = (contractId: string) => {
+        setShowExtendModal(true);
+    };
+
+    const handleCloseExtendModal = () => {
+        setShowExtendModal(false);
+        setNewEndDate(null);
     };
 
 
@@ -147,18 +157,43 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                 { contractId: contractIdToTerminate }
             );
 
-            if (response.data.succeeded) {
-                toast.success(response.data.mesage, { position: "top-center" });
-                // Cập nhật lại state hoặc thực hiện các hành động cần thiết sau khi kết thúc hợp đồng
+            if (response.status === 200 && response.data.succeeded) {
+                toast.success(response.data.message, { position: "top-center" });
                 fetchRoomDetails();
-            } else {
-                toast.error("Kết thúc hợp đồng thất bại!", { position: "top-center" });
             }
         } catch (error: any) {
-            toast.error(error.response.data.message, { position: "top-center" });
+            toast.error("Có lỗi xảy ra khi chấm dứt hợp đồng", { position: "top-center" });
         } finally {
             setLoading(false);
             handleCloseConfirmModal();
+        }
+    };
+    const handleConfirmExtend = async () => {
+        if (!roomDetails?.contractDetailInRoom?.id || !newEndDate) return;
+
+        setLoading(true);
+        setError(null);
+
+        const formattedDate = newEndDate.toISOString(); // Hoặc định dạng phù hợp với API
+
+        try {
+            const response = await apiInstance.post('/rental-contracts/contract-extension', {
+                rentalContractId: roomDetails.contractDetailInRoom.id,
+                newEndDate: formattedDate,
+            });
+
+            if (response.data.succeeded) {
+                toast.success(response.data.message, { position: "top-center" });
+                fetchRoomDetails(); // Cập nhật lại thông tin phòng
+                handleCloseExtendModal();
+            } else {
+                toast.error(response.data.message || "Gia hạn hợp đồng thất bại.", { position: "top-center" });
+            }
+        } catch (error: any) {
+            console.error("Error extending contract:", error);
+            toast.error("Có lỗi xảy ra khi gia hạn hợp đồng.", { position: "top-center" });
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -233,7 +268,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                         <p><strong>Điện thoại:</strong> {tenant.phone}</p>
                                                         <p><strong>Tỉnh/Thành phố:</strong> {tenant.province}</p>
                                                         <p><strong>Số CMND:</strong> {tenant.identityCardNumber}</p>
-                                                        <p><strong>Ngày vào:</strong> {new Date(tenant.moveInDate).toLocaleDateString()}</p>
+                                                        <p><strong>Ngày vào:</strong> {new Date(tenant.moveInDate).toLocaleDateString('vi-VN')}</p>
                                                         {tenant.description && <p><strong>Mô tả:</strong> {tenant.description}</p>}
 
                                                         {/* Dấu hiệu người đại diện hợp đồng và người liên hệ */}
@@ -309,7 +344,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                                 <td className="text-center">{detail.numberOfCustomer}</td>
                                                                 <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
                                                                 <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
-                                                                <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                                                <td className="text-center">{new Date(detail.billingDate).toLocaleDateString('vi-VN')}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -328,8 +363,8 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     {roomDetails.contractDetailInRoom ? (
                                         <div>
                                             <p hidden><strong>Id:</strong> {roomDetails.contractDetailInRoom.id}</p>
-                                            <p><strong>Ngày bắt đầu:</strong> {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString()}</p>
-                                            <p><strong>Ngày kết thúc:</strong> {roomDetails.contractDetailInRoom.endDate ? new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString() : "N/A"}</p>
+                                            <p><strong>Ngày bắt đầu:</strong> {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString('vi-Vn')}</p>
+                                            <p><strong>Ngày kết thúc:</strong> {roomDetails.contractDetailInRoom.endDate ? new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString('vi-VN') : "N/A"}</p>
                                             <p><strong>Tiền thuê hàng tháng:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.monthlyRent)} đ</p>
                                             <p><strong>Số tiền đặt cọc:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.depositAmount)} đ</p>
                                             <p><strong>Chu kỳ thanh toán (ngày):</strong> {roomDetails.contractDetailInRoom.paymentCycleDays}</p>
@@ -344,6 +379,16 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                     Kết thúc hợp đồng
                                                 </button>
                                             )}
+
+
+                                            {/* Button Gia hạn hợp đồng */}
+                                            <button
+                                                className="btn btn-success"
+                                                onClick={() => handleExtendContract(roomDetails.contractDetailInRoom!.id!)}
+                                                disabled={loading}
+                                            >
+                                                Gia hạn hợp đồng
+                                            </button>
 
                                             {/* Modal xác nhận */}
                                             <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>
@@ -362,13 +407,37 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                     </Button>
                                                 </Modal.Footer>
                                             </Modal>
-                                            {/* Button Gia hạn hợp đồng */}
-                                            {/* <button
-                                                className="btn btn-success"
-                                                onClick={() => handleExtendContract(roomDetails.contractDetailInRoom.id)}
-                                            >
-                                                Gia hạn hợp đồng
-                                            </button> */}
+                                            {/* Modal Gia hạn hợp đồng */}
+                                            <Modal show={showExtendModal} onHide={handleCloseExtendModal}>
+                                                <Modal.Header closeButton>
+                                                    <Modal.Title style={{ color: 'black' }}>Gia hạn hợp đồng</Modal.Title>
+                                                </Modal.Header>
+                                                <Modal.Body>
+                                                    <Form>
+                                                        <Form.Group controlId="newEndDate">
+                                                            <Form.Label>Ngày kết thúc mới</Form.Label>
+                                                            <input
+                                                                type="date"
+                                                                value={newEndDate ? newEndDate.toISOString().split('T')[0] : ''}
+                                                                onChange={(e) => setNewEndDate(new Date(e.target.value))}
+                                                                className="form-control"
+                                                                min={roomDetails?.contractDetailInRoom?.endDate
+                                                                    ? new Date(roomDetails.contractDetailInRoom.endDate).toISOString().split('T')[0]
+                                                                    : new Date().toISOString().split('T')[0]}
+                                                                placeholder="Chọn ngày kết thúc mới"
+                                                            />
+                                                        </Form.Group>
+                                                    </Form>
+                                                </Modal.Body>
+                                                <Modal.Footer>
+                                                    <Button variant="secondary" onClick={handleCloseExtendModal}>
+                                                        Hủy
+                                                    </Button>
+                                                    <Button variant="primary" onClick={handleConfirmExtend} disabled={!newEndDate || loading}>
+                                                        {loading ? "Đang xử lý..." : "Gia hạn"}
+                                                    </Button>
+                                                </Modal.Footer>
+                                            </Modal>
                                         </div>
                                     ) : (
                                         <p>Không có lịch sử hợp đồng hoặc hợp đồng đã hết hạn.</p>

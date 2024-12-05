@@ -250,7 +250,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             </div>
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Kỳ thanh toán (tháng)<span style={{color:'red'}}>*</span></label>
+                            <label className="form-label">Kỳ thanh toán (tháng)<span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="number"
                                 {...register("paymentCycleDays")}
@@ -270,7 +270,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                     <section className="mb-4">
                         <h5>Thông tin người thuê</h5>
                         <div className="mb-3">
-                            <label className="form-label">Họ tên *</label>
+                            <label className="form-label">Họ tên <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="text"
                                 {...register("tenant.fullName")}
@@ -279,7 +279,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Email *</label>
+                            <label className="form-label">Email <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="email"
                                 {...register("tenant.email")}
@@ -288,7 +288,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             />
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">Số điện thoại *</label>
+                            <label className="form-label">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="text"
                                 {...register("tenant.phone")}
@@ -315,7 +315,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             )}
                         </div>
                         <div className="mb-3">
-                            <label className="form-label">CCCD *</label>
+                            <label className="form-label">CCCD <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="text"
                                 {...register("tenant.identityCard")}
@@ -359,58 +359,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             )}
                         </div>
                     </section>
-                    {/* Nút hiển thị trường chi tiết */}
-                    <Button
-                        variant="link"
-                        onClick={() => setShowDetails(!showDetails)}
-                        className="mb-3"
-                    >
-                        {showDetails ? "Ẩn thông tin chi tiết" : "Thêm thông tin chi tiết"}
-                    </Button>
 
-                    {showDetails && (
-                        <section className="mb-4">
-                            <div className="mb-3">
-                                <label className="form-label">Ngày sinh</label>
-                                <input
-                                    type="date"
-                                    {...register("tenant.dateOfBirth")}
-                                    className="form-control"
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Tỉnh/Thành</label>
-                                <input
-                                    type="text"
-                                    {...register("tenant.province")}
-                                    className="form-control"
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Quận/Huyện</label>
-                                <input
-                                    type="text"
-                                    {...register("tenant.district")}
-                                    className="form-control"
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Phường/Xã</label>
-                                <input
-                                    type="text"
-                                    {...register("tenant.commune")}
-                                    className="form-control"
-                                />
-                            </div>
-                            <div className="mb-3">
-                                <label className="form-label">Địa chỉ chi tiết</label>
-                                <textarea
-                                    {...register("tenant.detailAddress")}
-                                    className="form-control"
-                                ></textarea>
-                            </div>
-                        </section>
-                    )}
 
                     {/* Dịch vụ */}
                     <section className="mb-4">
