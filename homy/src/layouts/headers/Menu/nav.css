@@ -1,0 +1,14 @@
+.nav-item.favorites .fa-heart {
+    font-size: 20px;
+    color:aqua;
+}
+
+.nav-item.favorites span {
+    font-size: 14px;
+    font-weight: normal;
+}
+.nav-item.favorites .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Adjust spacing between icon and text */
+}

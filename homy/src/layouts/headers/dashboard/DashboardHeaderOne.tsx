@@ -258,14 +258,20 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         </li> */}
                         <li className="plr">
                             <Link href="/dashboard/invoices" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_9 : dashboardIcon_10} alt="Manage Invoices" />
+                                <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10} alt="Manage Invoices" />
                                 <span>Quản lí hóa đơn</span>
                             </Link>
                         </li>
                         <li className="plr">
                             <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_10 : dashboardIcon_10} alt="Reviews" />
+                                <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1} alt="Reviews" />
                                 <span>Quản lí dịch vụ</span>
+                            </Link>
+                        </li>
+                        <li className="plr">
+                            <Link href="/dashboard/manage-tenant" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                <Image src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3} alt="Reviews" />
+                                <span>Quản lí người thuê</span>
                             </Link>
                         </li>
                     </ul>
