@@ -1,16 +1,16 @@
 "use client";
 import DashboardHeaderOne from "@/layouts/headers/dashboard/DashboardHeaderOne";
-import InvoiceBody from "./InvoiceBody";
+import MainTenanceBody from "./maintenanceBody";
 import { useState } from "react";
 
-const DashboardSavedSearch = () => {
+const DashboardMainTenance = () => {
    const [isActive, setIsActive] = useState(false);
    return (
       <>
          <DashboardHeaderOne isActive={isActive} setIsActive={setIsActive} />
-         <InvoiceBody />
+         <MainTenanceBody />
       </>
    )
 }
 
-export default DashboardSavedSearch;
+export default DashboardMainTenance;
