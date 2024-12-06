@@ -39,21 +39,21 @@ const PropertyTableBody = () => {
     const [showModal, setShowModal] = useState(false);
 
     // Function to get UserId from token in localStorage
-    const getUserIdFromToken = useCallback(() => {
-        const token = window.localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
-                return decodedToken.UserId;
-            } catch (error) {
-                console.error("Error decoding token:", error);
-                setError("Error decoding user token");
-                return null;
+        const getUserIdFromToken = useCallback(() => {
+            const token = window.localStorage.getItem("token");
+            if (token) {
+                try {
+                    const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+                    return decodedToken.UserId;
+                } catch (error) {
+                    console.error("Error decoding token:", error);
+                    setError("Error decoding user token");
+                    return null;
+                }
             }
-        }
-        setError("No token found");
-        return null;
-    }, []);
+            setError("No token found");
+            return null;
+        }, []);
 
     // Fetching landlordId from the token when component mounts
     useEffect(() => {
