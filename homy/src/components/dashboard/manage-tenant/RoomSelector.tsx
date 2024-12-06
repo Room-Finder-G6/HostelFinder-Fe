@@ -135,7 +135,7 @@ const RoomSelector: React.FC<HostelSelectorProps> = ({
             ))}
           </select>
 
-          {selectedHostel && rooms && rooms.length > 0 && (
+          {/* {selectedHostel && rooms && rooms.length > 0 && (
             <select
               id="roomSelect"
               className="form-select mt-2"
@@ -151,7 +151,7 @@ const RoomSelector: React.FC<HostelSelectorProps> = ({
                 </option>
               ))}
             </select>
-          )}
+          )} */}
 
           {/* Thông báo nếu không có phòng */}
           {selectedHostel && rooms.length === 0 && (
