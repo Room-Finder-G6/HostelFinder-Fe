@@ -193,7 +193,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <span>Dashboard</span>
                             </Link>
                         </li> */}
-                        
+
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
                             <div className="nav-title">Profile</div>
@@ -266,6 +266,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
                                 <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_10 : dashboardIcon_10} alt="Reviews" />
                                 <span>Quản lí dịch vụ</span>
+                            </Link>
+                        </li>
+                        <li className="plr">
+                            <Link href="/dashboard/manage-maintenance" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
+                                <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý" />
+                                <span>Sửa chữa, bảo dưỡng</span>
                             </Link>
                         </li>
                     </ul>
