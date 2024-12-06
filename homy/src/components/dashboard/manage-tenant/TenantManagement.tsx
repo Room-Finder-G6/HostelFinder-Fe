@@ -223,7 +223,7 @@ const TenantManagement = () => {
 
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="Quản lý tenant" />
+            <DashboardHeaderTwo title="Quản lý người thuê" />
 
             <div className="d-flex align-items-center gap-4 mb-4">
                 <RoomSelector
