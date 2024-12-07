@@ -230,6 +230,14 @@ const ListingFourArea = () => {
 
     const totalPages = Math.ceil(totalPosts / pageSize);
 
+    const handleNextPage = async () => {
+        // Check if we are at the last page
+        if (pageIndex * pageSize >= totalPosts) return; // Disable next button if no posts on next page
+
+        // Fetch the next page of posts
+        setPageIndex((prev) => prev + 1);
+    };
+
     return (
         <div className="property-listing-six bg-pink-two pt-60 md-pt-80 pb-170 xl-pb-120 mt-150 xl-mt-120">
             <div className="container">
@@ -336,8 +344,8 @@ const ListingFourArea = () => {
                         <li className={`page-item ${pageIndex === totalPages ? "disabled" : ""}`}>
                             <button
                                 className="page-link"
-                                onClick={() => setPageIndex(pageIndex + 1)}
-                                disabled={filteredPosts.length === 0 || pageIndex === totalPages}
+                                onClick={handleNextPage}
+                                disabled={filteredPosts.length < pageSize || pageIndex * pageSize >= totalPosts}
                             >
                                 &raquo;
                             </button>
