@@ -16,9 +16,7 @@ const Profile: React.FC = () => {
       const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
 
       // Thực hiện đăng xuất với callbackUrl đúng
-      signOut({
-         callbackUrl: callbackUrl,
-      });
+      window.location.href = "/";
    };
 
    return (
