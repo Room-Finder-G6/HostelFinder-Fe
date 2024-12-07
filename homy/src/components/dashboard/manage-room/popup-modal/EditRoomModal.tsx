@@ -4,7 +4,8 @@ import apiInstance from '@/utils/apiInstance';
 import { Amenity } from '@/models/amenity';
 import { UpdateRoomRequestDto } from '@/models/UpdateRoomRequestDto';
 import { toast } from "react-toastify";
-import  './css/EditRoom.css';
+import './css/EditRoom.css';
+import Loading from '@/components/Loading';
 interface EditRoomModalProps {
     roomId: string;
     isOpen: boolean;
@@ -124,9 +125,7 @@ const EditRoomModal: React.FC<EditRoomModalProps> = ({ roomId, isOpen, onClose, 
         }
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
-
+    if (loading) return <Loading />
     return (
         <Modal show={isOpen} onHide={onClose} size="lg">
             <Modal.Header closeButton>

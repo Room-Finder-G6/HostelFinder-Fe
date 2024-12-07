@@ -104,9 +104,29 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         }
     };
 
-    const handleCreateContract = (roomId: string) => {
-        setSelectedRoomId(roomId);
-        setIsModalOpen(true);
+    const handleCreateContract = async (roomId: string) => {
+        try {
+            setLoading(true);
+            const response = await apiInstance.get(`/rental-contracts/check-contract?roomId=${roomId}`);
+            console.log(response.data);
+            if (response.data) {
+                if (response.data) {
+                    toast.error("Phòng này đã có hợp đồng. Không thể tạo thêm hợp đồng mới.");
+                }
+            }
+            else {
+                setSelectedRoomId(roomId);
+                setIsModalOpen(true);
+            }
+        }
+        catch (error: any) {
+            // Xử lý lỗi khi gọi API
+            console.error("Error checking contract existence:", error);
+            toast.error("Có lỗi xảy ra khi kiểm tra hợp đồng của phòng này.");
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     const handleCreateInvoice = (roomId: string) => {
