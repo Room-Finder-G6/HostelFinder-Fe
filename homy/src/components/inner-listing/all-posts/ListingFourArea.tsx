@@ -1,12 +1,12 @@
 "use client";
-import React, {useEffect, useState} from "react";
-import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
+import React, { useEffect, useState } from "react";
 import apiInstance from "@/utils/apiInstance";
-import {FilterPostData} from "@/models/filterPostData";
+import { FilterPostData } from "@/models/filterPostData";
 import Loading from "@/components/Loading";
+import { FilteredPosts } from "@/models/filteredPosts";
+import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import Link from "next/link";
 import Image from "next/image";
-import {FilteredPosts} from "@/models/filteredPosts";
 
 const truncateText = (text: string, maxLength: number = 100) => {
     if (text.length <= maxLength) return text;
@@ -35,6 +35,10 @@ const ListingFourArea = () => {
         return `${day}/${month}/${year}`;
     };
 
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize] = useState(8); // Set the page size you want (e.g., 10 posts per page)
+    const [totalPosts, setTotalPosts] = useState(0); // To track total number of posts for pagination
+
     const handleSearch = async () => {
         setIsLoading(true);
         try {
@@ -46,34 +50,25 @@ const ListingFourArea = () => {
                 formData.append(key, value.toString());
             });
 
-            // Configure headers for form data
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
+            const response = await apiInstance.post(
+                "posts/filtered-paged",
+                formData,
+                {
+                    params: { pageIndex, pageSize },
                 }
-            };
+            );
 
-            const response = await apiInstance.post("posts/filter", formData, config);
-
-            console.log("Filter data:", Object.fromEntries(formData));
-
-            // Xử lý response
             if (response.status === 200) {
-                if (response.data.status === 'notFound') {
-                    // Nếu không tìm thấy bài viết, set mảng rỗng
-                    setFilteredPosts([]);
-                } else {
-                    // Nếu có dữ liệu, cập nhật state
-                    setFilteredPosts(response.data.data || []);
-                }
-                console.log("Filtered posts:", response.data);
+                const { data, totalPosts } = response.data;
+                setFilteredPosts(data);
+                setTotalPosts(totalPosts);
             } else {
                 console.error("Failed to filter posts");
-                setFilteredPosts([]); // Set mảng rỗng khi có lỗi
+                setFilteredPosts([]);
             }
         } catch (error) {
             console.error("Error fetching filtered posts:", error);
-            setFilteredPosts([]); // Set mảng rỗng khi có lỗi
+            setFilteredPosts([]);
         } finally {
             setIsLoading(false);
         }
@@ -81,34 +76,32 @@ const ListingFourArea = () => {
 
     useEffect(() => {
         handleSearch();
-    }, []);
+    }, [pageIndex]); // Re-fetch posts when pageIndex or filterData changes
 
-    const handleFilterChange = (newFilterData: FilterPostData) => {
-        setFilterData(newFilterData);
-    };
+    const totalPages = Math.ceil(totalPosts / pageSize); // Calculate total pages
 
     return (
         <div className="property-listing-six bg-pink-two pt-60 md-pt-80 pb-170 xl-pb-120 mt-150 xl-mt-120">
             <div className="container">
-                <h4 className={"mb-20"}>Cho thuê nhà trọ, phòng trọ trên toàn quốc</h4>
+                {/* Filter Section */}
                 <div className="search-wrapper-one layout-one bg position-relative mb-55 md-mb-40">
                     <div className="bg-wrapper border-layout">
                         <DropdownTwo
-                            filterData={filterData as FilterPostData}
-                            onFilterChange={handleFilterChange}
+                            filterData={filterData}
+                            onFilterChange={setFilterData}
                             onSearch={handleSearch}
                         />
                     </div>
                 </div>
 
-                {isLoading && <Loading/>}
+                {isLoading && <Loading />}
 
                 {filteredPosts.length === 0 && !isLoading && (
                     <div className="no-posts-found">Không tìm thấy bài viết nào</div>
                 )}
 
-                {filteredPosts.map((item: any) => (
-                    <div key={item.id} className="listing-card-seven border-20 p-20 mb-30 wow fadeInUp">
+                {filteredPosts.map((item:any) => (
+                    <div key={item.id} className="listing-card-seven border-20 p-20 mb-30">
                         <div className="d-flex flex-wrap layout-one">
                             <div className={`img-gallery position-relative z-1 border-20 overflow-hidden`}>
                                 <div
@@ -117,7 +110,7 @@ const ListingFourArea = () => {
                                 >
                                     Vip&nbsp;{item.membershipTag}
                                 </div>
-                                <Image
+                                <img
                                     src={item.firstImage}
                                     alt=""
                                     className="img-fluid w-100 h-100 rounded-3"
@@ -166,9 +159,41 @@ const ListingFourArea = () => {
                         </div>
                     </div>
                 ))}
+
+                {/* Pagination Controls */}
+                <nav aria-label="Page navigation" className={'d-flex justify-content-center'}>
+                    <ul className="pagination">
+                        <li className={`page-item ${pageIndex === 1 ? "disabled" : ""}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => setPageIndex(pageIndex - 1)}
+                                disabled={pageIndex === 1}
+                            >
+                                &laquo;
+                            </button>
+                        </li>
+
+                        <li className="page-item">
+                            <span className="page-link">
+                                Trang {pageIndex}
+                            </span>
+                        </li>
+
+                        <li className={`page-item ${pageIndex === totalPages ? "disabled" : ""}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => setPageIndex(pageIndex + 1)}
+                                disabled={filteredPosts.length === 0 || pageIndex === totalPages}
+                            >
+                                &raquo;
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     );
 };
+
 
 export default ListingFourArea;

@@ -44,6 +44,9 @@ const NavMenu = () => {
                 <Link className="nav-link" href="/all-posts">Phòng trọ cho thuê</Link>
             </li>
             <li className="nav-item about-us">
+                <Link className="nav-link" href="/dashboard/membership">Gói thành viên</Link>
+            </li>
+            <li className="nav-item about-us">
                 <Link className="nav-link" href="/about_us_01">Về chúng tôi</Link>
             </li>
         </ul>

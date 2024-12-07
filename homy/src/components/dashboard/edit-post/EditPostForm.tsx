@@ -128,12 +128,14 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
             const response = await apiInstance.put(`posts/${postData.id}`, formData);
             if (response.status === 200) {
                 toast.success('Post updated successfully!', { position: "top-center" });
-                router.push("/dashboard/manage-post");
+                setTimeout(() => {
+                    router.push("/dashboard/manage-post");
+                }, 1000);
             }
         } catch (error: any) {
             toast.error(`Error updating post: ${error.response?.data?.message || error.message}`, { position: "top-center" });
         } finally {
-            setLoading(false); // Hide loading spinner once done
+            setLoading(false);
         }
     };
 
