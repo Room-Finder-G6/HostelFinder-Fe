@@ -1,14 +1,14 @@
 'use client';
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import apiInstance from "@/utils/apiInstance";
-import { FilterPostData } from "@/models/filterPostData";
+import {FilterPostData} from "@/models/filterPostData";
 import Loading from "@/components/Loading";
 import Link from "next/link";
 import Image from "next/image";
-import { FilteredPosts } from "@/models/filteredPosts";
-import { jwtDecode } from "jwt-decode";
-import { toast } from 'react-toastify';
+import {FilteredPosts} from "@/models/filteredPosts";
+import {jwtDecode} from "jwt-decode";
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const truncateText = (text: string, maxLength: number = 100) => {
@@ -154,12 +154,12 @@ const ListingFourArea = () => {
                 "posts/filtered-paged",
                 formData,
                 {
-                    params: { pageIndex: 1, pageSize }, // Use pageIndex 1 directly here
+                    params: {pageIndex: 1, pageSize}, // Use pageIndex 1 directly here
                 }
             );
 
             if (response.status === 200) {
-                const { data, totalPosts } = response.data;
+                const {data, totalPosts} = response.data;
                 setFilteredPosts(data);
                 setTotalPosts(totalPosts);
             } else {
@@ -209,12 +209,12 @@ const ListingFourArea = () => {
                     "posts/filtered-paged",
                     formData,
                     {
-                        params: { pageIndex, pageSize },
+                        params: {pageIndex, pageSize},
                     }
                 );
 
                 if (response.status === 200) {
-                    const { data, totalPosts } = response.data;
+                    const {data, totalPosts} = response.data;
                     setFilteredPosts(data);
                     setTotalPosts(totalPosts);
                 }
@@ -253,12 +253,14 @@ const ListingFourArea = () => {
                     <div key={item.id} className="listing-card-seven border-20 p-20 mb-30 wow fadeInUp">
                         <div className="d-flex flex-wrap layout-one">
                             <div className={`img-gallery position-relative z-1 border-20 overflow-hidden`}>
-                                <div
-                                    className={`tag border-20 `}
-                                    style={{backgroundColor: `${membershipColors[item.membershipTag]}`}}
-                                >
-                                    Vip&nbsp;{item.membershipTag}
-                                </div>
+                                {item.membershipTag && (
+                                    <div
+                                        className={`tag border-20 `}
+                                        style={{backgroundColor: `${membershipColors[item.membershipTag]}`}}
+                                    >
+                                        Vip&nbsp;{item.membershipTag}
+                                    </div>
+                                )}
                                 <Image
                                     src={item.firstImage || "/path/to/default-image.jpg"}
                                     alt={item.title || "Default Image"}
