@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import Image from "next/image";
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import apiInstance from "@/utils/apiInstance";
+import { useRouter } from "next/navigation";
 
 interface FormData {
    userName: string;
@@ -17,6 +18,8 @@ interface FormData {
 }
 
 const RegisterForm = () => {
+   const router = useRouter();
+
    const schema = yup.object({
       userName: yup.string().required("Tên đăng nhập là bắt buộc").label("Name"),
       fullName: yup.string().required("Họ và tên là bắt buộc").label("Full Name"),

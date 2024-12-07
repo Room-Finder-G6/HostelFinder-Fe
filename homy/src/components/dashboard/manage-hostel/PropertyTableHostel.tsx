@@ -212,7 +212,7 @@ const PropertyTableHostel = ({
               </div>
             </td>
             <td>{new Date(item.createdOn).toLocaleDateString()}</td>
-            <td>{item.size}</td>
+            <td>{item.size}m²</td>
             <td>
               <div className="action-dots float-end">
                 <button

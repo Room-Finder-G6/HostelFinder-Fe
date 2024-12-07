@@ -163,7 +163,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange, postData }) => {
                         <label htmlFor="status">Trạng thái bài đăng*</label>
                         <NiceSelect
                             options={[
-                                { value: "true", text: "Đang hoạt động" },
+                                { value: "true", text: "Hoạt động" },
                                 { value: "false", text: "Ẩn bài đăng" },
                             ]}
                             value={postData.status ? "true" : "false"}

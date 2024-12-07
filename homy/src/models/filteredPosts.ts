@@ -5,15 +5,11 @@ export interface FilteredPosts {
     wishlistId: string;  // Thêm wishlistId vào đây
     title: string;
     description: string;
+    address: Address;
     firstImage: string;
-    membershipTag: string;
-    address: {
-        province: string;
-        district: string;
-        commune: string;
-    };
-    size: string;
-    monthlyRentCost?: number;
+    monthlyRentCost: number;
+    size: number;
+    membershipTag?: string;
     createdOn: string;
     wishlistPostId: string;
 }

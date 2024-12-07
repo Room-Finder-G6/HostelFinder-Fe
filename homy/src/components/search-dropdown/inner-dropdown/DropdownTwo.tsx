@@ -29,11 +29,11 @@ const PRICE_RANGES: Record<string, PriceRange> = {
 
 const SIZE_RANGES: Record<string, SizeRange> = {
     "0": { min: 0, max: Number.MAX_SAFE_INTEGER }, // Tất cả diện tích
-    "1": { min: 0, max: 30 },
+    "1": { min: 0, max: 29.99 },
     "2": { min: 30, max: 50 },
     "3": { min: 50, max: 80 },
     "4": { min: 80, max: 100 },
-    "5": { min: 100, max: null } // max = null nghĩa là không giới hạn
+    "5": { min: 100.01, max: null } // max = null nghĩa là không giới hạn
 };
 
 const PRICE_OPTIONS = [

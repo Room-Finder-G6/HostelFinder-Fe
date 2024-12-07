@@ -207,7 +207,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                     disabled={isGenerating || !hostelId || !roomId}
                 >
                     <i className={`fa${isGenerating ? ' fa-spinner fa-spin' : ' fa-robot'} me-2`}></i>
-                    {isGenerating ? "AI đang viết..." : "Tạo tự động với AI"}
+                    {isGenerating ? "AI đang viết..." : "Tạo tiêu đề và mô tả tự động với AI"}
                 </button>
             </div>
 
@@ -227,7 +227,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
 
             {/* Description */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="description">Chi tiết*</label>
+                <label htmlFor="description">Thông tin mô tả*</label>
                 <textarea
                     className="form-control size-lg"
                     name="description"
@@ -253,24 +253,6 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                             onChange={(e) => handleSelectChange("membershipServiceId", e)}
                             name="membershipServiceId"
                             placeholder="Loại bài đăng"
-                        />
-                    </div>
-                </div>
-
-                {/* Availability */}
-                <div className="col-md-6">
-                    <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="isAvailable">Trạng thái phòng*</label>
-                        <NiceSelect
-                            className="nice-select"
-                            options={[
-                                { value: "true", text: "Còn trống" },
-                                { value: "false", text: "Hết phòng" },
-                            ]}
-                            defaultCurrent={0}
-                            onChange={(e) => handleSelectChange("status", e)}
-                            name="status"
-                            placeholder="Trạng thái phòng"
                         />
                     </div>
                 </div>
