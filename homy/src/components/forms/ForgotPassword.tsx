@@ -3,75 +3,78 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toast } from 'react-toastify';
+import apiInstance from "../../utils/apiInstance"; // Giả sử bạn đã cấu hình apiInstance
 
 interface FormData {
-   name: string;
    email: string;
-   password: string;
-   confirmPassword: string;
-   newPassword: string;
 }
 
 const ForgotPassword = ({ setShowForgotPassword }: any) => {
-   const [step, setStep] = useState(1); // Step 1: Nhập email, Step 2: Đặt mật khẩu mới
-   const [email, setEmail] = useState('');
+   const [loading, setLoading] = useState(false); // Trạng thái loading khi gọi API
+   const [emailSent, setEmailSent] = useState(false); // Trạng thái gửi email thành công
 
-   // Validation schema for email input
+   // Validation schema cho email
    const emailSchema = yup.object({
-      email: yup.string().required().email().label("Email"),
+      email: yup.string().required("Email is required").email("Invalid email address").label("Email"),
    }).required();
 
-   // const passwordSchema = yup.object({
-   //    newPassword: yup.string().min(6).required().label("New Password"),
-   //    confirmPassword: yup.string().oneOf([yup.ref('newPassword'), null], 'Passwords must match').required().label("Confirm Password")
-   // }).required();
+   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+      resolver: yupResolver(emailSchema),
+   });
 
-   // const { register, handleSubmit, reset, formState: { errors } } = useForm({
-   //    resolver: yupResolver(step === 2 ? passwordSchema : emailSchema),
-   // });
+   const handleEmailSubmit = async (data: FormData) => {
+      setLoading(true);
+      try {
+         // Gọi API để reset mật khẩu
+         const response = await apiInstance.post("/auth/forgot-password", {
+            email: data.email,
+         });
 
-   const handleEmailSubmit = (data: any) => {
-      // Gửi email 
-      setEmail(data.email);
-      toast('Verification link sent to your email', { position: 'top-center' });
-      setStep(2);
+         if (response.status === 200) {
+            toast.success("Mật khẩu mới đã được gửi tới email của bạn! Vui lòng kiểm tra hòm thư", { position: "top-center" });
+            setEmailSent(true);
+         } else {
+            toast.error("Có lỗi xảy ra, vui lòng thử lại sau!", { position: "top-center" });
+         }
+      } catch (error) {
+         toast.error("Có lỗi xảy ra, vui lòng thử lại sau!", { position: "top-center" });
+      } finally {
+         setLoading(false);
+      }
    };
-
-   // const handlePasswordSubmit = (data: any) => {
-   //    // Xử lý đổi mật khẩu mới
-   //    toast('Password successfully changed!', { position: 'top-center' });
-   //    reset();
-   //    setShowForgotPassword(false); // Quay lại trang đăng nhập
-   // };
 
    return (
       <div>
-         {/* {step === 1 && (
+         {!emailSent ? (
             <form onSubmit={handleSubmit(handleEmailSubmit)}>
                <div className="input-group-meta mb-25">
                   <label>Email*</label>
-                  <input type="email" {...register("email")} placeholder="Your email" />
+                  <input
+                     type="email"
+                     {...register("email")}
+                     placeholder="Nhập email của bạn"
+                  />
                   <p className="form_error">{errors.email?.message}</p>
                </div>
-               <button type="submit" className="btn-two w-100 text-uppercase">Send Verification Link</button>
+               <button
+                  type="submit"
+                  className="btn-two w-100 text-uppercase"
+                  disabled={loading}
+               >
+                  {loading ? "Đang gửi..." : "Gửi email"}
+               </button>
             </form>
-         )} */}
-
-         {/* {step === 2 && (
-            <form onSubmit={handleSubmit(handlePasswordSubmit)}>
-               <div className="input-group-meta mb-25">
-                  <label>New Password*</label>
-                  <input type="password" {...register("newPassword")} placeholder="Enter new password" />
-                  <p className="form_error">{errors.newPassword?.message}</p>
-               </div>
-               <div className="input-group-meta mb-25">
-                  <label>Confirm New Password*</label>
-                  <input type="password" {...register("confirmPassword")} placeholder="Confirm new password" />
-                  <p className="form_error">{errors.confirmPassword?.message}</p>
-               </div>
-               <button type="submit" className="btn-two w-100 text-uppercase">Reset Password</button>
-            </form> */}
-         {/* )} */}
+         ) : (
+            <div>
+               <p style={{ color: "green" }}>Mật khẩu mới đã được gửi đến email của bạn.</p>
+               <button
+                  className="btn-two w-100 text-uppercase"
+                  onClick={() => setShowForgotPassword(false)} // Quay lại trang đăng nhập
+               >
+                  Quay lại đăng nhập
+               </button>
+            </div>
+         )}
       </div>
    );
 };
