@@ -39,3 +39,10 @@
     background-color: #6c757d;
     color: #fff;
 }
+.form-actions{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 20px;      
+    align-items: center; 
+}

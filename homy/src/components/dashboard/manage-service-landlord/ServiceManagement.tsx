@@ -2,14 +2,13 @@
 import React, { useState, useEffect } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import { toast } from "react-toastify";
-import './room.css';
 import apiInstance from "@/utils/apiInstance";
 import HostelSelector from "./HostelSelector";
 import { FaMoneyBill, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSearchParams } from "next/navigation";
 import './service.css';
-import ServicePriceModal from "./ServicePriceModal";
-import ServiceTable from "./ServiceTable";
+
+
 
 interface ServiceCost {
    id: string;
@@ -59,7 +58,7 @@ const ServiceManagement = () => {
       { value: 3, label: 'Theo người' },
       { value: 4, label: 'Theo tháng' },
    ];
-   
+
    const chargingMethodLabels: { [key: number]: string } = {
       0: 'Không tính phí',
       1: 'Phí theo kWh',
@@ -97,7 +96,7 @@ const ServiceManagement = () => {
 
    const handleAddServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-   
+
       // Chuyển 'chargingMethod' từ string thành number, đảm bảo kiểu phù hợp
       if (name === "chargingMethod") {
          setNewService({
@@ -111,8 +110,8 @@ const ServiceManagement = () => {
          });
       }
    };
-   
-   
+
+
 
    const handleAddServiceSubmit = async () => {
       // Kiểm tra nếu tên dịch vụ chưa được điền
@@ -120,14 +119,14 @@ const ServiceManagement = () => {
          toast.warning("Vui lòng nhập tên dịch vụ.", { position: "top-center" });
          return;
       }
-   
+
       // Chuyển đổi chargingMethod sang number trước khi gửi
       const payload = {
          serviceName: newService.serviceName,
          hostelId: selectedHostel,
          chargingMethod: parseInt(newService.chargingMethod.toString(), 10),  // Chuyển chuỗi thành số tại đây
       };
-   
+
       try {
          const response = await apiInstance.post('/services/AddService', payload);
          if (response.data.succeeded) {
@@ -138,11 +137,11 @@ const ServiceManagement = () => {
             toast.error("Thêm dịch vụ thất bại.", { position: "top-center" });
          }
       } catch (error) {
-         toast.error("Có lỗi xảy ra khi thêm dịch vụ.", { position: "top-center" });
+         toast.error("Dịch vụ đã tồn tại. Hãy truy cập quản lý nhà trọ để thêm", { position: "top-center" });
       }
    };
-   
-   
+
+
 
    const handleDeleteService = async (id: string) => {
       try {
@@ -199,7 +198,7 @@ const ServiceManagement = () => {
                      {services.map(service => (
                         <li key={service.id} className="d-flex justify-content-between align-items-center">
                            <span>{service.serviceName}</span>
-                           
+
                            <span>
                               {chargingMethodLabels[service.chargingMethod]}
                            </span>
@@ -229,7 +228,7 @@ const ServiceManagement = () => {
                            onChange={handleAddServiceChange}
                         />
                      </div>
-                     
+
                      <div>
                         <label>Phương thức tính phí:</label>
                         <select
@@ -245,9 +244,14 @@ const ServiceManagement = () => {
                         </select>
                      </div>
                      <div className="modal-actions">
-                        <button className="btn btn-secondary" onClick={toggleAddServiceModal}>Hủy</button>
-                        <button className="btn btn-primary" onClick={handleAddServiceSubmit}>Lưu</button>
+                        <button className="btn btn-secondary" onClick={toggleAddServiceModal}>
+                           Hủy
+                        </button>
+                        <button className="btn btn-primary" onClick={handleAddServiceSubmit}>
+                           Lưu
+                        </button>
                      </div>
+
                   </div>
                </div>
             )}
