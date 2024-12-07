@@ -13,7 +13,7 @@ const Profile: React.FC = () => {
       localStorage.removeItem("userName");
       localStorage.removeItem("token");
       // Lấy callbackUrl từ biến môi trường
-      const callbackUrl = process.env.NEXT_PUBLIC_CALLBACK_URL || "http://46.250.224.140:4000/";
+      const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
 
       // Thực hiện đăng xuất với callbackUrl đúng
       signOut({
