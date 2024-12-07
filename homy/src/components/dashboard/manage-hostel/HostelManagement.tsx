@@ -58,14 +58,14 @@ const HostelManagement = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="My Properties" />
+            <DashboardHeaderTwo title="Nhà trọ của tôi" />
             <h2 className="main-title d-block d-lg-none">Quản lý nhà trọ</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
                <div className="d-flex ms-auto xs-mt-30">
-                  <div className="fs-16 me-2">Sort by:</div>
+                  <div className="fs-16 me-2">Sắp xếp theo:</div>
                   <input
                      type="text"
-                     placeholder="Search..."
+                     placeholder="Tìm kiếm..."
                      value={searchPhrase}
                      onChange={handleSearchChange}
                      className="form-control ms-3"
