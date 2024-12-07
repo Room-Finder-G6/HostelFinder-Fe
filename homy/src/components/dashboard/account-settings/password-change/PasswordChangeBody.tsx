@@ -17,10 +17,14 @@ const PasswordChangeBody = () => {
   const handleLogout = () => {
     localStorage.removeItem("userName");
     localStorage.removeItem("token");
-    const callbackUrl = window.location.origin;
-    signOut({
-      callbackUrl: callbackUrl,
-    });
+    // Lấy callbackUrl từ biến môi trường
+    const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
+
+    // Thực hiện đăng xuất với callbackUrl đúng
+    // signOut({
+    //   callbackUrl: callbackUrl,
+    // });
+    window.location.href = "/";
   };
 
   // Hàm lấy userId từ token JWT
