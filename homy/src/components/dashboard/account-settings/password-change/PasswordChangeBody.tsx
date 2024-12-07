@@ -1,17 +1,62 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Link from "next/link";
 import { toast } from "react-toastify"; // Assuming you're using toast for notifications
 import apiInstance from "@/utils/apiInstance"; // Assuming axios instance configuration
-
+import { jwtDecode } from "jwt-decode";
+import { signOut } from "next-auth/react";
+interface JwtPayload {
+  UserId: string;
+  Username: string;
+}
 const PasswordChangeBody = () => {
+  const [userName, setUserName] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("token");
+    const callbackUrl = window.location.origin;
+    signOut({
+      callbackUrl: callbackUrl,
+    });
+  };
+
+  // Hàm lấy userId từ token JWT
+  const getUserInfoFromToken = useCallback(() => {
+    const token = window.localStorage.getItem("token");
+    if (token) {
+      try {
+        const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); // Giải mã token để lấy userId
+        setUserName(decodedToken.Username);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        setError("Error decoding user token");
+      }
+    }
+    setError("No token found");
+    return null;
+  }, []);
+
+  useEffect(() => {
+    getUserInfoFromToken();
+  }, [getUserInfoFromToken]);
+
   const [formData, setFormData] = useState({
     username: "", // Replace with actual username from user context or session if available
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  useEffect(() => {
+    if (userName) {
+      setFormData((prevData) => ({
+        ...prevData,
+        username: userName,
+      }));
+    }
+  }, [userName]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,12 +88,12 @@ const PasswordChangeBody = () => {
       });
 
       if (response.status === 200) {
-        toast.success("Password updated successfully", { position: "top-center" });
+        toast.success(response.data.message, { position: "top-center" });
         setFormData({ ...formData, currentPassword: "", newPassword: "", confirmPassword: "" });
+        handleLogout();
       }
-    } catch (error) {
-      console.error("Error changing password:", error);
-      toast.error("Failed to update password", { position: "top-center" });
+    } catch (error: any) {
+      toast.error(error.response?.data.message, { position: "top-center" });
     }
   };
 
@@ -61,11 +106,11 @@ const PasswordChangeBody = () => {
             <div className="row">
               <div className="col-12">
                 <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="currentPassword">Old Password*</label>
+                  <label htmlFor="currentPassword">Mật khẩu cũ <span style={{ color: 'red' }}>*</span></label>
                   <input
                     type="password"
                     name="currentPassword"
-                    placeholder="Type current password"
+                    placeholder="Nhập mật khẩu cũ"
                     value={formData.currentPassword}
                     onChange={handleChange}
                     required
@@ -74,11 +119,11 @@ const PasswordChangeBody = () => {
               </div>
               <div className="col-12">
                 <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="newPassword">New Password*</label>
+                  <label htmlFor="newPassword">Mật khẩu mới <span style={{ color: 'red' }}>*</span></label>
                   <input
                     type="password"
                     name="newPassword"
-                    placeholder="Type new password"
+                    placeholder="Nhập mật khẩu mới"
                     value={formData.newPassword}
                     onChange={handleChange}
                     required
@@ -87,11 +132,11 @@ const PasswordChangeBody = () => {
               </div>
               <div className="col-12">
                 <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="confirmPassword">Confirm Password*</label>
+                  <label htmlFor="Xác nhận mật khẩu">Xác nhận mật khẩu <span style={{ color: 'red' }}>*</span></label>
                   <input
                     type="password"
                     name="confirmPassword"
-                    placeholder="Confirm new password"
+                    placeholder="Nhập lại mật khẩu mới"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
@@ -101,7 +146,7 @@ const PasswordChangeBody = () => {
             </div>
 
             <div className="button-group d-inline-flex align-items-center">
-              <button type="submit" className="dash-btn-two tran3s">Save & Updated</button>
+              <button type="submit" className="dash-btn-two tran3s">Lưu và cập nhật</button>
             </div>
           </form>
         </div>

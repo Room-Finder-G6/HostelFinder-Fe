@@ -15,13 +15,13 @@ interface UserAvatarSettingProps {
 }
 
 const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
-                                                                 fullName,
-                                                                 username,
-                                                                 email,
-                                                                 phone,
-                                                                 errors = {},
-                                                                 onChange
-                                                             }) => {
+    fullName,
+    username,
+    email,
+    phone,
+    errors = {},
+    onChange
+}) => {
     return (
         <div className="row">
             <div className="col-sm-6">
@@ -92,7 +92,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
                 </div>
                 <div className="info-text d-sm-flex align-items-center justify-content-between mt-5">
                     <p className="m0">Đổi mật khẩu?
-                        <Link href="/dashboard/account-settings/password-change">Click here</Link>
+                        <Link href="/dashboard/account-settings/password-change"> Ấn vào đây</Link>
                     </p>
                 </div>
             </div>

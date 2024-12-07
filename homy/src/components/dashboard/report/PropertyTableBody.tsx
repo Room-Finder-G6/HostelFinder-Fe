@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
 import { Container, Row, Col, Card, Table, Form, Button } from "react-bootstrap";
 import "./report.css";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
-
+import Loading from '@/components/Loading';
 
 // Kiểu dữ liệu của chi tiết doanh thu phòng
 interface RoomRevenue {
@@ -45,6 +44,7 @@ const PropertyTableBody = () => {
    const [hostels, setHostels] = useState<any[]>([]); // Lưu danh sách nhà trọ
    const [selectedHostel, setSelectedHostel] = useState<string>(""); // Lưu ID của hostel được chọn
    const [isClient, setIsClient] = useState(false);
+   const [isLoading, setIsLoading] = useState(false);
 
    // Hàm lấy userId từ token
    // Hàm lấy userId từ token
@@ -88,6 +88,7 @@ const PropertyTableBody = () => {
    }, []);
    const fetchRevenue = async () => {
       try {
+         setIsLoading(true);
          let url = '';
          const params: RevenueParams = { hostelId: selectedHostel, year: selectedYear, month: selectedMonth };
 
@@ -116,6 +117,9 @@ const PropertyTableBody = () => {
          }
       } catch (error) {
          console.error("Error fetching revenue data:", error);
+      }
+      finally {
+         setIsLoading(false);
       }
    };
    // Lấy dữ liệu doanh thu theo hostelId, năm và tháng
@@ -304,7 +308,7 @@ const PropertyTableBody = () => {
                               </Table>
                            </>
                         ) : (
-                           <p>Đang tải dữ liệu...</p>
+                           <Loading />
                         )
                      ) : monthlyRevenue ? (
                         <>
@@ -378,7 +382,7 @@ const PropertyTableBody = () => {
                            </Table>
                         </>
                      ) : (
-                        <p>Đang tải dữ liệu...</p>
+                        <Loading />
                      )}
                   </Card.Body>
                </Card>

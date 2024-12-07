@@ -201,7 +201,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         <li className="plr">
                             <Link href="/dashboard/profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3} alt="Profile" />
-                                <span>Profile</span>
+                                <span>Thông tin cá nhân</span>
                             </Link>
                         </li>
                         <li className="plr">
@@ -210,16 +210,16 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <span>Nạp tiền</span>
                             </Link>
                         </li>
-                        <li className="plr">
+                        {/* <li className="plr">
                             <Link href="/dashboard/account-settings" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/account-settings' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/account-settings' ? dashboardIconActive_4 : dashboardIcon_4} alt="Account Settings" />
                                 <span>Account Settings</span>
                             </Link>
-                        </li>
+                        </li> */}
                         <li className="plr">
                             <Link href="/dashboard/membership" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/membership' ? dashboardIconActive_5 : dashboardIcon_5} alt="Membership" />
-                                <span>Membership</span>
+                                <span>Gói hội viên</span>
                             </Link>
                         </li>
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
