@@ -16,7 +16,6 @@ const truncateText = (text: string, maxLength: number = 100) => {
     return text.substring(0, maxLength) + "...";
 };
 
-// Hàm lấy userId từ token JWT
 export const getUserIdFromToken = (): string | null => {
     if (typeof window === "undefined") {
         console.error("localStorage is not available on the server");
@@ -48,6 +47,10 @@ const ListingFourArea = () => {
 
     const [userId, setUserId] = useState<string | null>(null);
     const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize] = useState(8);
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [wishlistCount, setWishlistCount] = useState<number>(0);
 
     const membershipColors: Record<string, string> = {
         Đồng: "gray",
@@ -62,9 +65,7 @@ const ListingFourArea = () => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
-    const [wishlistCount, setWishlistCount] = useState<number>(0);
 
-    // Hàm cập nhật số lượng bài viết trong wishlist
     const updateWishlistCount = async () => {
         const userIdFromToken = getUserIdFromToken();
         if (userIdFromToken) {
@@ -79,8 +80,6 @@ const ListingFourArea = () => {
         }
     };
 
-
-    // Hàm xử lý thêm bài viết vào danh sách yêu thích
     const handleAddToWishlist = async (postId: string) => {
         const userIdFromToken = getUserIdFromToken();
 
@@ -90,18 +89,14 @@ const ListingFourArea = () => {
         }
 
         try {
-            // Kiểm tra xem bài viết đã có trong danh sách yêu thích chưa
             if (likedPosts.has(postId)) {
-                // Lấy danh sách wishlist để xóa bài viết
                 const wishlistResponse = await apiInstance.get(`wishlists/GetWishlistByUserId/${userIdFromToken}`);
                 const wishlistPosts = wishlistResponse.data.posts;
 
-                // Tìm id của wishlistPost để xóa
                 const postToRemove = wishlistPosts.find((item: any) => item.roomId === postId);
                 if (postToRemove) {
                     const wishlistPostId = postToRemove.id;
 
-                    // Xóa bài viết khỏi wishlist
                     const response = await apiInstance.post("wishlists/DeleteRoomFromWishList", {
                         wishlistPostId: wishlistPostId,
                         userId: userIdFromToken,
@@ -109,7 +104,6 @@ const ListingFourArea = () => {
 
                     if (response.status === 200) {
                         toast.info("Bạn đã bỏ yêu thích bài viết.");
-                        // Cập nhật lại danh sách likedPosts và thay đổi icon
                         setLikedPosts((prev) => {
                             const newLikedPosts = new Set(prev);
                             newLikedPosts.delete(postId);
@@ -123,17 +117,15 @@ const ListingFourArea = () => {
                     toast.error("Không tìm thấy bài viết trong danh sách yêu thích.");
                 }
             } else {
-                // Thêm bài viết vào wishlist
                 const response = await apiInstance.post("wishlists/AddRoomToWishList", {
                     postId: postId,
                     userId: userIdFromToken,
                 });
 
                 if (response.status === 200) {
-                    const wishlistPostId = response.data.wishlistPostId; // Giả sử API trả về wishlistPostId
+                    const wishlistPostId = response.data.wishlistPostId;
                     toast.success("Bài viết đã được thêm vào danh sách yêu thích!");
 
-                    // Cập nhật lại danh sách likedPosts và thay đổi icon
                     setLikedPosts((prev) => {
                         const newLikedPosts = new Set(prev).add(postId);
                         localStorage.setItem('likedPosts', JSON.stringify([...newLikedPosts]));
@@ -149,13 +141,9 @@ const ListingFourArea = () => {
         }
     };
 
-
-    const [pageIndex, setPageIndex] = useState(1);
-    const [pageSize] = useState(8); // Set the page size you want (e.g., 10 posts per page)
-    const [totalPosts, setTotalPosts] = useState(0); // To track total number of posts for pagination
-
     const handleSearch = async () => {
         setIsLoading(true);
+        setPageIndex(1); // Reset page index to 1 when searching
         try {
             const formData = new FormData();
             Object.entries(filterData).forEach(([key, value]) => {
@@ -166,7 +154,7 @@ const ListingFourArea = () => {
                 "posts/filtered-paged",
                 formData,
                 {
-                    params: { pageIndex, pageSize },
+                    params: { pageIndex: 1, pageSize }, // Use pageIndex 1 directly here
                 }
             );
 
@@ -195,12 +183,9 @@ const ListingFourArea = () => {
                 const response = await apiInstance.get(`wishlists/GetWishlistByUserId/${userIdFromToken}`);
                 if (response.status === 200) {
                     const wishlistPosts = response.data.posts;
-
-                    // Explicitly specify the type of likedPostIds
                     const likedPostIds: Set<string> = new Set(wishlistPosts.map((post: any) => post.roomId));
-
-                    setLikedPosts(likedPostIds); // Now this should work correctly
-                    localStorage.setItem('likedPosts', JSON.stringify([...likedPostIds])); // Lưu vào localStorage
+                    setLikedPosts(likedPostIds);
+                    localStorage.setItem('likedPosts', JSON.stringify([...likedPostIds]));
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách yêu thích:", error);
@@ -208,19 +193,46 @@ const ListingFourArea = () => {
         };
 
         fetchLikedPosts();
-        handleSearch(); // Gọi hàm tìm kiếm sau khi lấy danh sách yêu thích
-    }, [pageIndex]);
+    }, []);
 
-    const totalPages = Math.ceil(totalPosts / pageSize); // Calculate total pages
+    // Separate useEffect for handling page changes
+    useEffect(() => {
+        const fetchPageData = async () => {
+            setIsLoading(true);
+            try {
+                const formData = new FormData();
+                Object.entries(filterData).forEach(([key, value]) => {
+                    formData.append(key, value.toString());
+                });
 
-    const handleFilterChange = (newFilterData: FilterPostData) => {
-        setFilterData(newFilterData);
-    };
+                const response = await apiInstance.post(
+                    "posts/filtered-paged",
+                    formData,
+                    {
+                        params: { pageIndex, pageSize },
+                    }
+                );
+
+                if (response.status === 200) {
+                    const { data, totalPosts } = response.data;
+                    setFilteredPosts(data);
+                    setTotalPosts(totalPosts);
+                }
+            } catch (error) {
+                console.error("Error fetching page data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchPageData();
+    }, [pageIndex, pageSize]);
+
+    const totalPages = Math.ceil(totalPosts / pageSize);
 
     return (
         <div className="property-listing-six bg-pink-two pt-60 md-pt-80 pb-170 xl-pb-120 mt-150 xl-mt-120">
             <div className="container">
-                {/* Filter Section */}
                 <div className="search-wrapper-one layout-one bg position-relative mb-55 md-mb-40">
                     <div className="bg-wrapper border-layout">
                         <DropdownTwo
@@ -231,7 +243,7 @@ const ListingFourArea = () => {
                     </div>
                 </div>
 
-                {isLoading && <Loading />}
+                {isLoading && <Loading/>}
 
                 {filteredPosts.length === 0 && !isLoading && (
                     <div className="no-posts-found">Không tìm thấy bài viết nào</div>
@@ -243,17 +255,17 @@ const ListingFourArea = () => {
                             <div className={`img-gallery position-relative z-1 border-20 overflow-hidden`}>
                                 <div
                                     className={`tag border-20 `}
-                                    style={{ backgroundColor: `${membershipColors[item.membershipTag]}` }}
+                                    style={{backgroundColor: `${membershipColors[item.membershipTag]}`}}
                                 >
                                     Vip&nbsp;{item.membershipTag}
                                 </div>
                                 <Image
-                                    src={item.firstImage || "/path/to/default-image.jpg"} // Đảm bảo src luôn có giá trị hợp lệ
-                                    alt={item.title || "Default Image"} // Nếu không có title, dùng "Default Image"
+                                    src={item.firstImage || "/path/to/default-image.jpg"}
+                                    alt={item.title || "Default Image"}
                                     className="img-fluid w-100 h-100 rounded-3"
                                     width={300}
                                     height={300}
-                                    style={{ objectFit: "cover", borderRadius: "15px" }}
+                                    style={{objectFit: "cover", borderRadius: "15px"}}
                                 />
                             </div>
                             <div className="property-info">
@@ -284,9 +296,13 @@ const ListingFourArea = () => {
                                         <span className={"mt-10"}>Ngày đăng: {formatDate(item.createdOn)}</span>
                                     </div>
                                     <div className="style-none d-flex action-icons on-top">
-                                        <Link href="#">
-                                            <i className="fa-light fa-heart"></i>
-                                        </Link>
+                                        <button
+                                            className={`wishlist-btn ${likedPosts.has(item.id) ? 'text-danger' : ''}`}
+                                            onClick={() => handleAddToWishlist(item.id)}
+                                            disabled={likedPosts.has(item.id)}
+                                        >
+                                            <i className={`fa-heart ${likedPosts.has(item.id) ? 'fa-solid' : 'fa-regular'}`}/>
+                                        </button>
                                     </div>
                                     <Link href={`/post-details/${item.id}`} className="btn-four rounded-circle">
                                         <i className="bi bi-arrow-up-right"></i>
@@ -296,6 +312,36 @@ const ListingFourArea = () => {
                         </div>
                     </div>
                 ))}
+
+                <nav aria-label="Page navigation" className={'d-flex justify-content-center'}>
+                    <ul className="pagination">
+                        <li className={`page-item ${pageIndex === 1 ? "disabled" : ""}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => setPageIndex(pageIndex - 1)}
+                                disabled={pageIndex === 1}
+                            >
+                                &laquo;
+                            </button>
+                        </li>
+
+                        <li className="page-item">
+                            <span className="page-link">
+                                Trang {pageIndex}
+                            </span>
+                        </li>
+
+                        <li className={`page-item ${pageIndex === totalPages ? "disabled" : ""}`}>
+                            <button
+                                className="page-link"
+                                onClick={() => setPageIndex(pageIndex + 1)}
+                                disabled={filteredPosts.length === 0 || pageIndex === totalPages}
+                            >
+                                &raquo;
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
             </div>
         </div>
     );
