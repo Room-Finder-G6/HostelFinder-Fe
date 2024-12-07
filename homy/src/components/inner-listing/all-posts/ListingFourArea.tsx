@@ -275,7 +275,7 @@ const ListingFourArea = () => {
                                     className="img-fluid w-100 h-100 rounded-3"
                                     width={300}
                                     height={300}
-                                    style={{objectFit: "cover", borderRadius: "15px"}}
+                                    style={{objectFit: "cover", borderRadius: "15px", aspectRatio: '18 / 12' }}
                                 />
                             </div>
                             <div className="property-info">
@@ -284,7 +284,7 @@ const ListingFourArea = () => {
                                 </Link>
                                 <div className="address">
                                     <i className="bi bi-geo-alt"></i>&nbsp;
-                                    {item.address.province},&nbsp;{item.address.district},&nbsp;{item.address.commune}
+                                    {item.address.commune},&nbsp;{item.address.district},&nbsp;{item.address.province}
                                 </div>
                                 <div className="mb-20 pt-20 pb-5 w-75">{truncateText(item.description, 160)}</div>
                                 <div className="pl-footer d-flex flex-wrap align-items-center justify-content-between">
