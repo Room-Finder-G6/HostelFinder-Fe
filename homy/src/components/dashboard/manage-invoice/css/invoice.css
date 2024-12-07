@@ -21,4 +21,13 @@
     width: 18px; 
     height: 18px;
   }
+  .custom-button {
+    background-color: #52ca6e; /* Màu xanh */
+    border-color: #5de67d;
+  }
+  
+  .custom-button:hover {
+    background-color: #218838; /* Màu xanh đậm khi hover */
+    border-color: #1e7e34;
+  }
   

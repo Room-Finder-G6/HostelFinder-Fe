@@ -264,4 +264,11 @@
     transform: translateY(0);
     opacity: 1;
   }
+}.modal-actions {
+  display: flex;             /* Sắp xếp các phần tử ngang hàng */
+  justify-content: flex-start; /* Đẩy các nút sang phải (tùy ý) */
+  align-items: center;       /* Căn chỉnh theo chiều dọc */
+  gap: 10px;                 /* Khoảng cách giữa các nút */
+  margin-top: 15px;          /* Khoảng cách phía trên modal-actions */
 }
+

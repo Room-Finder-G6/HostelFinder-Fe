@@ -53,6 +53,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         toast.success(message, { position: "top-center" });
 
         const backdrops = document.querySelectorAll('.modal-backdrop');
+        document.body.style.overflow = '';
         backdrops.forEach(backdrop => backdrop.remove());
 
         if (responseData.role === "User") {
@@ -71,7 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         toast.error(error.message, { position: "top-center" });
       }
     } finally {
-      setLoading(false); // Kết thúc loading
+      setLoading(false);
     }
   };
 

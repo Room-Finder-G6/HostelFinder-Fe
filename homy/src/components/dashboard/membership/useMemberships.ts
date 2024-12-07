@@ -90,8 +90,8 @@ const useMemberships = () => {
       // Log phản hồi từ backend
       console.log("API Response:", response.data);
 
-      if (response.data.success) {
-        toast.success("Mua membership thành công!"); // Thành công thì dùng toast.success
+      if (response.status === 200) {
+        toast.success("Mua gói thành viên thành công!"); // Thành công thì dùng toast.success
       } else {
         const errorMessage = response.data.message;
         console.log("Backend error message:", errorMessage);
