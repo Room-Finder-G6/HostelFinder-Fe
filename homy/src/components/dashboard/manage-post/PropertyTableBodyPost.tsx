@@ -1,6 +1,10 @@
 import styles from './UserPostsBody.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
+import {getUserIdFromToken} from "@/utils/tokenUtils";
+import {useEffect, useState} from "react";
+import {toast} from "react-toastify";
+import apiInstance from "@/utils/apiInstance";
 
 interface UserPostsBodyProps {
     posts: {
@@ -22,15 +26,28 @@ interface UserPostsBodyProps {
 }
 
 const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteClick}) => {
-    if (loading) {
-        return (
-            <tbody>
-            <tr>
-                <td colSpan={5} className="text-center">Loading...</td>
-            </tr>
-            </tbody>
-        );
-    }
+    const handlePushPost = async (postId: string) => {
+        try {
+            const userId = getUserIdFromToken();
+
+            if (!userId) {
+                toast.error('Không thể xác thực người dùng');
+                return;
+            }
+
+            // Gửi userId trong URL như API endpoint mong đợi
+            const response = await apiInstance.patch(`/posts/${postId}/push?userId=${userId}`);
+
+            if (response.data.succeeded) {
+                toast.success('Đẩy bài thành công');
+            } else {
+                toast.error(response.data.message || 'Đẩy bài không thành công');
+            }
+        } catch (error: any) {
+            console.error('Error pushing post:', error);
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đẩy bài');
+        }
+    };
 
     if (posts.length === 0) {
         return (
@@ -46,9 +63,13 @@ const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteCl
         <tbody>
         {posts.map((post) => {
             // Kiểm tra xem createdOn có phải là một ngày hợp lệ không
-            const createdDate = new Date(post.createdOn);
-            const isValidDate = !isNaN(createdDate.getTime()); // Kiểm tra nếu nó có phải là một ngày hợp lệ không
-            const formattedDate = isValidDate ? createdDate.toLocaleDateString() : "Ngày không hợp lệ";
+            const formatDate = (dateString: any) => {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            };
 
             return (
                 <tr key={post.id}>
@@ -82,18 +103,18 @@ const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteCl
 
                     {/* Cột Ngày tạo */}
                     <td style={{verticalAlign: 'middle'}}>
-                        {formattedDate}
+                        {formatDate(post.createdOn)}
                     </td>
 
                     {/* Cột Trạng thái */}
                     <td style={{verticalAlign: 'middle', whiteSpace: 'nowrap'}}>
-                            <span
-                                className={`${styles.badge} ${
-                                    post.status ? styles.success : styles.danger
-                                }`}
-                            >
+                        <span
+                            className={`${styles.badge} ${
+                                post.status ? styles.success : styles.danger
+                            }`}
+                        >
                                 {post.status ? 'Họat động' : 'Ẩn'}
-                            </span>
+                        </span>
                     </td>
 
                     {/* Cột Hành động */}
@@ -110,8 +131,16 @@ const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteCl
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
-                                        Cập nhật
+                                        Xem và sửa
                                     </Link>
+                                </li>
+                                <li>
+                                    <button
+                                        className="dropdown-item"
+                                        onClick={() => handlePushPost(post.id)}
+                                    >
+                                        Đẩy bài
+                                    </button>
                                 </li>
                                 <li>
                                     <button

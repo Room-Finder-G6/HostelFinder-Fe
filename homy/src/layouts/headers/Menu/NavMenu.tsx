@@ -106,7 +106,7 @@ const NavMenu = () => {
                 </div>
             </li>
             {(role === 'Landlord' || role === 'Admin') && (
-                <li className="nav-item">
+                <li className="nav-item dashboard-menu">
                     <Link className="nav-link" href="/dashboard/manage-hostels">Quản lý</Link>
                 </li>
             )}
