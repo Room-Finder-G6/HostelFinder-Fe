@@ -1,10 +1,11 @@
-﻿import React, { useCallback, useEffect, useState } from 'react';
+﻿import React, {useCallback, useEffect, useState} from 'react';
 import Image from "next/image";
 import dashboardAvatar from "@/assets/images/dashboard/avatar_01.jpg";
 import Profile from "@/layouts/headers/dashboard/Profile";
 import Link from "next/link";
-import { jwtDecode } from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import apiInstance from '@/utils/apiInstance';
+
 interface JwtPayload {
     UserId: string;
 }
@@ -15,8 +16,8 @@ const Authored = () => {
     const [error, setError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [urlProfile, setUrlProfile] = useState<string>("");
-      // Lấy userId từ token
-      const getUserIdFromToken = useCallback(() => {
+    // Lấy userId từ token
+    const getUserIdFromToken = useCallback(() => {
         const token = window.localStorage.getItem("token");
         if (token) {
             try {
@@ -69,19 +70,18 @@ const Authored = () => {
     }, [userId, fetchUserProfile]);
     return (
         <div className="user-data d-flex align-items-center position-relative">
-            <button
-                className="user-avatar online position-relative rounded-circle dropdown-toggle"
-                type="button"
-                id="profile-dropdown"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                aria-expanded="false"
-                aria-label="User Profile"
+            <button className="user-avatar online position-relative rounded-circle dropdown-toggle"
+                    type="button"
+                    id="profile-dropdown"
+                    data-bs-toggle="dropdown"
+                    data-bs-auto-close="outside"
+                    aria-expanded="false"
+                    aria-label="User Profile"
             >
                 <Image
                     src={urlProfile}
                     alt="User Avatar"
-                    className="lazy-img"
+                    className="lazy-img rounded-circle"
                     width={60}
                     height={60}
                 />
@@ -90,7 +90,7 @@ const Authored = () => {
                 <span>Create Post</span>
                 <i className="fa-thin fa-arrow-up-right"></i>
             </Link> */}
-            <Profile />
+            <Profile/>
         </div>
     );
 };
