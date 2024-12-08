@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
 import { useRouter } from "next/navigation";
 import ServicesList from "../../manage-service/ServiceList";
+import Loading from "@/components/Loading";
 
 interface CustomJwtPayload {
     landlordId: string;
@@ -45,6 +46,7 @@ const AddHostelForm: React.FC = () => {
     const router = useRouter();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
+    const [loading, setLoading] = useState<boolean>(false)
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
@@ -246,6 +248,8 @@ const AddHostelForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setLoading(true)
+
         if (
             !formData.address.province ||
             !formData.address.district ||
@@ -291,7 +295,7 @@ const AddHostelForm: React.FC = () => {
             if (response.status === 200 || response.data.succeeded) {
                 const { message } = response.data;
                 toast.success(message, { position: "top-center" });
-                window.location.href = '/dashboard/manage-hostels';
+                router.push("/dashboard/manage-hostels");
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
@@ -299,12 +303,15 @@ const AddHostelForm: React.FC = () => {
             } else {
                 toast.error("Something went wrong", { position: "top-center" });
             }
+        }finally {
+            setLoading(false)
         }
     };
 
 
     return (
         <form onSubmit={handleSubmit}>
+            {loading && <Loading/>}
             <div className="bg-white card-box border-20">
                 <div className="dash-input-wrapper mb-30">
                     <label htmlFor="">Tên nhà trọ*</label>
@@ -488,7 +495,7 @@ const AddHostelForm: React.FC = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
+                        <GoongMap isMarkerFixed={false} selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
                         {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
                     </div>
 

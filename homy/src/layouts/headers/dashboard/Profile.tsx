@@ -10,16 +10,13 @@ const Profile: React.FC = () => {
    const router = useRouter();
 
    const handleLogout = () => {
-      localStorage.removeItem("token");
       localStorage.removeItem("userName");
-      // router.refresh();
-      // signOut({
-      //    callbackUrl: "/",
-      // });
-      const callbackUrl = process.env.NODE_ENV === 'production' ? 'http://46.250.224.140:4000/' : 'http://localhost:3000/';
-      signOut({
-         callbackUrl: callbackUrl,
-      });
+      localStorage.removeItem("token");
+      // Lấy callbackUrl từ biến môi trường
+      const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
+
+      // Thực hiện đăng xuất với callbackUrl đúng
+      window.location.href = "/";
    };
 
    return (

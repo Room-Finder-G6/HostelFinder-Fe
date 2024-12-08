@@ -1,15 +1,13 @@
 import {Address} from "@/models/address";
 
-export interface FilteredPosts {
+export interface Posts {
     id: string;
-    wishlistId: string;  // Thêm wishlistId vào đây
     title: string;
     description: string;
     address: Address;
-    firstImage: string;
     monthlyRentCost: number;
     size: number;
     membershipTag?: string;
+    firstImage: string;
     createdOn: string;
-    wishlistPostId: string;
 }

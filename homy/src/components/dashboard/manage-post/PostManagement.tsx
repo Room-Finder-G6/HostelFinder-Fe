@@ -83,7 +83,7 @@ const UserPostManagement = () => {
 
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="My Posts" />
+            <DashboardHeaderTwo title="Bài đăng của tôi" />
             <div className="d-flex align-items-center justify-content-between mb-25">
                 <div className="d-flex align-items-center ms-auto">
                     <div className="short-filter d-flex align-items-center me-3">
@@ -115,7 +115,7 @@ const UserPostManagement = () => {
                                 <th scope="col">Tiêu đề</th>
                                 <th scope="col">Ngày Tạo</th>
                                 <th scope="col">Trạng thái</th>
-                                <th scope="col">Action</th>
+                                <th scope="col"></th>
                             </tr>
                         </thead>
                         <UserPostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick} />

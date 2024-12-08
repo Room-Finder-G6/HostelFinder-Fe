@@ -13,6 +13,7 @@ import { jwtDecode } from "jwt-decode";
 // Interface khai báo payload của token JWT
 interface JwtPayload {
     UserId: string;
+    Role: string;
 }
 
 const NavMenu = () => {
@@ -21,6 +22,7 @@ const NavMenu = () => {
     const currentRoute = usePathname();
     const [navTitle, setNavTitle] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [role, setRole] = useState<string | null>(null);
 
     const isMenuItemActive = (menuLink: string) => {
         return currentRoute === menuLink;
@@ -44,6 +46,7 @@ const NavMenu = () => {
         if (token) {
             try {
                 const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); // Giải mã token để lấy userId
+                setRole(decodedToken.Role);
                 return decodedToken.UserId;
             } catch (error) {
                 console.error("Error decoding token:", error);
@@ -102,21 +105,28 @@ const NavMenu = () => {
                     </Link>
                 </div>
             </li>
-            <li className="nav-item dashboard-menu">
-                <Link className="nav-link" href="/dashboard/manage-hostels">Quản lý</Link>
-            </li>
-            <li className="nav-item admin-menu">
-                <Link className="nav-link" href="/admin/admin-index">Admin</Link>
-            </li>
+            {(role === 'Landlord' || role === 'Admin') && (
+                <li className="nav-item">
+                    <Link className="nav-link" href="/dashboard/manage-hostels">Quản lý</Link>
+                </li>
+            )}
+            {role === 'Admin' && (
+                <li className="nav-item admin-menu">
+                    <Link className="nav-link" href="/admin/admin-index">Admin</Link>
+                </li>
+            )}
             <li className="nav-item posts">
                 <Link className="nav-link" href="/all-posts">Phòng trọ cho thuê</Link>
+            </li>
+            <li className="nav-item about-us">
+                <Link className="nav-link" href="/dashboard/membership">Gói thành viên</Link>
             </li>
             <li className="nav-item about-us">
                 <Link className="nav-link" href="/about_us_01">Về chúng tôi</Link>
             </li>
             <li className="nav-item favorites">
                 <Link className="nav-link d-flex align-items-center gap-2" href="/favorite">
-                    <i className="fa fa-heart"></i>  
+                    <i className="fa fa-heart"></i>
                     {wishlistCount > 0 && (
                         <span className="wishlist-badge">
                             {wishlistCount}
