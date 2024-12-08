@@ -42,6 +42,14 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
     const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
     const [isEditRoomModalOpen, setIsEditRoomModalOpen] = useState<boolean>(false);
+
+    const formatDate = (dateString: any) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
     // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
         if (!selectedHostel) return;
@@ -214,7 +222,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                                 </div>
                             </div>
                         </td>
-                        <td className="py-3 px-4">{new Date(room.createdOn).toLocaleDateString()}</td>
+                        <td className="py-3 px-4">{formatDate(room.createdOn)}</td>
                         <td className="py-3 px-4">{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
                         <td className="py-3 px-4">
                             {room.isAvailable ? (
