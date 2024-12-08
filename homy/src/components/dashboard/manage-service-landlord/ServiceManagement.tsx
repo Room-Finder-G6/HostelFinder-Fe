@@ -216,8 +216,8 @@ const ServiceManagement = () => {
 
             {/* Modal thêm dịch vụ */}
             {isAddServiceModalOpen && (
-               <div className="modal-overlay">
-                  <div className="modal-content">
+               <div className="bg-white card-box p0 border-20">
+                  <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                      <h5>Thêm Dịch Vụ</h5>
                      <div>
                         <label>Tên dịch vụ:</label>
@@ -228,7 +228,6 @@ const ServiceManagement = () => {
                            onChange={handleAddServiceChange}
                         />
                      </div>
-
                      <div>
                         <label>Phương thức tính phí:</label>
                         <select

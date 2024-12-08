@@ -15,18 +15,14 @@
   /* Kéo card lên trên banner */
   position: relative;
   z-index: 2;
-
 }
 
 .grid {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: stretch; /* Căn đều chiều cao các thẻ */
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Đảm bảo responsive */
-  gap: 20px;
+  gap: 30px; /* Tăng khoảng cách giữa các item */
+  justify-content: center; /* Căn giữa các mục */
+  margin: 0 10px; /* Thêm margin xung quanh grid */
 }
 
 .badge {
@@ -42,7 +38,6 @@
   z-index: 4;
 }
 
-
 .card h3 {
   font-size: 1.4rem;
   color: #333;
@@ -50,7 +45,8 @@
   font-weight: bold;
   text-align: center;
 }
-.card h6{
+
+.card h6 {
   font-size: 1rem;
   color: #333;
   margin: 15px 0 10px;
@@ -95,7 +91,6 @@
   margin-left: 8px;
   font-size: 14px;
 }
-
 
 .actions button:hover {
   background-color: #e64444;
@@ -143,11 +138,11 @@
   width: 50px;
   height: 50px;
 }
+
 .actions {
   display: flex;
   align-items: center;
   justify-content: center;
-
 }
 
 .button {
@@ -172,17 +167,6 @@
   color: #ff4d4f;
 }
 
-.serviceItem {
-  display: flex;
-  align-items: center;
-  margin-bottom: 8px;
-  font-size: 14px;
-  
-}
-
-.serviceItem span {
-  margin-left: 8px;
-}
 /* Đoạn CSS để tạo vòng xoay */
 .spinner {
   border: 8px solid #f3f3f3; /* Màu nền của vòng xoay */

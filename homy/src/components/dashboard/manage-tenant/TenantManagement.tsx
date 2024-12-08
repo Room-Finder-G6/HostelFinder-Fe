@@ -4,7 +4,8 @@ import apiInstance from "@/utils/apiInstance";
 import Loading from "@/components/Loading";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import RoomSelector from "./RoomSelector";
-
+import { AxiosError } from 'axios';
+import './tenant.css'
 interface Room {
     id: string;
     roomName: string;
@@ -16,6 +17,8 @@ interface Hostel {
 }
 
 interface Tenant {
+    roomId: string;
+    tenancyId: string;
     id: string;
     roomName: string;
     fullName: string;
@@ -63,24 +66,21 @@ const TenantManagement = () => {
             );
             if (response.data.succeeded) {
                 const filteredTenants = response.data.data.filter((tenant: Tenant) => {
-                    // Lọc tenant theo phòng nếu `roomName` hoặc `roomId` chứa `searchQuery`
                     return tenant.roomName.includes(searchQuery); // Có thể thay "roomName" bằng trường phù hợp
                 });
                 setTenants(filteredTenants);
             } else {
-                toast.error("Không thể tải danh sách tenants.");
+                const errorMessage = response.data.message || "Không thể tải danh sách tenants.";
+                toast.error(errorMessage);
                 setTenants([]); // Fallback to an empty array
             }
-        } catch (error) {
-            toast.error("Lỗi khi tải danh sách tenants.");
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Lỗi khi tải danh sách tenants.";
+            toast.error(errorMessage);
             setTenants([]); // Fallback to an empty array
         }
         setLoading(false);
     };
-
-
-
-
 
     // Hàm fetch danh sách phòng theo hostelId
     const fetchRooms = async (hostelId: string) => {
@@ -90,22 +90,25 @@ const TenantManagement = () => {
             if (response.data.succeeded) {
                 setRooms(response.data.data);
             } else {
-                toast.error("Không thể tải danh sách phòng trọ.");
+                const errorMessage = response.data.message || "Không thể tải danh sách phòng trọ.";
+                toast.error(errorMessage);
             }
-        } catch (error) {
-            toast.error("Lỗi khi tải danh sách phòng trọ.");
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || "Lỗi khi tải danh sách phòng trọ.";
+            toast.error(errorMessage);
         }
         setLoading(false);
     };
+
     // Hàm thay đổi trang
     const handlePageChange = (newPage: number) => {
         // Kiểm tra nếu trang sau có hợp lệ hay không
         if (newPage > totalPages || newPage < 1) return;  // Không thay đổi trang nếu vượt quá số trang hợp lệ
-    
+
         setPage(newPage);
         fetchTenants(selectedHostelId, newPage, searchQuery); // Lấy lại danh sách tenants theo trang mới
     };
-    
+
     // Hàm tìm kiếm phòng trọ theo tên
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -121,6 +124,31 @@ const TenantManagement = () => {
         fetchRooms(hostelId); // Lấy phòng của hostel đã chọn
         fetchTenants(hostelId, 1, searchQuery); // Lấy tenants của hostel đã chọn
     };
+    const handleMoveOut = async (tenantId: string, roomId: string) => {
+        setLoading(true);
+        try {
+            // Gửi yêu cầu MoveOut đến API
+            const response = await apiInstance.post(`/Tenants/moveout?tenantId=${tenantId}&roomId=${roomId}`);
+
+            if (response.data.succeeded) {
+                // Sau khi move out thành công, làm mới trang
+                window.location.reload();  // Làm mới trang để tải lại dữ liệu
+
+                toast.success("Thành viên đã chuyển ra khỏi phòng thành công.");
+            } else {
+                const errorMessage = response.data.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
+                toast.error(errorMessage);
+            }
+        } catch (error: any) {
+            console.error("Move out error:", error);
+            const errorMessage = error.response?.data?.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
+            toast.error(errorMessage);
+        }
+        setLoading(false);
+    };
+
+
+
     const handleRoomChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const roomId = e.target.value;
         setNewTenant((prev: any) => ({
@@ -148,6 +176,7 @@ const TenantManagement = () => {
             }));
         }
     };
+
 
 
 
@@ -233,8 +262,13 @@ const TenantManagement = () => {
                     onRoomChange={() => { }} // Không cần xử lý khi thay đổi phòng
                 />
             </div>
-            {loading && <Loading />}
+            {loading &&
+                <Loading />
 
+                // <div>
+                //     {renderTenants()}
+                // </div>
+            }
             {/* Tìm kiếm theo tên phòng trọ */}
             <input
                 type="text"
@@ -404,66 +438,83 @@ const TenantManagement = () => {
                     </div>
                 </div>
             )}
- <div className="bg-white card-box p0 border-20">
- <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
-            {tenants && tenants.length > 0 && (
-                <>
-                  <table className="table property-list-table">
-                        <thead>
-                            <tr>
-                                <th>Ảnh đại diện</th>
-                                <th>Tên</th>
-                                <th>Email</th>
-                                <th>Số điện thoại</th>
-                                <th>Phòng</th>
-                                <th>Ngày vào</th>
-                                <th>Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {tenants.map((tenant) => (
-                                <tr key={tenant.id}>
-                                    <td>
-                                        <img
-                                            src={tenant.avatarUrl}
-                                            alt={tenant.fullName}
-                                            style={{ width: "150px", height: "100px", borderRadius: "10%" }}
-                                        />
-                                    </td>
-                                    <td>{tenant.fullName}</td>
-                                    <td>{tenant.email}</td>
-                                    <td>{tenant.phone}</td>
-                                    <td>{tenant.roomName}</td>
-                                    <td>{new Date(tenant.moveInDate).toLocaleDateString()}</td>
-                                    <td>{tenant.status}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+            <div className="bg-white card-box p0 border-20">
+                <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
+                    {tenants && tenants.length > 0 && (
+                        <>
+                            <table className="table property-list-table">
+                                <thead>
+                                    <tr>
+                                        <th>Ảnh đại diện</th>
+                                        <th>Tên</th>
+                                        <th>Email</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Phòng</th>
+                                        <th>Ngày vào</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th> {/* Cột mới cho nút Move Out */}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {tenants.map((tenant) => (
+                                        <tr key={tenant.id}>
+                                            <td>
+                                                <img
+                                                    src={tenant.avatarUrl}
+                                                    alt={tenant.fullName}
+                                                    style={{ width: "120px", height: "125px", borderRadius: "10%" }}
+                                                />
+                                            </td>
+                                            <td>{tenant.fullName}</td>
+                                            <td>{tenant.email}</td>
+                                            <td>{tenant.phone}</td>
+                                            <td>{tenant.roomName}</td>
+                                            <td>{new Date(tenant.moveInDate).toLocaleDateString()}</td>
+                                            <td style={{ color: tenant.status === 'Đã rời phòng' ? 'red' : 'black' }}>
+                                                {tenant.status}
+                                            </td>
 
-                    {/* Pagination Controls */}
-                    <div className="d-flex justify-content-between align-items-center">
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => handlePageChange(page - 1)}
-                            disabled={page === 1}
-                        >
-                            Trang trước
-                        </button>
-                        <span>Trang {page} / {totalPages}</span>
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => handlePageChange(page + 1)}
-                            disabled={page === totalPages}
-                        >
-                            Trang sau
-                        </button>
-                    </div>
-                </>
-            )}
+                                            <td>
+                                                {/* Kiểm tra nếu trạng thái là "Đã chuyển ra" thì ẩn nút */}
+
+                                                <button
+                                                    className="btn btn-danger"
+                                                    onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
+                                                >
+                                                    Chuyển ra
+                                                </button>
+
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+
+                            {/* Pagination Controls */}
+                            <div className="d-flex justify-content-between align-items-center">
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => handlePageChange(page - 1)}
+                                    disabled={page === 1}
+                                >
+                                    Trang trước
+                                </button>
+                                <span>Trang {page} / {totalPages}</span>
+                                <button
+                                    className="btn btn-secondary"
+                                    onClick={() => handlePageChange(page + 1)}
+                                    disabled={page === totalPages}
+                                >
+                                    Trang sau
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
-            </div>
+
         </div>
+
     );
 };
 
