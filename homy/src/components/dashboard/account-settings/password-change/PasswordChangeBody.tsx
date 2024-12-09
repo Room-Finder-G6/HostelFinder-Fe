@@ -75,11 +75,11 @@ const PasswordChangeBody = () => {
 
     // Basic validation
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      toast.error("All fields are required", { position: "top-center" });
+      toast.error("Tất cả các trường đều bắt buộc", { position: "top-center" });
       return;
     }
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("Passwords do not match", { position: "top-center" });
+      toast.error("Mật khẩu không khớp", { position: "top-center" });
       return;
     }
 
