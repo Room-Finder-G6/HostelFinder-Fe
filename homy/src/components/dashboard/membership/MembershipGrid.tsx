@@ -39,9 +39,10 @@ const MembershipGrid = () => {
               <h6 style={{ fontSize: "17px", fontWeight: "bold", marginRight: "35px" }}>
                 Gói tin hàng tháng
               </h6>
+              
               {membership.membershipServices.map((service, idx) => (
                 <ul key={idx} className={styles.serviceList}>
-                  <li className={styles.serviceItem}  style={{fontWeight: "bold"}}>
+                  <li className={styles.serviceItem1}  style={{fontWeight: "700", textAlign: "center", fontSize: "14.5px"}}>
                     <span className={styles.icon}></span>
                     <span>{service.serviceName}</span>
                   </li>
@@ -52,6 +53,21 @@ const MembershipGrid = () => {
                   <li className={styles.serviceItem}>
                     <span className={styles.icon}>✔</span>
                     <span>{`Số lượt đẩy: ${service.maxPushTopAllowed}`}</span>
+                  </li>
+                  <li className={styles.serviceItem1}  style={{fontWeight: "700", textAlign: "center", fontSize: "14.5px"}}>
+                    <span>{`Các dịch vụ khác`}</span>
+                  </li>
+                  <li className={styles.serviceItem}>
+                    <span className={styles.icon}>✔</span>
+                    <span>{`Tích hợp AI thông minh`}</span>
+                  </li>
+                  <li className={styles.serviceItem}>
+                    <span className={styles.icon}>✔</span>
+                    <span>{`Quản lí nhà trọ`}</span>
+                  </li>
+                  <li className={styles.serviceItem}>
+                    <span className={styles.icon}>✔</span>
+                    <span>{`Top bài đăng`}</span>
                   </li>
                 </ul>
               ))}

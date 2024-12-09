@@ -1,0 +1,12 @@
+.status-moved-out {
+    color: red;
+}
+/* Đảm bảo ảnh có kích thước đồng nhất */
+/* Đảm bảo ảnh có kích thước đồng nhất */
+.avatar-image {
+    width: 100px;     /* Đảm bảo chiều rộng cố định */
+    height: 100px;    /* Đảm bảo chiều cao cố định */
+    object-fit: cover;/* Đảm bảo ảnh được cắt đúng tỷ lệ */
+    border-radius: 10%; /* Bo tròn ảnh */
+  }
+  
