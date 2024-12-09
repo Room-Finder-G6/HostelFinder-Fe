@@ -5,17 +5,18 @@ import { toast } from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
 import { useRouter } from "next/navigation"; // Đổi import từ next/router sang next/navigation
 import styles from "./AddMembership.module.css";
-
+import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
+import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
 const AddMembership = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
-    const [services, setServices] = useState<{
-        serviceName: string;
-        maxPushTopAllowed: number;
-        maxPostsAllowed: number;
-    }[]>([]);
+    const [service, setService] = useState<{ serviceName: string; maxPushTopAllowed: number; maxPostsAllowed: number }>({
+        serviceName: "",
+        maxPushTopAllowed: 0,
+        maxPostsAllowed: 0,
+    });
     const router = useRouter(); // Cập nhật router từ next/navigation
 
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,13 +29,9 @@ const AddMembership = () => {
         setDuration(value);
     };
 
-    const handleAddService = () => {
-        setServices([...services, { serviceName: "", maxPushTopAllowed: 0, maxPostsAllowed: 0 }]);
-    };
-
+    // Hàm thay đổi thông tin dịch vụ
     const handleServiceChange = (
-        index: number, 
-        field: 'serviceName' | 'maxPushTopAllowed' | 'maxPostsAllowed', 
+        field: 'serviceName' | 'maxPushTopAllowed' | 'maxPostsAllowed',
         value: any
     ) => {
         if (field === 'maxPushTopAllowed' || field === 'maxPostsAllowed') {
@@ -43,13 +40,11 @@ const AddMembership = () => {
                 return;
             }
         }
-        
-        const updatedServices = [...services]; 
-        updatedServices[index] = {
-            ...updatedServices[index],
+
+        setService({
+            ...service,
             [field]: value,
-        };
-        setServices(updatedServices);
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -60,7 +55,7 @@ const AddMembership = () => {
             description,
             price,
             duration,
-            membershipServices: services,
+            membershipServices: [service], // Dịch vụ sẽ luôn có 1 phần tử
         };
 
         try {
@@ -79,116 +74,120 @@ const AddMembership = () => {
     };
 
     return (
-        <div className={styles.container}>
-            <div className={styles.formWrapper}>
-                <h2 className={styles.title}>Thêm Gói Thành Viên Mới</h2>
+
+
+
+        <div className="dashboard-body">
+            <div className="position-relative">
+                <AdminHeaderTwo title="Thêm gói thành viên" />
+                <h2 className="main-title d-block d-lg-none">Thêm gói thành viên</h2>
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="name">Tên Gói</label>
-                        <input
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            placeholder="Nhập tên gói"
-                            className={styles.input}
-                        />
-                    </div>
+                    <div className="bg-white card-box border-20">
+                        <div className="dash-input-wrapper mb-30">
+                            <label htmlFor="name">Tên Gói</label>
+                            <input
+                                id="name"
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                required
+                                placeholder="Nhập tên gói"
+                                className={styles.input}
+                            />
+                        </div>
 
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="description">Miêu Tả</label>
-                        <input
-                            id="description"
-                            type="text"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            required
-                            placeholder="Nhập miêu tả"
-                            className={styles.input}
-                        />
-                    </div>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="description">Miêu Tả</label>
+                            <input
+                                id="description"
+                                type="text"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                required
+                                placeholder="Nhập miêu tả"
+                                className={styles.input}
+                            />
+                        </div>
 
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="price">Giá</label>
-                        <input
-                            id="price"
-                            type="number"
-                            value={price}
-                            onChange={handlePriceChange} 
-                            required
-                            placeholder="Nhập giá"
-                            className={styles.input}
-                        />
-                    </div>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="price">Giá</label>
+                            <input
+                                id="price"
+                                type="number"
+                                value={price}
+                                onChange={handlePriceChange}
+                                required
+                                placeholder="Nhập giá"
+                                className={styles.input}
+                            />
+                        </div>
 
-                    <div className={styles.inputGroup}>
-                        <label htmlFor="duration">Thời Gian</label>
-                        <input
-                            id="duration"
-                            type="number"
-                            value={duration}
-                            onChange={handleDurationChange} 
-                            required
-                            placeholder="Nhập thời gian"
-                            className={styles.input}
-                        />
-                    </div>
+                        <div className={styles.inputGroup}>
+                            <label htmlFor="duration">Thời Gian</label>
+                            <input
+                                id="duration"
+                                type="number"
+                                value={duration}
+                                onChange={handleDurationChange}
+                                required
+                                placeholder="Nhập thời gian"
+                                className={styles.input}
+                            />
+                        </div>
 
-                    <div className={styles.servicesContainer}>
-                        <label className={styles.servicesLabel}>Dịch Vụ</label>
-                        {services.map((service, index) => (
-                            <div key={index} className={styles.serviceItem}>
+                        <div className={styles.servicesContainer}>
+                            <label className={styles.servicesLabel}>Dịch Vụ</label>
+                            <div className={styles.serviceItem}>
                                 <div className={styles.inputGroup}>
-                                    <label htmlFor={`serviceName_${index}`}>Tên Dịch Vụ</label>
+                                    <label htmlFor="serviceName">Tên Dịch Vụ</label>
                                     <input
-                                        id={`serviceName_${index}`}
+                                        id="serviceName"
                                         type="text"
                                         value={service.serviceName}
-                                        onChange={(e) => handleServiceChange(index, 'serviceName', e.target.value)}
-                                        required
+                                        onChange={(e) => handleServiceChange('serviceName', e.target.value)}
                                         placeholder="Nhập tên dịch vụ"
                                         className={styles.input}
+                                        required
                                     />
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label htmlFor={`maxPushTopAllowed_${index}`}>Số Push Top tối đa</label>
+                                    <label htmlFor="maxPushTopAllowed">Số Lượng Push Top Cho Phép</label>
                                     <input
-                                        id={`maxPushTopAllowed_${index}`}
+                                        id="maxPushTopAllowed"
                                         type="number"
                                         value={service.maxPushTopAllowed}
-                                        onChange={(e) => handleServiceChange(index, 'maxPushTopAllowed', Number(e.target.value))}
-                                        required
-                                        placeholder="Nhập số Push Top tối đa"
+                                        onChange={(e) => handleServiceChange('maxPushTopAllowed', e.target.value)}
+                                        placeholder="Nhập số lượng"
                                         className={styles.input}
+                                        required
                                     />
                                 </div>
 
                                 <div className={styles.inputGroup}>
-                                    <label htmlFor={`maxPostsAllowed_${index}`}>Số Bài Đăng tối đa</label>
+                                    <label htmlFor="maxPostsAllowed">Số Lượng Bài Viết Cho Phép</label>
                                     <input
-                                        id={`maxPostsAllowed_${index}`}
+                                        id="maxPostsAllowed"
                                         type="number"
                                         value={service.maxPostsAllowed}
-                                        onChange={(e) => handleServiceChange(index, 'maxPostsAllowed', Number(e.target.value))}
-                                        required
-                                        placeholder="Nhập số bài đăng tối đa"
+                                        onChange={(e) => handleServiceChange('maxPostsAllowed', e.target.value)}
+                                        placeholder="Nhập số lượng"
                                         className={styles.input}
+                                        required
                                     />
                                 </div>
                             </div>
-                        ))}
-
-                        <button type="button" onClick={handleAddService} className={styles.addServiceBtn}>
-                            Thêm Dịch Vụ
-                        </button>
+                        </div>
+                        <div className="button-group d-inline-flex align-items-center mt-30">
+                    <button type="submit" className="dash-btn-two tran3s me-3">Thêm Gói Thành Viên</button>
                     </div>
-
-                    <button type="submit" className={styles.submitBtn}>Thêm Gói Thành Viên</button>
+                    </div>
+                    
                 </form>
             </div>
         </div>
+
+
     );
 };
 

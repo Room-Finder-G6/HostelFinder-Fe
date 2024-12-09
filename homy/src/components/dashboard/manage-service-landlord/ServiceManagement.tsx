@@ -3,13 +3,10 @@ import React, { useState, useEffect } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import { toast } from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
-import HostelSelector from "./HostelSelector";
 import { FaMoneyBill, FaPlus, FaTrash } from 'react-icons/fa';
 import { useSearchParams } from "next/navigation";
 import './service.css';
-
-
-
+import HostelSelector from "./HostelSelector";
 interface ServiceCost {
    id: string;
    serviceId: string;
@@ -52,7 +49,7 @@ const ServiceManagement = () => {
    });
 
    const unitOptions = [
-      { value: 0, label: 'Không có đơn vị' },  // Chuyển thành number
+      { value: 0, label: 'Không có đơn vị' },
       { value: 1, label: 'kWh' },
       { value: 2, label: 'Khối' },
       { value: 3, label: 'Theo người' },
@@ -91,17 +88,15 @@ const ServiceManagement = () => {
    };
 
    const toggleAddServiceModal = () => {
-      setIsAddServiceModalOpen(!isAddServiceModalOpen);  // Chuyển trạng thái mở/đóng modal
+      setIsAddServiceModalOpen(!isAddServiceModalOpen);
    };
 
    const handleAddServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-
-      // Chuyển 'chargingMethod' từ string thành number, đảm bảo kiểu phù hợp
       if (name === "chargingMethod") {
          setNewService({
             ...newService,
-            [name]: Number(value),  // Sử dụng Number() để chuyển từ string sang number
+            [name]: Number(value),
          });
       } else {
          setNewService({
@@ -110,21 +105,32 @@ const ServiceManagement = () => {
          });
       }
    };
-
+   const handleDeleteService = async (id: string) => {
+      try {
+         const response = await apiInstance.delete(`/services/DeleteService/${id}`);
+         if (response.data.succeeded) {
+            toast.success("Xóa dịch vụ thành công.", { position: "top-center" });
+            // Cập nhật lại danh sách dịch vụ sau khi xóa
+            setServices(services.filter(service => service.id !== id));  // Dùng đúng 'id'
+         } else {
+            toast.error("Xóa dịch vụ thất bại.", { position: "top-center" });
+         }
+      } catch (error) {
+         toast.error("Có lỗi xảy ra khi xóa dịch vụ.", { position: "top-center" });
+      }
+   };
 
 
    const handleAddServiceSubmit = async () => {
-      // Kiểm tra nếu tên dịch vụ chưa được điền
       if (!newService.serviceName || newService.serviceName.trim() === "") {
          toast.warning("Vui lòng nhập tên dịch vụ.", { position: "top-center" });
          return;
       }
 
-      // Chuyển đổi chargingMethod sang number trước khi gửi
       const payload = {
          serviceName: newService.serviceName,
          hostelId: selectedHostel,
-         chargingMethod: parseInt(newService.chargingMethod.toString(), 10),  // Chuyển chuỗi thành số tại đây
+         chargingMethod: parseInt(newService.chargingMethod.toString(), 10),
       };
 
       try {
@@ -138,23 +144,6 @@ const ServiceManagement = () => {
          }
       } catch (error) {
          toast.error("Dịch vụ đã tồn tại. Hãy truy cập quản lý nhà trọ để thêm", { position: "top-center" });
-      }
-   };
-
-
-
-   const handleDeleteService = async (id: string) => {
-      try {
-         const response = await apiInstance.delete(`/services/DeleteService/${id}`);
-         if (response.data.succeeded) {
-            toast.success("Xóa dịch vụ thành công.", { position: "top-center" });
-            // Cập nhật lại danh sách dịch vụ sau khi xóa
-            setServices(services.filter(service => service.id !== id));  // Thay thế serviceId bằng id
-         } else {
-            toast.error("Xóa dịch vụ thất bại.", { position: "top-center" });
-         }
-      } catch (error) {
-         toast.error("Có lỗi xảy ra khi xóa dịch vụ.", { position: "top-center" });
       }
    };
    const handleDeleteButtonClick = (id: string) => {
@@ -175,87 +164,97 @@ const ServiceManagement = () => {
                   onHostelChange={handleHostelChange}
                />
                <div className="d-flex align-items-center gap-4">
-                  <button
-                     className="btn btn-success btn-sm d-flex align-items-center"
-                     onClick={toggleAddServiceModal}  // Mở popup thêm dịch vụ
-                  >
-                     <div
-                        className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
-                        style={{ width: '24px', height: '24px', color: 'green' }}
-                     >
-                        <FaPlus size={14} />
-                     </div>
-                     Thêm dịch vụ
+                  <button className="btn btn-success btn-sm" onClick={toggleAddServiceModal}>
+                     <FaPlus size={14} /> Thêm dịch vụ
                   </button>
                </div>
             </div>
 
+            {/* Service List */}
             {/* Danh sách dịch vụ */}
             {services.length > 0 && (
                <div className="service-list">
                   <h4>Dịch vụ của nhà trọ:</h4>
-                  <ul>
-                     {services.map(service => (
-                        <li key={service.id} className="d-flex justify-content-between align-items-center">
-                           <span>{service.serviceName}</span>
+                  <div className="bg-white card-box p-4 border-20">
+                     <div className="table-responsive">
+                        <table className="table property-list-table"></table>
+                        <ul>
+                           {services.map(service => (
+                              <li key={service.id} className="d-flex justify-content-between align-items-center">
+                                 <span>{service.serviceName}</span>
 
-                           <span>
-                              {chargingMethodLabels[service.chargingMethod]}
-                           </span>
-                           <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => handleDeleteButtonClick(service.id)}
-                           >
-                              <FaTrash size={14} />
-                           </button>
-                        </li>
-                     ))}
-                  </ul>
+                                 <span>
+                                    {chargingMethodLabels[service.chargingMethod]}
+                                 </span>
+                                 <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleDeleteButtonClick(service.id)}
+                                 >
+                                    <FaTrash size={14} />
+                                 </button>
+                              </li>
+                           ))}
+                        </ul>
+                     </div>
+                  </div>
                </div>
             )}
 
-            {/* Modal thêm dịch vụ */}
+            {/* Modal Add Service */}
             {isAddServiceModalOpen && (
-               <div className="bg-white card-box p0 border-20">
-                  <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
-                     <h5>Thêm Dịch Vụ</h5>
-                     <div>
-                        <label>Tên dịch vụ:</label>
-                        <input
-                           type="text"
-                           name="serviceName"
-                           value={newService.serviceName}
-                           onChange={handleAddServiceChange}
-                        />
-                     </div>
-                     <div>
-                        <label>Phương thức tính phí:</label>
-                        <select
-                           name="chargingMethod"
-                           value={newService.chargingMethod}
-                           onChange={handleAddServiceChange}
-                        >
-                           {unitOptions.map(option => (
-                              <option key={option.value} value={option.value}>
-                                 {option.label}
-                              </option>
-                           ))}
-                        </select>
-                     </div>
-                     <div className="modal-actions">
-                        <button className="btn btn-secondary" onClick={toggleAddServiceModal}>
-                           Hủy
-                        </button>
-                        <button className="btn btn-primary" onClick={handleAddServiceSubmit}>
-                           Lưu
-                        </button>
+               <div className="modal-overlay">
+                  <div className="modal-content">
+                     <div className="modal-header">
+                        <h5 className="modal-title">Thêm dịch vụ</h5>
+                        <button onClick={toggleAddServiceModal}>&times;</button>
                      </div>
 
+                     <div className="modal-body">
+                        <form onSubmit={(e) => e.preventDefault()}>
+                           <div className="form-group">
+                              <label htmlFor="serviceName">Tên dịch vụ</label>
+                              <input
+                                 type="text"
+                                 id="serviceName"
+                                 name="serviceName"
+                                 value={newService.serviceName}
+                                 onChange={handleAddServiceChange}
+                                 className="form-control"
+                              />
+                           </div>
+
+                           <div className="form-group">
+                              <label htmlFor="chargingMethod">Cách tính phí</label>
+                              <select
+                                 name="chargingMethod"
+                                 id="chargingMethod"
+                                 value={newService.chargingMethod}
+                                 onChange={handleAddServiceChange}
+                                 className="form-control"
+                              >
+                                 {unitOptions.map(option => (
+                                    <option key={option.value} value={option.value}>
+                                       {option.label}
+                                    </option>
+                                 ))}
+                              </select>
+                           </div>
+
+                           <button
+                              type="submit"
+                              className="btn btn-success mt-3"
+                              onClick={handleAddServiceSubmit}
+                           >
+                              Thêm dịch vụ
+                           </button>
+                        </form>
+                     </div>
                   </div>
                </div>
             )}
          </div>
       </div>
+
    );
 };
 

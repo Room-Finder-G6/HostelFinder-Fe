@@ -36,9 +36,9 @@ const TenantManagement = () => {
     const [tenants, setTenants] = useState<Tenant[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [totalPages, setTotalPages] = useState<number>(10); // Tổng số trang
+    const [totalPages, setTotalPages] = useState<number>(0); // Tổng số trang
     const [searchQuery, setSearchQuery] = useState<string>(""); // Từ khóa tìm kiếm
-    const [page, setPage] = useState<number>(1); // Trang hiện tại
+    const [page, setPage] = useState(1); // Trang hiện tại
     const [newTenant, setNewTenant] = useState<any>({
         roomId: "",
         fullName: "",
@@ -66,22 +66,27 @@ const TenantManagement = () => {
             );
             if (response.data.succeeded) {
                 const filteredTenants = response.data.data.filter((tenant: Tenant) => {
-                    return tenant.roomName.includes(searchQuery); // Có thể thay "roomName" bằng trường phù hợp
+                    return tenant.roomName.toLowerCase().includes(searchQuery.toLowerCase()); // Tìm kiếm theo tên phòng (hoặc trường khác)
                 });
+    
                 setTenants(filteredTenants);
+    
+                // Nếu API trả về tổng số bản ghi, bạn có thể tính toán totalPages
+                const totalRecords = response.data.totalRecords;
+                setTotalPages(Math.ceil(totalRecords / 10));
             } else {
                 const errorMessage = response.data.message || "Không thể tải danh sách tenants.";
                 toast.error(errorMessage);
                 setTenants([]); // Fallback to an empty array
             }
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message || "Lỗi khi tải danh sách tenants.";
+            const errorMessage = error.response?.data?.message ;
             toast.error(errorMessage);
             setTenants([]); // Fallback to an empty array
         }
         setLoading(false);
     };
-
+    
     // Hàm fetch danh sách phòng theo hostelId
     const fetchRooms = async (hostelId: string) => {
         setLoading(true);
@@ -90,11 +95,11 @@ const TenantManagement = () => {
             if (response.data.succeeded) {
                 setRooms(response.data.data);
             } else {
-                const errorMessage = response.data.message || "Không thể tải danh sách phòng trọ.";
+                const errorMessage = response.data.message ;
                 toast.error(errorMessage);
             }
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message || "Lỗi khi tải danh sách phòng trọ.";
+            const errorMessage = error.response?.data?.message ;
             toast.error(errorMessage);
         }
         setLoading(false);
@@ -103,10 +108,9 @@ const TenantManagement = () => {
     // Hàm thay đổi trang
     const handlePageChange = (newPage: number) => {
         // Kiểm tra nếu trang sau có hợp lệ hay không
-        if (newPage > totalPages || newPage < 1) return;  // Không thay đổi trang nếu vượt quá số trang hợp lệ
-
+        if (newPage > totalPages || newPage < 1) return;
         setPage(newPage);
-        fetchTenants(selectedHostelId, newPage, searchQuery); // Lấy lại danh sách tenants theo trang mới
+        fetchTenants(selectedHostelId, newPage, searchQuery);
     };
 
     // Hàm tìm kiếm phòng trọ theo tên
@@ -120,6 +124,7 @@ const TenantManagement = () => {
     const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const hostelId = e.target.value;
         setSelectedHostelId(hostelId);
+        setPage(1); // Reset trang về 1
         setTenants([]); // Reset tenants khi thay đổi hostel
         fetchRooms(hostelId); // Lấy phòng của hostel đã chọn
         fetchTenants(hostelId, 1, searchQuery); // Lấy tenants của hostel đã chọn
@@ -147,13 +152,11 @@ const TenantManagement = () => {
         setLoading(false);
     };
 
-
-
     const handleRoomChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const roomId = e.target.value;
         setNewTenant((prev: any) => ({
             ...prev,
-            roomId, // Cập nhật giá trị roomId vào state
+            roomId,
         }));
     };
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -176,10 +179,6 @@ const TenantManagement = () => {
             }));
         }
     };
-
-
-
-
     // Mở/Đóng modal
     const toggleModal = () => setIsModalOpen(!isModalOpen);
 
@@ -462,9 +461,11 @@ const TenantManagement = () => {
                                                 <img
                                                     src={tenant.avatarUrl}
                                                     alt={tenant.fullName}
-                                                    style={{ width: "120px", height: "125px", borderRadius: "10%" }}
+                                                    className="avatar-image"
                                                 />
                                             </td>
+
+
                                             <td>{tenant.fullName}</td>
                                             <td>{tenant.email}</td>
                                             <td>{tenant.phone}</td>
@@ -491,23 +492,36 @@ const TenantManagement = () => {
                             </table>
 
                             {/* Pagination Controls */}
-                            <div className="d-flex justify-content-between align-items-center">
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => handlePageChange(page - 1)}
-                                    disabled={page === 1}
-                                >
-                                    Trang trước
-                                </button>
-                                <span>Trang {page} / {totalPages}</span>
-                                <button
-                                    className="btn btn-secondary"
-                                    onClick={() => handlePageChange(page + 1)}
-                                    disabled={page === totalPages}
-                                >
-                                    Trang sau
-                                </button>
-                            </div>
+                            <nav aria-label="Page navigation" className={'d-flex justify-content-center'}>
+                                <ul className="pagination">
+                                    <li className={`page-item ${page === 1 ? "disabled" : ""}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageChange(page - 1)}
+                                            disabled={page === 1}
+                                        >
+                                            &laquo;
+                                        </button>
+                                    </li>
+
+                                    <li className="page-item">
+                                        <span className="page-link">
+                                            Trang {page}
+                                        </span>
+                                    </li>
+
+                                    <li className={`page-item ${page === totalPages ? "disabled" : ""}`}>
+                                        <button
+                                            className="page-link"
+                                            onClick={() => handlePageChange(page + 1)}
+                                            disabled={page === totalPages}
+                                        >
+                                            &raquo;
+                                        </button>
+                                    </li>
+                                </ul>
+                            </nav>
+
                         </>
                     )}
                 </div>

@@ -42,7 +42,7 @@ const MembershipGrid = () => {
               
               {membership.membershipServices.map((service, idx) => (
                 <ul key={idx} className={styles.serviceList}>
-                  <li className={styles.serviceItem}  style={{fontWeight: "bold"}}>
+                  <li className={styles.serviceItem1}  style={{fontWeight: "700", textAlign: "center", fontSize: "14.5px"}}>
                     <span className={styles.icon}></span>
                     <span>{service.serviceName}</span>
                   </li>
@@ -54,7 +54,7 @@ const MembershipGrid = () => {
                     <span className={styles.icon}>✔</span>
                     <span>{`Số lượt đẩy: ${service.maxPushTopAllowed}`}</span>
                   </li>
-                  <li className={styles.serviceItem}  style={{fontWeight: "bold"}}>
+                  <li className={styles.serviceItem1}  style={{fontWeight: "700", textAlign: "center", fontSize: "14.5px"}}>
                     <span>{`Các dịch vụ khác`}</span>
                   </li>
                   <li className={styles.serviceItem}>
