@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
 
 // Importing dashboard assets
 import dashboardIconActive_1 from "@/assets/images/dashboard/icon/icon_1_active.svg";
@@ -42,7 +42,7 @@ interface NavLinkProps {
 }
 
 // Tạo component NavLink riêng để tối ưu việc render
-const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactiveIcon, label, currentPath }) => {
+const NavLink: React.FC<NavLinkProps> = React.memo(({href, activeIcon, inactiveIcon, label, currentPath}) => {
     const isActive = currentPath === href;
 
     return (
@@ -63,7 +63,7 @@ const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactive
 
 NavLink.displayName = 'NavLink';
 
-const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
+const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsActive}) => {
     const pathname = usePathname();
 
     // Định nghĩa navigation items để dễ quản lý và maintain
@@ -158,12 +158,13 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
         <aside className={`dash-aside-navbar ${isActive ? "show" : ""}`}>
             <div className="position-relative">
                 {/* Logo Section */}
-                <div className="logo d-md-block d-flex align-items-center justify-content-between plr bottom-line pb-30">
+                <div
+                    className="logo d-md-block d-flex align-items-center justify-content-between plr bottom-line pb-20">
                     <Link
                         href="/"
                         prefetch={true}
                         className="logo-container"
-                        style={{ display: "flex", alignItems: "center" }}
+                        style={{display: "flex", alignItems: "center"}}
                     >
                         <Image
                             src="/assets/images/logo/logo_06.svg"
@@ -172,7 +173,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             height={50}
                             priority={true}
                         />
-                        <span className="logo-text" style={{ fontSize: "25px", color: "black", marginRight: "10px" }}>
+                        <span className="logo-text" style={{fontSize: "25px", color: "black", marginRight: "10px"}}>
                             <strong>&nbsp;PhongTro24/7</strong>
                         </span>
                     </Link>
@@ -185,28 +186,32 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 </div>
 
                 {/* Navigation Section */}
-                <nav className="dasboard-main-nav pt-30 bottom-line">
+                <nav className="dasboard-main-nav pt-20 bottom-line">
                     <ul className="style-none">
-                        {/* <li className="plr">
+                         {/*<li className="plr">
                             <Link href="/dashboard/dashboard-index" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/dashboard-index' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/dashboard-index' ? dashboardIconActive_1 : dashboardIcon_1} alt="Dashboard" />
                                 <span>Dashboard</span>
                             </Link>
-                        </li> */}
+                        </li>*/}
 
-                        <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
+                        <li className="bottom-line pt-20 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
-                            <div className="nav-title">Profile</div>
+                            <div className="nav-title">Thông tin chung</div>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3} alt="Profile" />
+                            <Link href="/dashboard/profile"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3}
+                                       alt="Profile"/>
                                 <span>Thông tin cá nhân</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/deposit" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/deposit' ? dashboardIconActive_7 : dashboardIcon_7} alt="Deposit" />
+                            <Link href="/dashboard/deposit"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/deposit' ? dashboardIconActive_7 : dashboardIcon_7}
+                                       alt="Deposit"/>
                                 <span>Nạp tiền</span>
                             </Link>
                         </li>
@@ -217,36 +222,49 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             </Link>
                         </li> */}
                         <li className="plr">
-                            <Link href="/dashboard/membership" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/membership' ? dashboardIconActive_5 : dashboardIcon_5} alt="Membership" />
+                            <Link href="/dashboard/membership"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/dashboard/membership' ? dashboardIconActive_5 : dashboardIcon_5}
+                                    alt="Membership"/>
                                 <span>Gói hội viên</span>
                             </Link>
                         </li>
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
-                            <div className="nav-title">Listing</div>
+                            <div className="nav-title">Dành cho hội viên</div>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/reports" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6} alt="List Room" />
+                            <Link href="/dashboard/reports"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6}
+                                       alt="List Room"/>
                                 <span>Thống kê</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-hostels" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Nhà Trọ" />
+                            <Link href="/dashboard/manage-hostels"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7}
+                                    alt="Quản Lý Nhà Trọ"/>
                                 <span>Quản Lý Nhà Trọ</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-room" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-room' ? dashboardIconActive_1 : roomIcon} alt="Quản Lý Phòng Trọ" />
+                            <Link href="/dashboard/manage-room"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
+                                <Image src={pathname === '/dashboard/manage-room' ? dashboardIconActive_1 : roomIcon}
+                                       alt="Quản Lý Phòng Trọ"/>
                                 <span>Quản Lý Phòng Trọ</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Bài Đăng" />
+                            <Link href="/dashboard/manage-post"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7}
+                                    alt="Quản Lý Bài Đăng"/>
                                 <span>Quản Lý Bài Đăng</span>
                             </Link>
                         </li>
@@ -257,27 +275,50 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             </Link>
                         </li> */}
                         <li className="plr">
-                            <Link href="/dashboard/invoices" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10} alt="Manage Invoices" />
-                                <span>Quản lí hóa đơn</span>
+                            <Link href="/dashboard/invoices"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10}
+                                    alt="Manage Invoices"/>
+                                <span>Quản lý hóa đơn</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1} alt="Reviews" />
-                                <span>Quản lí dịch vụ</span>
+                            <Link href="/dashboard/manage-service-landlord"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1}
+                                    alt="Reviews"/>
+                                <span>Quản lý dịch vụ</span>
                             </Link>
                         </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-maintenance" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý" />
+                            <Link href="/dashboard/manage-maintenance"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
+                                <Image
+                                    src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10}
+                                    alt="Quản lý"/>
                                 <span>Sửa chữa, bảo dưỡng</span>
                             </Link>
                         </li>
+                        <li className="plr bottom-line">
+                            <Link href="/dashboard/manage-tenant"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                <Image src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3}
+                                       alt="Reviews"/>
+                                <span>Quản lý người thuê</span>
+                            </Link>
+                        </li>
+
+                        <li className="pt-20">
+                            <div className="nav-title">Tìm người ở ghép</div>
+                        </li>
                         <li className="plr">
-                            <Link href="/dashboard/manage-tenant" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3} alt="Reviews" />
-                                <span>Quản lí người thuê</span>
+                            <Link href="/dashboard/manage-find-roommates"
+                                  className={`d-flex w-100 align-items-center ${pathname === 'dashboard/manage-find-roommates' ? 'active' : ''}`}>
+                                <Image src={pathname === '/manage-find-roommates' ? dashboardIconActive_3 : dashboardIcon_3}
+                                       alt="Reviews"/>
+                                <span>Đăng bài ở ghép</span>
                             </Link>
                         </li>
                     </ul>
@@ -287,24 +328,12 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     {/*<div className="progress-value fw-500">82%</div>*/}
                     <div className="progress-line position-relative">
-                        <div className="inner-line" style={{ width: "100%" }}></div>
+                        <div className="inner-line" style={{width: "100%"}}></div>
                     </div>
                     {/*<p>Profile Complete</p>*/}
                 </div>
 
-                {/* Logout Button */}
-                <div className="plr">
-                    <Link
-                        href="#"
-                        className="d-flex w-100 align-items-center logout-btn"
-                        prefetch={false}
-                    >
-                        {/* <div className="icon tran3s d-flex align-items-center justify-content-center rounded-circle">
-                            <Image src={dashboardIcon_11} alt="Logout" priority={false} />
-                        </div>
-                        <span>Logout</span> */}
-                    </Link>
-                </div>
+
             </div>
         </aside>
     );
