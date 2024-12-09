@@ -20,7 +20,7 @@ export interface PostData {
     membershipServiceId: string;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 
 const AddPostBody: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false)
@@ -118,7 +118,7 @@ const AddPostBody: React.FC = () => {
 
         try {
             await apiInstance.post(`posts?userId=${userId}`, formData);
-            toast.success("Bài đăng đã được tạo thành công!");
+            toast.success("Tạo bài viết thành công!");
             setPostData({
                 hostelId: "",
                 roomId: "",
