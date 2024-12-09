@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -27,6 +27,7 @@ import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_activ
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 import roomIcon from "@/assets/images/dashboard/icon/roomIconActive.svg";
+import { jwtDecode } from "jwt-decode";
 
 interface DashboardHeaderOneProps {
     isActive: boolean;
@@ -39,6 +40,10 @@ interface NavLinkProps {
     inactiveIcon: any;
     label: string;
     currentPath: string;
+}
+interface JwtPayload {
+    UserId: string;
+    Role: string;
 }
 
 // Tạo component NavLink riêng để tối ưu việc render
@@ -65,6 +70,31 @@ NavLink.displayName = 'NavLink';
 
 const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
     const pathname = usePathname();
+    const [role, setRole] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    // Hàm lấy userId từ token JWT
+    const getUserIdFromToken = useCallback(() => {
+        const token = window.localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+                setRole(decodedToken.Role);
+                return decodedToken.UserId;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                setError("Error decoding user token");
+                return null;
+            }
+        }
+        setError("No token found");
+        return null;
+    }, []);
+
+    useEffect(() => {
+        getUserIdFromToken();
+    });
+
 
     // Định nghĩa navigation items để dễ quản lý và maintain
     const navigationItems = [
@@ -196,7 +226,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
 
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
-                            <div className="nav-title">Profile</div>
+                            <div className="nav-title">Cá nhân</div>
                         </li>
                         <li className="plr">
                             <Link href="/dashboard/profile" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
@@ -224,73 +254,85 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         </li>
                         <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                         <li>
-                            <div className="nav-title">Listing</div>
+                            <div className="nav-title">Danh sách</div>
                         </li>
-                        <li className="plr">
-                            <Link href="/dashboard/reports" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6} alt="List Room" />
-                                <span>Thống kê</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-hostels" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Nhà Trọ" />
-                                <span>Quản Lý Nhà Trọ</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-room" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-room' ? dashboardIconActive_1 : roomIcon} alt="Quản Lý Phòng Trọ" />
-                                <span>Quản Lý Phòng Trọ</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Bài Đăng" />
-                                <span>Quản Lý Bài Đăng</span>
-                            </Link>
-                        </li>
+                        {(role === 'Landlord') && (
+                            <>
+                                <li className="plr">
+                                    <Link href="/dashboard/reports" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6} alt="List Room" />
+                                        <span>Thống kê</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-hostels" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Nhà Trọ" />
+                                        <span>Quản Lý Nhà Trọ</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-room" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/manage-room' ? dashboardIconActive_1 : roomIcon} alt="Quản Lý Phòng Trọ" />
+                                        <span>Quản Lý Phòng Trọ</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-post" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7} alt="Quản Lý Bài Đăng" />
+                                        <span>Quản Lý Bài Đăng</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/invoices" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10} alt="Manage Invoices" />
+                                        <span>Quản lí hóa đơn</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1} alt="Reviews" />
+                                        <span>Quản lí dịch vụ</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-rental-contract" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/manage-rental-contract' ? dashboardIconActive_1 : dashboardIcon_1} alt="Reviews" />
+                                        <span>Quản lí hợp đồng</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-maintenance" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý" />
+                                        <span>Sửa chữa, bảo dưỡng</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-tenant" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3} alt="Reviews" />
+                                        <span>Quản lí người thuê</span>
+                                    </Link>
+                                </li>
+                            </>
+                        )}
+
                         {/* <li className="plr">
                             <Link href="/dashboard/favourites" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/favourites' ? 'active' : ''}`}>
                                 <Image src={pathname === '/dashboard/favourites' ? dashboardIconActive_8 : dashboardIcon_8} alt="Favourites" />
                                 <span>Favourites</span>
                             </Link>
                         </li> */}
-                        <li className="plr">
-                            <Link href="/dashboard/invoices" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10} alt="Manage Invoices" />
-                                <span>Quản lí hóa đơn</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-service-landlord" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1} alt="Reviews" />
-                                <span>Quản lí dịch vụ</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-maintenance" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý" />
-                                <span>Sửa chữa, bảo dưỡng</span>
-                            </Link>
-                        </li>
-                        <li className="plr">
-                            <Link href="/dashboard/manage-tenant" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
-                                <Image src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3} alt="Reviews" />
-                                <span>Quản lí người thuê</span>
-                            </Link>
-                        </li>
+
                     </ul>
                 </nav>
 
                 {/* Profile Completion Section */}
-                <div className="profile-complete-status bottom-line pb-35 plr">
-                    {/*<div className="progress-value fw-500">82%</div>*/}
+                {/* <div className="profile-complete-status bottom-line pb-35 plr">
+                    <div className="progress-value fw-500">100%</div>
                     <div className="progress-line position-relative">
                         <div className="inner-line" style={{ width: "100%" }}></div>
                     </div>
-                    {/*<p>Profile Complete</p>*/}
-                </div>
+                    <p>Profile Complete</p>
+                </div> */}
 
                 {/* Logout Button */}
                 <div className="plr">

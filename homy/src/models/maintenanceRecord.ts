@@ -1,7 +1,7 @@
 export interface MaintenanceRecord {
-    hostelId: string;
+    hostelId: string | null;
     roomId: string | null;
-    hostelName: string;
+    hostelName: string | null;
     roomName: string | null;
     title: string;
     description: string | null;
@@ -24,5 +24,23 @@ export interface MaintenanceRecord {
   export enum SortDirection {
     Ascending = 0,
     Descending = 1,
+  }
+
+  export enum MaintenanceType {
+    Electrical = 0, 
+    Plumbing = 1,    
+    Painting = 2,     
+    General = 3,       
+    Other = 4           
+  }
+
+  export interface AddMaintenanceRecord {
+    hostelId: string ;
+    roomId: string | null;
+    title: string;
+    description: string | null;
+    maintenanceDate: string; 
+    cost: number;
+    maintenanceType: number;
   }
   

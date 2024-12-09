@@ -149,7 +149,7 @@ const InvoiceBody = () => {
          return "bg-success text-white";  // Màu xanh lá cho "Đang trong thời hạn"
       }
 
-      return "bg-secondary text-white";  // Màu xám cho "Chưa bắt đầu"
+      return "bg-secondary text-gray";  // Màu xám cho "Chưa bắt đầu"
    };
 
    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
