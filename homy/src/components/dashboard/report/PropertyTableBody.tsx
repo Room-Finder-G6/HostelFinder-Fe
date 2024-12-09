@@ -16,6 +16,8 @@ interface RoomRevenue {
 interface ReportData {
    totalAllRevenue: number;
    roomRevenueDetail: RoomRevenue[];
+   totalRoomRevenue: number;
+   totalCostOfMaintenance: number;
 }
 
 // Kiểu dữ liệu phản hồi từ API
@@ -149,6 +151,127 @@ const PropertyTableBody = () => {
             </Col>
          </Row>
 
+         {viewMode === "year" ? (
+            yearlyRevenue ? (
+               <>
+                  <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
+                     <div className="item receipt d-flex align-items-center">
+                        <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
+                        <div className="value text-success d-flex align-items-center">
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="feather feather-trending-up mr-2"
+                           >
+                              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                              <polyline points="17 6 23 6 23 12"></polyline>
+                           </svg>
+                           <span className="total">{formatCurrency(yearlyRevenue.totalRoomRevenue)}</span>
+                        </div>
+                     </div>
+
+                     <div className="item expense d-flex align-items-center">
+                        <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
+                        <div className="value text-danger d-flex align-items-center">
+                           <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="feather feather-trending-down mr-2"
+                           >
+                              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                              <polyline points="17 18 23 18 23 12"></polyline>
+                           </svg>
+                           <span className="total">{formatCurrency(yearlyRevenue.totalCostOfMaintenance)}</span>
+                        </div>
+                     </div>
+
+                     <div className="item profit d-flex align-items-center">
+                        <div className="text-end mr-3 ">Lợi nhuận</div>
+                        <div className="value text-success d-flex align-items-center">
+                           <span className="total">{formatCurrency(yearlyRevenue.totalAllRevenue)}</span>
+                        </div>
+                     </div>
+                  </div>
+
+               </>
+            ) : (
+               <Loading />
+            )
+         ) : monthlyRevenue ? (
+            <>
+               <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
+                  <div className="item receipt d-flex align-items-center">
+                     <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
+                     <div className="value text-success d-flex align-items-center">
+                        <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           width="24"
+                           height="24"
+                           viewBox="0 0 24 24"
+                           fill="none"
+                           stroke="currentColor"
+                           strokeWidth="2"
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           className="feather feather-trending-up mr-2"
+                        >
+                           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                           <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                        <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
+                     </div>
+                  </div>
+
+                  <div className="item expense d-flex align-items-center">
+                     <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
+                     <div className="value text-danger d-flex align-items-center">
+                        <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           width="24"
+                           height="24"
+                           viewBox="0 0 24 24"
+                           fill="none"
+                           stroke="currentColor"
+                           strokeWidth="2"
+                           strokeLinecap="round"
+                           strokeLinejoin="round"
+                           className="feather feather-trending-down mr-2"
+                        >
+                           <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                           <polyline points="17 18 23 18 23 12"></polyline>
+                        </svg>
+                        <span className="total">{formatCurrency(0)}</span>
+                     </div>
+                  </div>
+
+                  <div className="item profit d-flex align-items-center">
+                     <div className="text-end mr-3">Lợi nhuận</div>
+                     <div className="value text-success d-flex align-items-center">
+                        <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
+                     </div>
+                  </div>
+               </div>
+
+            </>
+         ) : (
+            <Loading />
+         )}
+
+
          {/* Dropdown chọn hostel */}
          <Row className="mt-4">
             <Col>
@@ -238,70 +361,18 @@ const PropertyTableBody = () => {
                      {viewMode === "year" ? (
                         yearlyRevenue ? (
                            <>
-                              <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
-                                 <div className="item receipt d-flex align-items-center">
-                                    <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
-                                    <div className="value text-success d-flex align-items-center">
-                                       <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="24"
-                                          height="24"
-                                          viewBox="0 0 24 24"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          className="feather feather-trending-up mr-2"
-                                       >
-                                          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                          <polyline points="17 6 23 6 23 12"></polyline>
-                                       </svg>
-                                       <span className="total">{formatCurrency(yearlyRevenue.totalAllRevenue)}</span>
-                                    </div>
-                                 </div>
-
-                                 <div className="item expense d-flex align-items-center">
-                                    <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
-                                    <div className="value text-danger d-flex align-items-center">
-                                       <svg
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          width="24"
-                                          height="24"
-                                          viewBox="0 0 24 24"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          className="feather feather-trending-down mr-2"
-                                       >
-                                          <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                                          <polyline points="17 18 23 18 23 12"></polyline>
-                                       </svg>
-                                       <span className="total">{formatCurrency(0)}</span>
-                                    </div>
-                                 </div>
-
-                                 <div className="item profit d-flex align-items-center">
-                                    <div className="text-end mr-3">Lợi nhuận</div>
-                                    <div className="value text-success d-flex align-items-center">
-                                       <span className="total">{formatCurrency(yearlyRevenue.totalAllRevenue)}</span>
-                                    </div>
-                                 </div>
-                              </div>
-                              <Table striped bordered hover>
+                              <Table striped bordered hover className="table-center">
                                  <thead>
                                     <tr>
-                                       <th>Phòng</th>
-                                       <th>Doanh Thu</th>
+                                       <th className="text-center">Phòng</th>
+                                       <th className="text-center">Doanh Thu</th>
                                     </tr>
                                  </thead>
                                  <tbody>
                                     {yearlyRevenue.roomRevenueDetail.map((room, index) => (
                                        <tr key={index}>
-                                          <td>{room.roomName}</td>
-                                          <td>{formatCurrency(room.totalRevenue)}</td>
+                                          <td className="text-center">{room.roomName}</td>
+                                          <td className="text-center">{formatCurrency(room.totalRevenue)}</td>
                                        </tr>
                                     ))}
                                  </tbody>
@@ -312,58 +383,6 @@ const PropertyTableBody = () => {
                         )
                      ) : monthlyRevenue ? (
                         <>
-                           <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
-                              <div className="item receipt d-flex align-items-center">
-                                 <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
-                                 <div className="value text-success d-flex align-items-center">
-                                    <svg
-                                       xmlns="http://www.w3.org/2000/svg"
-                                       width="24"
-                                       height="24"
-                                       viewBox="0 0 24 24"
-                                       fill="none"
-                                       stroke="currentColor"
-                                       strokeWidth="2"
-                                       strokeLinecap="round"
-                                       strokeLinejoin="round"
-                                       className="feather feather-trending-up mr-2"
-                                    >
-                                       <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                       <polyline points="17 6 23 6 23 12"></polyline>
-                                    </svg>
-                                    <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
-                                 </div>
-                              </div>
-
-                              <div className="item expense d-flex align-items-center">
-                                 <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
-                                 <div className="value text-danger d-flex align-items-center">
-                                    <svg
-                                       xmlns="http://www.w3.org/2000/svg"
-                                       width="24"
-                                       height="24"
-                                       viewBox="0 0 24 24"
-                                       fill="none"
-                                       stroke="currentColor"
-                                       strokeWidth="2"
-                                       strokeLinecap="round"
-                                       strokeLinejoin="round"
-                                       className="feather feather-trending-down mr-2"
-                                    >
-                                       <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                                       <polyline points="17 18 23 18 23 12"></polyline>
-                                    </svg>
-                                    <span className="total">{formatCurrency(0)}</span>
-                                 </div>
-                              </div>
-
-                              <div className="item profit d-flex align-items-center">
-                                 <div className="text-end mr-3">Lợi nhuận</div>
-                                 <div className="value text-success d-flex align-items-center">
-                                    <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
-                                 </div>
-                              </div>
-                           </div>
                            <Table striped bordered hover>
                               <thead>
                                  <tr>

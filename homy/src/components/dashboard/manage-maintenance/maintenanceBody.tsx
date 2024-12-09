@@ -12,6 +12,9 @@ import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner } from 
 import { MdEmail } from 'react-icons/md';
 import { MaintenanceRecord, PagedResponse, SortDirection } from "@/models/maintenanceRecord";
 import { jwtDecode } from "jwt-decode";
+import MaintenanceModal from "./Add/MaintenanceModal";
+import { FaPlus } from "react-icons/fa";
+import Loading from "@/components/Loading";
 
 interface JwtPayload {
     UserId: string;
@@ -141,6 +144,30 @@ const MainTenanceBody = () => {
         setPageIndex(1); // Reset lại trang khi thay đổi nhà trọ
     };
 
+
+    const handleShowModal = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+    const handleSuccess = () => {
+        // You can handle any post-submit logic here (like fetching new data)
+    };
+
+    const reloadTable = () => {
+        fetchMaintenanceRecords();
+    };
+
+    const maintenanceTypeOptions = [
+        { label: 'Sửa điện', value: 0 },
+        { label: 'Sửa ống nước', value: 1 },
+        { label: 'Sửa tường', value: 2 },
+        { label: 'Sửa chữa chung', value: 3 },
+        { label: 'Khác', value: 4 }
+    ];
+
+    const getMaintenanceTypeLabel = (maintenanceType: number) => {
+        const option = maintenanceTypeOptions.find(option => option.value === maintenanceType);
+        return option ? option.label : 'Không xác định';
+    };
+
     return (
         <div className="dashboard-body">
             <div className="position-relative">
@@ -174,6 +201,15 @@ const MainTenanceBody = () => {
                 {/* Hiển thị thông báo lỗi nếu có */}
                 {error && <div className="alert alert-danger">{error}</div>}
 
+                <Button variant="btn btn-success btn-sm d-flex align-items-center" onClick={handleShowModal}>
+                    <div
+                        className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
+                        style={{ width: '24px', height: '24px', color: 'green' }}
+                    >
+                        <FaPlus size={14} />
+                    </div>
+                    Thêm mới
+                </Button>
                 {/* Bảng hiển thị Maintenance Records */}
                 <div className="bg-white card-box p0 border-20">
                     <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
@@ -192,7 +228,7 @@ const MainTenanceBody = () => {
                                         <th scope="col">Mô tả</th>
                                         <th scope="col">Ngày bảo trì</th>
                                         <th scope="col">Số tiền</th>
-                                        <th scope="col">Loại bảo trì</th>
+                                        <th scope="col">Loại</th>
                                         <th scope="col">Hành động</th>
                                     </tr>
                                 </thead>
@@ -209,7 +245,8 @@ const MainTenanceBody = () => {
                                                 <td>{record.description || "N/A"}</td>
                                                 <td>{new Date(record.maintenanceDate).toLocaleDateString()}</td>
                                                 <td>{record.cost.toLocaleString('vi-VN')} ₫</td>
-                                                <td>{record.maintenanceType === 0 ? "Loại 1" : "Loại 2"}</td>
+                                                <td>{getMaintenanceTypeLabel(record.maintenanceType)}</td>
+
                                                 <td>
                                                     <div className="d-flex justify-content-end btns-group">
                                                         {/* <ButtonToolbar onClick={() => handleViewClick(record.hostelId)}>
@@ -225,7 +262,7 @@ const MainTenanceBody = () => {
                                     ) : (
                                         <tr>
                                             <td colSpan={7} className="text-center">
-                                                Không tìm thấy bản ghi nào.
+                                                <Loading />
                                             </td>
                                         </tr>
                                     )}
@@ -234,6 +271,17 @@ const MainTenanceBody = () => {
                         )}
                     </div>
                 </div>
+
+
+
+                {/* MaintenanceModal component */}
+                <MaintenanceModal
+                    show={showModal}
+                    onClose={handleCloseModal}
+                    onSuccess={handleSuccess}
+                    selectedHostel={selectedHostel}
+                    reloadTable={reloadTable}
+                />
 
                 {/* Phân trang với thiết kế mới */}
                 {totalPages > 1 && (
@@ -247,7 +295,7 @@ const MainTenanceBody = () => {
                                 }}
                                 className={pageIndex === 1 ? "disabled" : ""}
                             >
-                                Trang trước
+                                Trang đầu
                             </Link>
                         </li>
 
@@ -283,7 +331,7 @@ const MainTenanceBody = () => {
                     </ul>
                 )}
             </div>
-        </div>
+        </div >
     );
 };
 

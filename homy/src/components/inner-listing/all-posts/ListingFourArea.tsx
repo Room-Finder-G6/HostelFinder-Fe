@@ -1,14 +1,14 @@
 'use client';
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import DropdownTwo from "@/components/search-dropdown/inner-dropdown/DropdownTwo";
 import apiInstance from "@/utils/apiInstance";
-import {FilterPostData} from "@/models/filterPostData";
+import { FilterPostData } from "@/models/filterPostData";
 import Loading from "@/components/Loading";
 import Link from "next/link";
 import Image from "next/image";
-import {FilteredPosts} from "@/models/filteredPosts";
-import {jwtDecode} from "jwt-decode";
-import {toast} from 'react-toastify';
+import { FilteredPosts } from "@/models/filteredPosts";
+import { jwtDecode } from "jwt-decode";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const truncateText = (text: string, maxLength: number = 100) => {
@@ -44,7 +44,6 @@ const ListingFourArea = () => {
         province: "",
         district: "",
     });
-
     const [userId, setUserId] = useState<string | null>(null);
     const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
     const [pageIndex, setPageIndex] = useState(1);
@@ -67,18 +66,28 @@ const ListingFourArea = () => {
     };
 
     const updateWishlistCount = async () => {
-        const userIdFromToken = getUserIdFromToken();
-        if (userIdFromToken) {
-            try {
-                const response = await apiInstance.get(`/wishlist/count/${userIdFromToken}`);
-                if (response.status === 200) {
-                    setWishlistCount(response.data);
-                }
-            } catch (error) {
-                console.error("Lỗi khi lấy số lượng bài viết yêu thích:", error);
+        const token = window.localStorage.getItem('token');
+        const userId = getUserIdFromToken(); 
+    
+        if (userId && token) {
+          try {
+            const response = await apiInstance.get(`/wishlists/count/${userId}`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+    
+            if (response.status === 200 && response.data.count !== undefined) {
+              setWishlistCount(response.data.count); // Cập nhật số lượng
+            } else {
+              console.error("Invalid response data:", response.data);
             }
+          } catch (error) {
+            console.error("Error fetching wishlist count:", error);
+          }
         }
-    };
+      };
+    
 
     const handleAddToWishlist = async (postId: string) => {
         const userIdFromToken = getUserIdFromToken();
@@ -94,29 +103,7 @@ const ListingFourArea = () => {
                 const wishlistPosts = wishlistResponse.data.posts;
 
                 const postToRemove = wishlistPosts.find((item: any) => item.roomId === postId);
-                if (postToRemove) {
-                    const wishlistPostId = postToRemove.id;
-
-                    const response = await apiInstance.post("wishlists/DeleteRoomFromWishList", {
-                        wishlistPostId: wishlistPostId,
-                        userId: userIdFromToken,
-                    });
-
-                    if (response.status === 200) {
-                        toast.info("Bạn đã bỏ yêu thích bài viết.");
-                        setLikedPosts((prev) => {
-                            const newLikedPosts = new Set(prev);
-                            newLikedPosts.delete(postId);
-                            localStorage.setItem('likedPosts', JSON.stringify([...newLikedPosts]));
-                            return newLikedPosts;
-                        });
-                    } else {
-                        toast.error("Lỗi khi bỏ bài viết khỏi danh sách yêu thích.");
-                    }
-                } else {
-                    toast.error("Không tìm thấy bài viết trong danh sách yêu thích.");
-                }
-            } else {
+             } else {
                 const response = await apiInstance.post("wishlists/AddRoomToWishList", {
                     postId: postId,
                     userId: userIdFromToken,
@@ -134,12 +121,15 @@ const ListingFourArea = () => {
                 } else {
                     toast.error("Thêm bài viết vào danh sách yêu thích thất bại.");
                 }
+   
             }
+            updateWishlistCount();
         } catch (error) {
             console.error("Lỗi khi thao tác với danh sách yêu thích:", error);
             toast.error("Bài viết đã có trong danh sách yêu thích");
         }
     };
+    
 
     const handleSearch = async () => {
         setIsLoading(true);
@@ -154,12 +144,12 @@ const ListingFourArea = () => {
                 "posts/filtered-paged",
                 formData,
                 {
-                    params: {pageIndex: 1, pageSize}, // Use pageIndex 1 directly here
+                    params: { pageIndex: 1, pageSize }, // Use pageIndex 1 directly here
                 }
             );
 
             if (response.status === 200) {
-                const {data, totalPosts} = response.data;
+                const { data, totalPosts } = response.data;
                 setFilteredPosts(data);
                 setTotalPosts(totalPosts);
             } else {
@@ -209,12 +199,12 @@ const ListingFourArea = () => {
                     "posts/filtered-paged",
                     formData,
                     {
-                        params: {pageIndex, pageSize},
+                        params: { pageIndex, pageSize },
                     }
                 );
 
                 if (response.status === 200) {
-                    const {data, totalPosts} = response.data;
+                    const { data, totalPosts } = response.data;
                     setFilteredPosts(data);
                     setTotalPosts(totalPosts);
                 }
@@ -251,7 +241,7 @@ const ListingFourArea = () => {
                     </div>
                 </div>
 
-                {isLoading && <Loading/>}
+                {isLoading && <Loading />}
 
                 {filteredPosts.length === 0 && !isLoading && (
                     <div className="no-posts-found">Không tìm thấy bài viết nào</div>
@@ -264,18 +254,18 @@ const ListingFourArea = () => {
                                 {item.membershipTag && (
                                     <div
                                         className={`tag border-20 `}
-                                        style={{backgroundColor: `${membershipColors[item.membershipTag]}`}}
+                                        style={{ backgroundColor: `${membershipColors[item.membershipTag]}` }}
                                     >
                                         Vip&nbsp;{item.membershipTag}
                                     </div>
                                 )}
                                 <Image
                                     src={item.firstImage || "/path/to/default-image.jpg"}
-                                    alt={item.title || "Default Image"}
+                                    alt={item.title || "Default I mage"}
                                     className="img-fluid w-100 h-100 rounded-3"
                                     width={300}
                                     height={300}
-                                    style={{objectFit: "cover", borderRadius: "15px", aspectRatio: '18 / 12' }}
+                                    style={{ objectFit: "cover", borderRadius: "15px", aspectRatio: '18 / 12' }}
                                 />
                             </div>
                             <div className="property-info">
@@ -291,7 +281,7 @@ const ListingFourArea = () => {
                                     <div className={"d-flex gap-5 align-items-center"}>
                                         <strong
                                             className="price fw-500 me-auto"
-                                            style={{color: "hsl(0,94%,42%)"}}
+                                            style={{ color: "hsl(0,94%,42%)" }}
                                         >
                                             {item.monthlyRentCost.toLocaleString({
                                                 minimumFractionDigits: 2,
@@ -311,7 +301,7 @@ const ListingFourArea = () => {
                                             onClick={() => handleAddToWishlist(item.id)}
                                             disabled={likedPosts.has(item.id)}
                                         >
-                                            <i className={`fa-heart ${likedPosts.has(item.id) ? 'fa-solid' : 'fa-regular'}`}/>
+                                            <i className={`fa-heart ${likedPosts.has(item.id) ? 'fa-solid' : 'fa-regular'}`} />
                                         </button>
                                     </div>
                                     <Link href={`/post-details/${item.id}`} className="btn-four rounded-circle">
