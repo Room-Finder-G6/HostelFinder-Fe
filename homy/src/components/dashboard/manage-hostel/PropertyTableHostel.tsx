@@ -43,7 +43,15 @@ const PropertyTableHostel = ({
   const [error, setError] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
- 
+
+  const formatDate = (dateString: any) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   // Function to get UserId from token in localStorage
   const getUserIdFromToken = useCallback(() => {
     const token = window.localStorage.getItem("token");
@@ -211,7 +219,7 @@ const PropertyTableHostel = ({
                 </div>
               </div>
             </td>
-            <td>{new Date(item.createdOn).toLocaleDateString()}</td>
+            <td>{formatDate(item.createdOn)}</td>
             <td>{item.size}m²</td>
             <td>
               <div className="action-dots float-end">
