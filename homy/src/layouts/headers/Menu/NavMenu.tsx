@@ -45,7 +45,7 @@ const NavMenu = () => {
         const token = window.localStorage.getItem("token");
         if (token) {
             try {
-                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); // Giải mã token để lấy userId
+                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); 
                 setRole(decodedToken.Role);
                 return decodedToken.UserId;
             } catch (error) {
