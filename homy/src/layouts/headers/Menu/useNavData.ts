@@ -58,9 +58,9 @@ const useNavData = () => {
     }
   };
 
-  useEffect(() => {
-    updateWishlistCount(); // Cập nhật số lượng khi component mount
-  }, []);
+  // useEffect(() => {
+  //   updateWishlistCount(); // Cập nhật số lượng khi component mount
+  // }, []);
 
   // Hàm xử lý xóa khỏi wishlist
 
