@@ -154,9 +154,8 @@ const ServiceManagement = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Quản lí nhà trọ và dịch vụ" />
+            <DashboardHeaderTwo title="Quản lí nhà trọ và dịch vụ" />   
             <h2 className="main-title d-block d-lg-none">Quản lí nhà trọ và dịch vụ</h2>
-
             {/* Chọn nhà trọ */}
             <div className="d-flex align-items-center gap-4 mb-4">
                <HostelSelector
@@ -169,9 +168,6 @@ const ServiceManagement = () => {
                   </button>
                </div>
             </div>
-
-            {/* Service List */}
-            {/* Danh sách dịch vụ */}
             {services.length > 0 && (
                <div className="service-list">
                   <h4>Dịch vụ của nhà trọ:</h4>
@@ -199,12 +195,11 @@ const ServiceManagement = () => {
                   </div>
                </div>
             )}
-
             {/* Modal Add Service */}
             {isAddServiceModalOpen && (
-               <div className="modal-overlay">
-                  <div className="modal-content">
-                     <div className="modal-header">
+               <div className="modal-service">
+                  <div className="modal-service1">
+                     <div className="modal-service2">
                         <h5 className="modal-title">Thêm dịch vụ</h5>
                         <button onClick={toggleAddServiceModal}>&times;</button>
                      </div>
