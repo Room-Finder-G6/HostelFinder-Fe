@@ -1,14 +1,14 @@
 // components/dashboard/profile/ProfileBody.tsx
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Image from "next/image";
 import UserAvatarSetting from "./UserAvatarSetting";
-import Link from "next/link";
-import { toast } from "react-toastify";
-import { jwtDecode } from "jwt-decode";
+import {toast} from "react-toastify";
+import {jwtDecode} from "jwt-decode";
 import apiInstance from "@/utils/apiInstance";
-import { User } from "@/models/user";
+import {User} from "@/models/user";
 import Loading from "@/components/Loading";
+import Link from "next/link";
 
 interface CustomJwtPayload {
     UserId: string;
@@ -108,13 +108,13 @@ const ProfileBody: React.FC = () => {
                 if (decodedToken.UserId) {
                     fetchUserProfile(decodedToken.UserId);
                 } else {
-                    toast.error("User ID not found in token", { position: "top-center" });
+                    toast.error("User ID not found in token", {position: "top-center"});
                 }
             } catch (error) {
-                toast.error("Invalid token", { position: "top-center" });
+                toast.error("Invalid token", {position: "top-center"});
             }
         } else {
-            toast.error("Token not found in localStorage", { position: "top-center" });
+            toast.error("Token not found in localStorage", {position: "top-center"});
         }
     }, []);
 
@@ -129,17 +129,17 @@ const ProfileBody: React.FC = () => {
                     avatarUrl: data.avatarUrl
                 });
             } else {
-                toast.error("Failed to load user profile", { position: "top-center" });
+                toast.error("Failed to load user profile", {position: "top-center"});
             }
         } catch (error) {
-            toast.error("Error fetching user profile", { position: "top-center" });
+            toast.error("Error fetching user profile", {position: "top-center"});
         } finally {
             setIsLoading(false);
         }
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setProfileData((prevData) => ({
             ...prevData,
             [name]: value,
@@ -155,13 +155,13 @@ const ProfileBody: React.FC = () => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                toast.error("File size should not exceed 5MB", { position: "top-center" });
+                toast.error("File size should not exceed 5MB", {position: "top-center"});
                 return;
             }
 
             // Kiểm tra loại file
             if (!file.type.startsWith('image/')) {
-                toast.error("Please upload an image file", { position: "top-center" });
+                toast.error("Please upload an image file", {position: "top-center"});
                 return;
             }
 
@@ -181,7 +181,7 @@ const ProfileBody: React.FC = () => {
 
     const handleSubmit = async () => {
         if (!validateForm()) {
-            toast.error("Vui lòng kiểm tra lại thông tin nhập vào", { position: "top-center" });
+            toast.error("Vui lòng kiểm tra lại thông tin nhập vào", {position: "top-center"});
             return;
         }
 
@@ -203,16 +203,16 @@ const ProfileBody: React.FC = () => {
                 },
             });
             if (response.status === 200) {
-                toast.success("Profile updated successfully", { position: "top-center" });
+                toast.success("Thông tin cá nhân đã được cập nhật thành công", {position: "top-center"});
             }
         } catch (error: any) {
             if (error.response && error.response.data) {
-                const errorMessage = error.response.data.message || "Failed to update profile";
-                toast.error(errorMessage, { position: "top-center" });
+                const errorMessage = error.response.data.message || "Cập nhật thông tin thất bại";
+                toast.error(errorMessage, {position: "top-center"});
             } else if (error.request) {
-                toast.error("No response from server. Please try again later.", { position: "top-center" });
+                toast.error("Không có phản hồi từ máy chủ. Vui lòng thử lại sau.", {position: "top-center"});
             } else {
-                toast.error("An unexpected error occurred", { position: "top-center" });
+                toast.error("Đã xảy ra lỗi không mong muốn.", {position: "top-center"});
             }
         } finally {
             setIsLoading(false);
@@ -228,7 +228,7 @@ const ProfileBody: React.FC = () => {
                     fetchUserProfile(decodedToken.UserId);
                 }
             } catch (error) {
-                toast.error("Error resetting form", { position: "top-center" });
+                toast.error("Error resetting form", {position: "top-center"});
             }
         }
         setErrors({});
@@ -238,8 +238,8 @@ const ProfileBody: React.FC = () => {
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Profile" />
-                <h2 className="main-title d-block d-lg-none">Profile</h2>
+                <DashboardHeaderTwo title="Thông tin cá nhân"/>
+                <h2 className="main-title d-block d-lg-none">Thông tin cá nhân</h2>
 
                 <div className="bg-white card-box border-20">
                     <div className="user-avatar-setting d-flex align-items-center mb-30">
@@ -254,13 +254,14 @@ const ProfileBody: React.FC = () => {
                                 style={{width: "100%", height: "100%", objectFit: "cover"}}
                             />
                             {isLoading && (
-                                <div className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-light bg-opacity-50">
+                                <div
+                                    className="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-light bg-opacity-50">
                                     <Loading/>
                                 </div>
                             )}
                         </div>
                         <div className="upload-btn position-relative tran3s ms-4 me-3">
-                            Upload new photo
+                            Tải ảnh lên
                             <input
                                 type="file"
                                 id="uploadImg"
@@ -289,18 +290,26 @@ const ProfileBody: React.FC = () => {
                         >
                             {isLoading ? (
                                 <>
-                                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                                    Saving...
+                                    <span className="spinner-border spinner-border-sm me-2" role="status"
+                                          aria-hidden="true"></span>
+                                    Đang lưu...
                                 </>
-                            ) : 'Save'}
+                            ) : 'Lưu'}
                         </button>
                         <button
                             onClick={handleCancel}
                             className="dash-cancel-btn tran3s"
                             disabled={isLoading}
                         >
-                            Cancel
+                            Hủy
                         </button>
+                        <div className="info-text d-sm-flex align-items-center mt-5 ms-5">
+                            <p className="m0">
+                                <Link href="/dashboard/account-settings/password-change" passHref>
+                                    <span className="btn-link">Đổi mật khẩu</span>
+                                </Link>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>

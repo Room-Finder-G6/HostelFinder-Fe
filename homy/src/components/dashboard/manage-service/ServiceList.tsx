@@ -1,5 +1,4 @@
-// React component to fetch and display list of services with checkboxes from the API endpoint
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import apiInstance from '@/utils/apiInstance';
 
 interface Service {
@@ -9,20 +8,19 @@ interface Service {
 
 interface ServicesListProps {
     onServiceSelect: (selectedServices: string[]) => void;
+    initialSelectedServices?: string[];
 }
 
-const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
+const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect, initialSelectedServices = [] }) => {
     const [services, setServices] = useState<Service[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedServices, setSelectedServices] = useState<string[]>([]);
+    const [selectedServices, setSelectedServices] = useState<string[]>(initialSelectedServices);
 
     useEffect(() => {
-        // Fetching data from API
         const fetchServices = async () => {
             try {
                 const response = await apiInstance.get('/services');
-                console.log(response);
                 if (response.data.succeeded) {
                     setServices(response.data.data);
                 } else {
@@ -38,6 +36,10 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
         fetchServices();
     }, []);
 
+    useEffect(() => {
+        setSelectedServices(initialSelectedServices);
+    }, []);
+
     const handleServiceChange = (serviceId: string) => {
         setSelectedServices((prevSelected) => {
             if (prevSelected.includes(serviceId)) {
@@ -48,11 +50,11 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
         });
     };
 
+    const stableOnServiceSelect = useCallback(onServiceSelect, []);
+
     useEffect(() => {
-        if (onServiceSelect) {
-            onServiceSelect(selectedServices);
-        }
-    }, [selectedServices, onServiceSelect]);
+        stableOnServiceSelect(selectedServices);
+    }, [selectedServices, stableOnServiceSelect]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -71,8 +73,12 @@ const ServicesList: React.FC<ServicesListProps> = ({ onServiceSelect }) => {
                                 onChange={() => handleServiceChange(service.id)}
                             />
                             <div className="service-label d-flex align-items-center">
-                                {/* <img src={`public/assets/images/service/${service.serviceName.toLowerCase()}.png`} alt={service.serviceName} className="me-2" /> */}
-                                <img style={{ maxWidth: '18px', maxHeight: '18px' }} src={`/assets/images/service/${service.serviceName.toLowerCase()}.svg`} alt={service.serviceName} className="me-2" />
+                                <img
+                                    style={{ maxWidth: '18px', maxHeight: '18px' }}
+                                    src={`/assets/images/service/${service.serviceName.toLowerCase()}.svg`}
+                                    alt={service.serviceName}
+                                    className="me-2"
+                                />
                                 <span>{service.serviceName}</span>
                             </div>
                         </div>

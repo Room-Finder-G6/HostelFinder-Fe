@@ -1,12 +1,20 @@
 import { useEffect, useState } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { AxiosError } from "axios";
+
 interface Post {
     id: string;
     title: string;
+    description: string; // Thêm trường description
     status: boolean;
-    image: string | null;
+    firstImage: string | null;
     createdOn: string;
+    address: { // Thêm trường address
+        province: string;
+        district: string;
+        commune: string;
+        detailAddress: string;
+    };
 }
 
 const useAllPosts = () => {
@@ -15,23 +23,23 @@ const useAllPosts = () => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [pageIndex, setPageIndex] = useState<number>(1);
 
-    // Gọi API để lấy danh sách bài viết
     const fetchAllPosts = async (pageNumber: number) => {
         setLoading(true);
-
         try {
-            const response = await apiInstance.post(`/posts/get-all`, {
-                searchPhrase: "",
-                pageNumber: pageNumber,
-                pageSize: 10,
-                sortBy: "createdOn",
-                sortDirection: 0,
+            const response = await apiInstance.get(`/posts/GetAllPostWithPriceAndStatusAndTime`, {
+                params: {
+                    searchPhrase: "",
+                    pageNumber: pageNumber,
+                    pageSize: 10,
+                    sortBy: "createdOn",
+                    sortDirection: 0,
+                },
             });
-        
-            setPosts(response.data.data || []);
+    
+            setPosts(response.data.data || []); // response.data.data phải chứa description & address
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
-            const axiosError = error as AxiosError; // Ép kiểu
+            const axiosError = error as AxiosError;
             if (axiosError.response) {
                 console.error("Error fetching all posts:", axiosError.response.data);
             } else {
@@ -40,7 +48,9 @@ const useAllPosts = () => {
         } finally {
             setLoading(false);
         }
-    }
+    };
+    
+    
     useEffect(() => {
         fetchAllPosts(pageIndex);
     }, [pageIndex]);

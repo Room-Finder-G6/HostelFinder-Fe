@@ -15,7 +15,6 @@ interface MembershipTableBodyProps {
     onEdit: (membership: Membership) => void; // Thêm prop onEdit
 }
 
-
 const MembershipTableBody: React.FC<MembershipTableBodyProps> = ({ memberships, loading, onDelete, onEdit }) => {
     if (loading) {
         return (
@@ -71,7 +70,7 @@ const MembershipTableBody: React.FC<MembershipTableBodyProps> = ({ memberships, 
                                 <li>
                                     <button
                                         className="dropdown-item"
-                                        onClick={() => onDelete(membership.id)}
+                                        onClick={() => onDelete(membership.id)} // Gọi hàm xóa khi click
                                     >
                                         Delete
                                     </button>

@@ -5,9 +5,16 @@ import { jwtDecode } from "jwt-decode";
 interface Post {
     id: string;
     title: string;
+    description: string;
     status: boolean;
-    image: string | null;
+    firstImage: string | null;
     createdOn: string;
+    address: {
+        province: string;
+        district: string;
+        commune: string;
+        detailAddress: string;
+    };
 }
 
 interface JwtPayload {
@@ -21,7 +28,6 @@ const usePostsByUser = () => {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [userId, setUserId] = useState<string | null>(null);
 
-    // Hàm lấy `userId` từ token
     const getUserIdFromToken = useCallback(() => {
         const token = localStorage.getItem("token");
         if (token) {
@@ -37,24 +43,32 @@ const usePostsByUser = () => {
         return null;
     }, []);
 
-    // Gọi API để lấy danh sách bài đăng của người dùng
-    const fetchPostsByUser = async (pageNumber: number) => {
+    const fetchPostsByUser = async (pageNumber: number, sortOption: string) => {
         if (!userId) return;
 
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
+            const sortDirection = sortOption === "1" ? "desc" : "asc";  // Sắp xếp theo ngày tạo, "desc" cho mới nhất và "asc" cho cũ nhất
+
             const response = await apiInstance.get(`/posts/user/${userId}`, {
                 params: {
-                    pageNumber: pageNumber,
+                    pageNumber,
                     pageSize: 10,
-                    sortDirection: 0,
+                    sortBy: "createdAt",  // Đảm bảo API có hỗ trợ sắp xếp theo createdAt
+                    sortDirection,
                 },
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setPosts(response.data.data || []);
+
+            const postsWithImages = response.data.data.map((post: any) => ({
+                ...post,
+                image: post.image ? `${process.env.NEXT_PUBLIC_API_URL}/${post.image}` : "/default-image.png",
+            }));
+
+            setPosts(postsWithImages || []);
             setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error("Error fetching posts: ", error);
@@ -72,11 +86,11 @@ const usePostsByUser = () => {
 
     useEffect(() => {
         if (userId) {
-            fetchPostsByUser(pageIndex);
+            fetchPostsByUser(pageIndex, "1"); // Default: sort by Newest
         }
     }, [userId, pageIndex]);
 
-    return { posts, loading, totalPages, pageIndex, setPageIndex };
+    return { posts, loading, totalPages, pageIndex, setPageIndex, fetchPostsByUser };
 };
 
 export default usePostsByUser;

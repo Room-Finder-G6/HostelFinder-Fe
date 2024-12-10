@@ -1,0 +1,71 @@
+/* UserPostsBody.module.css */
+
+/* Bố cục bảng */
+.table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+}
+
+.table td {
+    vertical-align: middle;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+}
+
+/* Hỗ trợ hiển thị hình ảnh lớn hơn */
+.image {
+    width: 200px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+.placeholder {
+    width: 200px;
+    height: 100px;
+    background-color: #ccc;
+    border-radius: 8px;
+    margin-right: 15px;
+}
+
+/* Căn chỉnh tiêu đề */
+.title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+/* Căn chỉnh địa chỉ */
+.address {
+    color: #6c757d;
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+/* Căn chỉnh mô tả */
+.description {
+    color: #333;
+    font-size: 1rem;
+    margin: 5px 0;
+    line-height: 1.5;
+}
+
+/* Căn chỉnh trạng thái */
+.badge {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    border-radius: 5px;
+}
+
+.badge.success {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.badge.danger {
+    background-color: #dc3545;
+    color: #fff;
+}

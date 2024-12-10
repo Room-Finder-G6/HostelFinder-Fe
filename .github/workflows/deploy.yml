@@ -1,0 +1,69 @@
+name: Deploy Frontend to VPS using Docker (SSH Password)
+
+on:
+  push:
+    branches:
+      - main  # Trigger deployment on push to the main branch
+
+jobs:
+  deploy:
+    name: Deploy Frontend to VPS using Docker (SSH Password)
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment (Node 20)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        working-directory: homy
+        run: npm install
+
+      - name: Create .env file
+        run: |
+          echo "NEXT_PUBLIC_API_BASE_URL=${{ secrets.NEXT_PUBLIC_API_BASE_URL }}" > homy/.env
+          echo "NEXTAUTH_SECRET=${{ secrets.NEXTAUTH_SECRET }}" >> homy/.env
+          echo "GOOGLE_ID=${{ secrets.GOOGLE_ID }}" >> homy/.env
+          echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_MAPTILES_KEY=${{ secrets.NEXT_PUBLIC_GOONG_MAPTILES_KEY }}" >> homy/.env
+          echo "NEXT_PUBLIC_GOONG_API_KEY=${{ secrets.NEXT_PUBLIC_GOONG_API_KEY }}" >> homy/.env
+          
+      # Step 4: Build the application
+      - name: Build the application
+        working-directory: homy
+        run: npm run build
+
+      # Step 5: Build Docker image
+      - name: Build Docker image
+        id: build-image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest homy
+
+      # Step 7: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Step 8: Push Docker image to Docker Hub
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+
+      # Step 9: SSH into VPS and pull the image from Docker Hub
+      - name: Deploy Docker container on VPS
+        run: |
+          sshpass -p ${{ secrets.SSH_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.VPS_IP }} << 'EOF'
+            docker pull ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+            docker stop hostelfe || true
+            docker rm hostelfe || true
+            docker run -d --name hostelfe -p 4000:3000 ${{ secrets.DOCKER_USERNAME }}/hostelfe:latest
+          EOF

@@ -49,7 +49,6 @@ const AmenitiesList: React.FC<AmenitiesListProps> = ({ onAmenitySelect, selected
 
   return (
     <div>
-      <h5>Tiện nghi</h5>
       <div className="row">
         {amenities.map((amenity) => (
           <div key={amenity.id} className="col-md-3 mb-3">
@@ -59,12 +58,14 @@ const AmenitiesList: React.FC<AmenitiesListProps> = ({ onAmenitySelect, selected
                 className="me-2"
                 checked={selectedAmenities.includes(amenity.id)} // Sửa lỗi ở đây
                 onChange={() => handleAmenityChange(amenity.id)}
+                aria-label={`Select ${amenity.amenityName}`}
               />
               <div className="service-label d-flex align-items-center">
                 <img
                   style={{ maxWidth: '18px', maxHeight: '18px' }}
                   src={`/assets/images/amenity/${amenity.amenityName.toLowerCase()}.svg`}
                   alt={amenity.amenityName}
+                  onError={(e : any) => e.target.src = '/assets/images/amenity/default.svg'}
                   className="me-2"
                 />
                 <span>{amenity.amenityName}</span>

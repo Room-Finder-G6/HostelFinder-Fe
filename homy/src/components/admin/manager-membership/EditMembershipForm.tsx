@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import styles from "./EditMembershipForm.module.scss";
 
-
 interface Membership {
     id: string;
     name: string;
     description: string;
     price: number;
-    duration: string;
-    membershipsServices: {
+    duration: number;  // Duration should be a number
+    membershipServices: {
         id: string;
         serviceName: string;
         maxPushTopAllowed: number;
@@ -28,19 +27,21 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
         name: "",
         description: "",
         price: 0,
-        duration: "",
-        membershipsServices: [],
+        duration: 0,  // Initialize as number
+        membershipServices: [],
     });
 
+    // Set initial form data when membership data is passed in
     useEffect(() => {
         if (membership) {
             setFormData({
                 ...membership,
-                membershipsServices: membership.membershipsServices || [],
+                membershipServices: membership.membershipServices || [], // Handle services properly
             });
         }
     }, [membership]);
 
+    // Handle input change for simple fields (name, description, price, duration)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -49,43 +50,68 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
         }));
     };
 
+    // Handle changes in service fields
     const handleServiceChange = (index: number, field: string, value: string | number) => {
-        const updatedServices = [...formData.membershipsServices];
+        const updatedServices = [...formData.membershipServices];
         updatedServices[index] = { ...updatedServices[index], [field]: value };
         setFormData((prev) => ({
             ...prev,
-            membershipsServices: updatedServices,
+            membershipServices: updatedServices,
         }));
     };
 
+    // Add a new service entry
+    const handleAddService = () => {
+        setFormData((prev) => ({
+            ...prev,
+            membershipServices: [
+                ...prev.membershipServices,
+                {
+                    id: "", // Default empty id or generate new UUID
+                    serviceName: "",
+                    maxPushTopAllowed: 0,
+                    maxPostsAllowed: 0,
+                },
+            ],
+        }));
+    };
+
+    // Remove a service entry
+    const handleRemoveService = (index: number) => {
+        const updatedServices = formData.membershipServices.filter((_, i) => i !== index);
+        setFormData((prev) => ({
+            ...prev,
+            membershipServices: updatedServices,
+        }));
+    };
+
+    // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData.id, formData);
+        onSubmit(formData.id, formData); // Pass the updated form data to onSubmit
     };
 
     return (
         <form onSubmit={handleSubmit} className="edit-membership-form">
-           
             <div style={{ marginBottom: "15px" }}>
-    <label htmlFor="name" style={{ display: "block", fontWeight: "bold" }}>
-        Tên Thành Viên:
-    </label>
-    <input
-        id="name"
-        type="text"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        style={{
-            width: "100%",
-            padding: "10px",
-            fontSize: "1rem",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-        }}
-    />
-</div>
-
+                <label htmlFor="name" style={{ display: "block", fontWeight: "bold" }}>
+                    Tên Gói Thành Viên:
+                </label>
+                <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    style={{
+                        width: "100%",
+                        padding: "10px",
+                        fontSize: "1rem",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                    }}
+                />
+            </div>
 
             <div className="form-group">
                 <label htmlFor="description">Miêu tả:</label>
@@ -97,6 +123,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     className="form-control"
                 />
             </div>
+
             <div className="form-group">
                 <label htmlFor="price">Giá:</label>
                 <input
@@ -108,62 +135,89 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     className="form-control"
                 />
             </div>
+
             <div className="form-group">
                 <label htmlFor="duration">Khoảng Thời Gian:</label>
                 <input
                     id="duration"
-                    type="text"
+                    type="number"  // Changed to number type
                     name="duration"
                     value={formData.duration}
                     onChange={handleChange}
                     className="form-control"
                 />
             </div>
+
             <div className="form-group">
                 <label>Dịch Vụ:</label>
-                {formData.membershipsServices && formData.membershipsServices.length > 0 ? (
-                    formData.membershipsServices.map((service, index) => (
-                        <div key={service.id} className="service-group">
-                            <input
-                                type="text"
-                                value={service.serviceName}
-                                onChange={(e) =>
-                                    handleServiceChange(index, "serviceName", e.target.value)
-                                }
-                                className="form-control service-input"
-                                placeholder="Tên dịch vụ"
-                            />
-                            <input
-                                type="number"
-                                value={service.maxPushTopAllowed}
-                                onChange={(e) =>
-                                    handleServiceChange(index, "maxPushTopAllowed", Number(e.target.value))
-                                }
-                                className="form-control service-input"
-                                placeholder="Số lần đẩy top"
-                            />
-                            <input
-                                type="number"
-                                value={service.maxPostsAllowed}
-                                onChange={(e) =>
-                                    handleServiceChange(index, "maxPostsAllowed", Number(e.target.value))
-                                }
-                                className="form-control service-input"
-                                placeholder="Số bài viết tối đa"
-                            />
+                {formData.membershipServices && formData.membershipServices.length > 0 ? (
+                    formData.membershipServices.map((service, index) => (
+                        <div key={index} className="service-group">
+                            <div style={{ marginBottom: "10px" }}>
+                                <input
+                                    type="text"
+                                    value={service.serviceName}
+                                    onChange={(e) =>
+                                        handleServiceChange(index, "serviceName", e.target.value)
+                                    }
+                                    className="form-control service-input"
+                                    placeholder="Tên dịch vụ"
+                                />
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
+                                <input
+                                    type="number"
+                                    value={service.maxPushTopAllowed}
+                                    onChange={(e) =>
+                                        handleServiceChange(index, "maxPushTopAllowed", Number(e.target.value))
+                                    }
+                                    className="form-control service-input"
+                                    placeholder="Số lần đẩy top"
+                                />
+                            </div>
+                            <div style={{ marginBottom: "10px" }}>
+                                <input
+                                    type="number"
+                                    value={service.maxPostsAllowed}
+                                    onChange={(e) =>
+                                        handleServiceChange(index, "maxPostsAllowed", Number(e.target.value))
+                                    }
+                                    className="form-control service-input"
+                                    placeholder="Số bài viết tối đa"
+                                />
+                            </div>
+                            <button
+                                type="button"
+                                className="btn btn-danger"
+                                onClick={() => handleRemoveService(index)}
+                                style={{ marginBottom: "10px" }}
+                            >
+                                Xóa Dịch Vụ
+                            </button>
                         </div>
                     ))
                 ) : (
                     <p className="no-services">Không có dịch vụ</p>
                 )}
+
+                <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={handleAddService}
+                    style={{ marginBottom: "25px" }}
+                >
+                    Thêm Dịch Vụ
+                </button>
             </div>
+
             <div className="form-actions">
+            <button type="button" className="btn btn-secondary" onClick={onCancel}>
+                    Hủy
+                </button>
                 <button type="submit" className="btn btn-primary">
                     Lưu
                 </button>
-                <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                    Hủy
-                </button>
+             
             </div>
         </form>
     );

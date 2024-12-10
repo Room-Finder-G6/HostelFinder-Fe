@@ -1,4 +1,5 @@
 import Link from "next/link"
+import React from "react";
 
 interface UserAvatarSettingProps {
     username: string;
@@ -26,7 +27,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
         <div className="row">
             <div className="col-sm-6">
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="fullName">Tên*</label>
+                    <label htmlFor="fullName">Tên<span style={{color: 'red'}}>*</span></label>
                     <input
                         type="text"
                         name="fullName"
@@ -43,7 +44,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
 
             <div className="col-sm-6">
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="username">Tên đăng nhập*</label>
+                    <label htmlFor="username">Tên đăng nhập<span style={{color: 'red'}}>*</span></label>
                     <input
                         type="text"
                         name="username"
@@ -51,6 +52,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
                         onChange={onChange}
                         placeholder="Nhập tên đăng nhập"
                         required
+                        disabled={true}
                     />
                     {errors.username && (
                         <div className="error-message text-danger mt-1">{errors.username}</div>
@@ -60,7 +62,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
 
             <div className="col-sm-6">
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="email">Email*</label>
+                    <label htmlFor="email">Email<span style={{color: 'red'}}>*</span></label>
                     <input
                         type="email"
                         name="email"
@@ -77,7 +79,7 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
 
             <div className="col-sm-6">
                 <div className="dash-input-wrapper mb-30">
-                    <label htmlFor="phone">Số điện thoại*</label>
+                    <label htmlFor="phone">Số điện thoại<span style={{color: 'red'}}>*</span></label>
                     <input
                         type="tel"
                         name="phone"
@@ -90,12 +92,8 @@ const UserAvatarSetting: React.FC<UserAvatarSettingProps> = ({
                         <div className="error-message text-danger mt-1">{errors.phone}</div>
                     )}
                 </div>
-                <div className="info-text d-sm-flex align-items-center justify-content-between mt-5">
-                    <p className="m0">Đổi mật khẩu?
-                        <Link href="/dashboard/account-settings/password-change">Click here</Link>
-                    </p>
-                </div>
             </div>
+
         </div>
     );
 };

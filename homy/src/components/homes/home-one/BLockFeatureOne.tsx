@@ -9,13 +9,10 @@ const BLockFeatureOne = () => {
          <div className="container">
             <div className="title-one text-center mb-50 xl-mb-30 lg-mb-20 wow fadeInUp">
                <h3 style={{ fontFamily: 'Arial, sans-serif', fontSize: '50px', color: '#333' }}>
-                  CÁC DỊCH VỤ&nbsp;  
-                  <span style={{ fontFamily: 'Arial, sans-serif', fontWeight: 'bold', color: '#ff5733' }}>
-                      CHÍNH<Image src={titleShape} alt="" className="lazy-img" />
-                  </span>
+                  CÁC DỊCH VỤ CHÍNH CỦA CHÚNG TÔI
                </h3>
 
-               <p className="fs-24" style={{ fontFamily: 'Arial, sans-serif'}}>Hãy tin tưởng vào dịch vụ của chúng tôi.</p>
+               {/*<p className="fs-24" style={{ fontFamily: 'Arial, sans-serif'}}>Hãy tin tưởng vào dịch vụ của chúng tôi.</p>*/}
             </div>
 
             <div className="row gx-xl-5">

@@ -1,0 +1,33 @@
+.search-form form {
+    max-width: 400px; /* Giới hạn chiều rộng của form */
+  }
+  
+  .search-form .search-input {
+    border-radius: 25px; /* Bo tròn góc cho input */
+    padding: 0.5rem 1rem; /* Điều chỉnh padding cho input */
+    font-size: 14px; /* Giảm kích thước font của input */
+    width: 70%; /* Thu nhỏ độ rộng của input */
+  }
+  
+  .search-form .btn {
+    padding: 0.5rem 1rem; /* Cải thiện kích thước nút */
+    border-radius: 25px; /* Bo tròn góc của button */
+    display: flex; /* Đảm bảo hình ảnh trong button được căn giữa */
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .search-form .lazy-img {
+    width: 18px; 
+    height: 18px;
+  }
+  .custom-button {
+    background-color: #52ca6e; /* Màu xanh */
+    border-color: #5de67d;
+  }
+  
+  .custom-button:hover {
+    background-color: #218838; /* Màu xanh đậm khi hover */
+    border-color: #1e7e34;
+  }
+  

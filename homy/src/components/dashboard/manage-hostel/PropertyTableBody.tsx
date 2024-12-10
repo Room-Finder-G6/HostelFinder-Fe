@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
@@ -25,6 +23,7 @@ interface DataType {
     numberOfRooms: number;
     imageUrl: string | null;
     createdOn: string;
+    size: number | 0;
 }
 
 interface JwtPayload {
@@ -39,30 +38,32 @@ const PropertyTableBody = () => {
     const [deleteId, setDeleteId] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
 
-    const getUserIdFromToken = useCallback(() => {
-        const token = window.localStorage.getItem("token");
-        if (token) {
-            try {
-                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
-                return decodedToken.UserId;
-            } catch (error) {
-                console.error("Error decoding token:", error);
-                setError("Error decoding user token");
-                return null;
+    // Function to get UserId from token in localStorage
+        const getUserIdFromToken = useCallback(() => {
+            const token = window.localStorage.getItem("token");
+            if (token) {
+                try {
+                    const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+                    return decodedToken.UserId;
+                } catch (error) {
+                    console.error("Error decoding token:", error);
+                    setError("Error decoding user token");
+                    return null;
+                }
             }
-        }
-        setError("No token found");
-        return null;
-    }, []);
+            setError("No token found");
+            return null;
+        }, []);
 
+    // Fetching landlordId from the token when component mounts
     useEffect(() => {
         const userId = getUserIdFromToken();
         if (userId) {
             setLandlordId(userId);
         }
-        console.log(userId)
     }, [getUserIdFromToken]);
 
+    // Fetching hostel data for the current landlord
     const fetchHostels = useCallback(async () => {
         if (!landlordId) {
             return;
@@ -89,12 +90,14 @@ const PropertyTableBody = () => {
         }
     }, [landlordId]);
 
+    // Fetching data when landlordId is set
     useEffect(() => {
         if (landlordId) {
             fetchHostels();
         }
     }, [landlordId, fetchHostels]);
 
+    // Handle delete hostel
     const handleDelete = async (id: string) => {
         setIsLoading(true);
         setError(null);
@@ -117,21 +120,21 @@ const PropertyTableBody = () => {
         }
     };
 
-
+    // Open delete modal
     const openDeleteModal = (id: string) => {
         setDeleteId(id);
         setShowModal(true);
     };
 
+    // Close delete modal
     const closeDeleteModal = () => {
         setShowModal(false);
         setDeleteId(null);
     };
 
+    // Loading, error or no data handling
     if (isLoading) {
-        return <tbody>
-            <Loading />
-        </tbody>;
+        return <tbody><Loading /></tbody>;
     }
 
     if (error) {
@@ -145,7 +148,7 @@ const PropertyTableBody = () => {
     if (hostels.length === 0) {
         return <tbody>
             <tr>
-                <td colSpan={4}>No hostels found</td>
+                <td colSpan={4}>Hiện chưa có nhà trọ nào.</td>
             </tr>
         </tbody>;
     }
@@ -186,6 +189,7 @@ const PropertyTableBody = () => {
                             </div>
                         </td>
                         <td>{new Date(item.createdOn).toLocaleDateString()}</td>
+                        <td>{item.size}</td>
                         <td>
                             <div className="action-dots float-end">
                                 <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"

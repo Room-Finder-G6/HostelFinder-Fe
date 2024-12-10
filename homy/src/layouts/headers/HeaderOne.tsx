@@ -5,7 +5,6 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import UseSticky from "@/hooks/UseSticky"
 import LoginModal from "@/modals/LoginModal"
-import logo_6 from "@/assets/images/logo/logo_06.svg";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Guess from "@/layouts/headers/right-header/Guess";
 import Authored from "./right-header/Authored"
@@ -20,10 +19,10 @@ const HeaderOne = ({ style }: any) => {
     return (
         <>
             <header className={`theme-main-menu menu-overlay menu-style-one sticky-menu ${sticky ? "fixed" : ""}`}>
-                {!style && <div className="alert-wrapper text-center">
+                {/*{!style && <div className="alert-wrapper text-center">
                     <p className="fs-16 m0 text-white">The <Link href="/listing_01" className="fw-500">flash
                         sale</Link> go on. The offer will end in — <span>This Sunday</span></p>
-                </div>}
+                </div>}*/}
                 <div className="inner-content gap-one">
                     <div className="top-header position-relative">
                         <div className="d-flex align-items-center justify-content-between">
@@ -51,7 +50,7 @@ const HeaderOne = ({ style }: any) => {
                                     aria-label="Toggle navigation">
                                     <span></span>
                                 </button>
-                                <div className="collapse navbar-collapse" id="navbarNav">
+                                <div id="navbarNav">
                                     <NavMenu />
                                 </div>
                             </nav>

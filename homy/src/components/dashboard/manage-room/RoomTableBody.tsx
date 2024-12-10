@@ -1,25 +1,56 @@
-// components/RoomTableBody.tsx
-import React, { useEffect, useState, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import { TfiWrite } from 'react-icons/tfi';
+import { toast } from "react-toastify";
 import apiInstance from '@/utils/apiInstance';
-import { Room } from './Room';
-import Loading from "@/components/Loading";
-import { FaEdit, FaTrash, FaFileContract, FaFileInvoice, FaEllipsisV } from 'react-icons/fa';
-import { Menu, Transition } from '@headlessui/react';
-import CreateContractModal from './CreateContractModal'; // Import modal
-import './rentralContract.css';
+import Loading from '@/components/Loading';
+import CreateContractModal from './popup-modal/CreateContractModal';
+import RoomDetailsModal from './popup-modal/RoomDetailsModal';
+import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
+import MeterReadingForm from './popup-modal/MeterReadingModal';
+import EditRoomModal from './popup-modal/EditRoomModal';
+interface Room {
+    id: string;
+    roomName: string;
+    floor?: string;
+    size: number;
+    maxRenters: number;
+    monthlyRentCost: number;
+    isAvailable: boolean;
+    createdOn: string;
+    imageRoom: string;
+}
+
 interface RoomTableBodyProps {
     selectedHostel: string;
     selectedFloor: string | null;
     refresh: number;
+    setRefreshRooms: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh }) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh, setRefreshRooms }) => {
+    // State hooks
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [selectedRoomId, setSelectedRoomId] = useState<string>('');
+    const [isRoomDetailsModalOpen, setIsRoomDetailsModalOpen] = useState<boolean>(false);
+    const [roomDetailsId, setRoomDetailsId] = useState<string>('');
+    const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState<boolean>(false);
+    const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
+    const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
+    const [isEditRoomModalOpen, setIsEditRoomModalOpen] = useState<boolean>(false);
 
+    const formatDate = (dateString: any) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+    // Fetch rooms when selectedHostel, selectedFloor, or refresh changes
     useEffect(() => {
         if (!selectedHostel) return;
 
@@ -27,17 +58,22 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
             setLoading(true);
             try {
                 let url = `/rooms/hostels/${selectedHostel}`;
+                console.log(selectedHostel)
+                if (selectedHostel === "") {
+                    setRooms([]);
+                }
                 if (selectedFloor) {
                     url += `?floor=${selectedFloor}`;
                 }
                 const response = await apiInstance.get(url);
                 if (response.data.succeeded) {
-                    setRooms(response.data.data);
+                    setRooms(response.data.data || []);
                 } else {
                     setError('Không thể tải danh sách phòng');
                 }
             } catch (err: any) {
                 setError(err.message || 'Có lỗi xảy ra khi tải danh sách phòng');
+                setRooms([]);
             } finally {
                 setLoading(false);
             }
@@ -46,45 +82,98 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         fetchRooms();
     }, [selectedHostel, selectedFloor, refresh]);
 
-    useEffect(() => {
-        console.log("isModalOpen state:", isModalOpen);
-    }, [isModalOpen]);
-
+    // Handler functions
     const handleEdit = (roomId: string) => {
-        // Logic to edit the room
-    };
-
-    const handleDelete = (roomId: string) => {
-        // Logic to delete the room
-    };
-
-    const handleCreateContract = (roomId: string) => {
-        console.log("Opening modal for room:", roomId);
         setSelectedRoomId(roomId);
-        setIsModalOpen(true);
+        setIsEditRoomModalOpen(true);
+    };
+
+    const handleDelete = async (roomId: string) => {
+        try {
+            const checkResponse = await apiInstance.get(`/rooms/check-delete-room?roomId=${roomId}`);
+            console.log(checkResponse.data)
+            console.log(checkResponse.data)
+            if (checkResponse.data.succeeded && checkResponse.status === 200 && checkResponse.data.data === false) {
+                toast.error(checkResponse.data.message);
+                return;
+            }
+            const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
+            if (confirmDelete) {
+                const deleteResponse = await apiInstance.delete(`/rooms/${roomId}`);
+                if (deleteResponse.data.succeeded) {
+                    alert("Phòng đã được xóa thành công.");
+                    setRefreshRooms(prev => prev + 1);
+                } else {
+                    alert("Có lỗi xảy ra khi xóa phòng.");
+                }
+            }
+        } catch {
+            alert();
+        }
+    };
+
+    const handleCreateContract = async (roomId: string) => {
+        try {
+            setLoading(true);
+            const response = await apiInstance.get(`/rental-contracts/check-contract?roomId=${roomId}`);
+            console.log(response.data);
+            if (response.data) {
+                if (response.data) {
+                    toast.error("Phòng này đã có hợp đồng. Không thể tạo thêm hợp đồng mới.");
+                }
+            }
+            else {
+                setSelectedRoomId(roomId);
+                setIsModalOpen(true);
+            }
+        }
+        catch (error: any) {
+            // Xử lý lỗi khi gọi API
+            console.error("Error checking contract existence:", error);
+            toast.error("Có lỗi xảy ra khi kiểm tra hợp đồng của phòng này.");
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     const handleCreateInvoice = (roomId: string) => {
-        // Logic to create an invoice for the room
+        setInvoiceRoomId(roomId);
+        setIsInvoiceModalOpen(true);
     };
 
+    const handleViewRoomDetails = (roomId: string) => {
+        setRoomDetailsId(roomId);
+        setIsRoomDetailsModalOpen(true);
+    };
+
+    const handleMeterReading = (roomId: string) => {
+        setSelectedRoomId(roomId);
+        setIsMeterReadingModalOpen(true);
+    }
+
+    // Modal close handlers
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedRoomId('');
     };
 
     const handleSuccessCreateContract = () => {
-        // Tăng giá trị refresh để kích hoạt useEffect và làm mới danh sách phòng
-        // Nếu `refresh` được quản lý từ component cha, hãy gọi hàm tăng `refresh`
-        // Ở đây, giả sử bạn có một hàm prop để làm điều đó
-        // Nếu không, bạn có thể quản lý `refresh` trong state tại đây hoặc gọi lại fetchRooms()
-        // Ví dụ:
-        // setRefresh(prev => prev + 1);
         setIsModalOpen(false);
+        setRefreshRooms(prev => prev + 1);
         setSelectedRoomId('');
-        // Để làm mới danh sách phòng ngay lập tức, bạn có thể gọi lại fetchRooms() nếu cần
     };
 
+    const handleCloseRoomDetailsModal = () => {
+        setIsRoomDetailsModalOpen(false);
+        setRoomDetailsId('');
+    };
+    const handleCloseMeterReadingModal = () => {
+        setIsMeterReadingModalOpen(false);
+        setSelectedRoomId('');
+    };
+
+    // Render loading, error, or rooms
     if (loading) {
         return (
             <tbody>
@@ -97,143 +186,126 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         );
     }
 
-    if (error) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={5}>Lỗi: {error}</td>
-                </tr>
-            </tbody>
-        );
-    }
 
     if (rooms.length === 0) {
         return (
             <tbody>
                 <tr>
-                    <td colSpan={5}>Không có phòng nào trong nhà trọ này.</td>
+                    <td
+                        colSpan={5}
+                        className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
+                    >
+                        Hiện tại chưa có phòng trọ nào
+                    </td>
                 </tr>
             </tbody>
         );
     }
-
     return (
         <>
             <tbody>
                 {rooms.map((room) => (
-                    <tr key={room.id} className="border-b">
-                        <td className="py-4 px-6">
-                            <div className="flex items-center">
+                    <tr key={room.id} className="border-bottom">
+                        <td className="py-3 px-4">
+                            <div className="d-flex align-items-center">
                                 <img
                                     src={room.imageRoom}
                                     alt={room.roomName}
-                                    className="rounded w-20 h-20 object-cover mr-4"
+                                    className="rounded me-3"
+                                    style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                                 />
                                 <div>
-                                    <h6 className="font-semibold text-lg">{room.roomName}</h6>
-                                    <p className="text-sm text-gray-600">Tầng: {room.floor ?? 'N/A'}</p>
-                                    <p className="text-sm text-gray-600">Diện tích: {room.size} m²</p>
-                                    <p className="text-sm text-gray-600">Số người tối đa: {room.maxRenters}</p>
+                                    <h6 className="fw-semibold fs-5">{room.roomName}</h6>
+                                    <p className="text-muted small">Tầng: {room.floor ?? 'N/A'}</p>
+                                    <p className="text-muted small">Diện tích: {room.size} m²</p>
+                                    <p className="text-muted small">Số người tối đa: {room.maxRenters}</p>
                                 </div>
                             </div>
                         </td>
-                        <td className="py-4 px-6">{new Date(room.createdOn).toLocaleDateString()}</td>
-                        <td className="py-4 px-6">{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
-                        <td className="py-4 px-6">
+                        <td className="py-3 px-4">{formatDate(room.createdOn)}</td>
+                        <td className="py-3 px-4">{new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ</td>
+                        <td className="py-3 px-4">
                             {room.isAvailable ? (
-                                <span className="inline-block px-3 py-1 text-sm font-semibold text-green-700 bg-green-100 rounded-full">
+                                <span className="property-status Active">
                                     Còn trống
                                 </span>
                             ) : (
-                                <span className="inline-block px-3 py-1 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full">
+                                <span className="property-status pending">
                                     Đã thuê
                                 </span>
                             )}
                         </td>
-                        <td className="py-4 px-6 text-right">
-                            {/* Dropdown Menu */}
-                            <Menu as="div" className="relative inline-block text-left">
-                                <div>
-                                    <Menu.Button className="inline-flex justify-center w-full text-gray-700">
-                                        <FaEllipsisV />
-                                    </Menu.Button>
-                                </div>
-                                <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-100"
-                                    enterFrom="transform opacity-0 scale-95"
-                                    enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-75"
-                                    leaveFrom="transform opacity-100 scale-100"
-                                    leaveTo="transform opacity-0 scale-95"
-                                >
-                                    <Menu.Items className="absolute right-0 mt-2 w-56 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none z-50">
-                                        <div className="py-1">
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => handleEdit(room.id)}
-                                                        className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                                                            } group flex items-center px-4 py-2 text-sm w-full`}
-                                                    >
-                                                        <FaEdit className="mr-3" />
-                                                        Chỉnh sửa
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => handleDelete(room.id)}
-                                                        className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                                                            } group flex items-center px-4 py-2 text-sm w-full`}
-                                                    >
-                                                        <FaTrash className="mr-3" />
-                                                        Xóa
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                        </div>
-                                        <div className="py-1">
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => handleCreateContract(room.id)}
-                                                        className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                                                            } group flex items-center px-4 py-2 text-sm w-full`}
-                                                    >
-                                                        <FaFileContract className="mr-3" />
-                                                        Tạo hợp đồng
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <button
-                                                        onClick={() => handleCreateInvoice(room.id)}
-                                                        className={`${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
-                                                            } group flex items-center px-4 py-2 text-sm w-full`}
-                                                    >
-                                                        <FaFileInvoice className="mr-3" />
-                                                        Tạo hóa đơn
-                                                    </button>
-                                                )}
-                                            </Menu.Item>
-                                        </div>
-                                    </Menu.Items>
-                                </Transition>
-                            </Menu>
+                        <td className="py-3 px-4 text-end">
+                            <Dropdown>
+                                <Dropdown.Toggle id={`dropdown-${room.id}`} className="btn-sm btn-light">
+                                    <FaEllipsisV />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
+                                        <FaInfoCircle className="me-2" />
+                                        Thông tin phòng
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleEdit(room.id)}>
+                                        <FaEdit className="me-2" />
+                                        Chỉnh sửa
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleDelete(room.id)}>
+                                        <FaTrash className="me-2" />
+                                        Xóa
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
+                                        <FaFileContract className="me-2" />
+                                        Tạo hợp đồng
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                        <FaFileInvoice className="me-2" />
+                                        Tạo hóa đơn
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
+                                        <TfiWrite className="me-2" />
+                                        Ghi số dịch vụ
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
                         </td>
                     </tr>
                 ))}
             </tbody>
-            {/* Modal Tạo Hợp Đồng */}
             <CreateContractModal
                 isOpen={isModalOpen}
                 onClose={handleCloseModal}
                 roomId={selectedRoomId}
                 hostelId={selectedHostel}
                 onSuccess={handleSuccessCreateContract}
+            />
+            <RoomDetailsModal
+                isOpen={isRoomDetailsModalOpen}
+                onClose={handleCloseRoomDetailsModal}
+                roomId={roomDetailsId}
+            />
+            <CreateInvoiceModal
+                isOpen={isInvoiceModalOpen}
+                hostelId={selectedHostel}
+                onClose={() => {
+                    setIsInvoiceModalOpen(false);
+                    setInvoiceRoomId('');
+                }}
+                roomId={invoiceRoomId}
+            />
+            <MeterReadingForm
+                hostelId={selectedHostel}
+                roomId={selectedRoomId}
+                isOpen={isMeterReadingModalOpen}
+                onClose={handleCloseMeterReadingModal}
+            />
+            <EditRoomModal
+                roomId={selectedRoomId}
+                isOpen={isEditRoomModalOpen}
+                onClose={() => setIsEditRoomModalOpen(false)}
+                onSuccess={(updatedRoom) => {
+                    setRefreshRooms(prev => prev + 1);
+                }}
             />
         </>
     );

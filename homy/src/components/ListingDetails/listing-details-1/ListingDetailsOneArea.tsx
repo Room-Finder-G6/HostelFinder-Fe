@@ -45,7 +45,7 @@ const ListingDetailsOneArea = () => {
                 const postResponse = await apiInstance.get(`posts/${postId}`);
                 const fetchedPost = postResponse.data.data;
                 setPost(fetchedPost);
-console.log(fetchedPost.hostelId)
+
                 let fetchedRoom
                 const roomResponse = await apiInstance.get(`rooms/${fetchedPost.roomId}`);
                 fetchedRoom = roomResponse.data.data;
@@ -106,7 +106,15 @@ console.log(fetchedPost.hostelId)
                     <div className="col-xl-8">
                         <div className="property-overview mb-50 bg-white shadow4 border-20 p-40">
                             <h4 className="mb-20">Thông tin mô tả</h4>
-                            <p className="fs-20 lh-lg">{post?.description}.</p>
+                            <p className="fs-20 lh-lg">
+                                {post?.description.split('\n').map((line, index) => (
+                                    <React.Fragment key={index}>
+                                        {line}
+                                        <br/>
+                                    </React.Fragment>
+                                ))}
+                            </p>
+
                         </div>
                         <div className="property-feature-accordion bg-white shadow4 border-20 p-40 mb-50">
                             <h4 className="mb-20">Dịch vụ chung</h4>

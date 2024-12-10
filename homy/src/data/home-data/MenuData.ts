@@ -1,7 +1,7 @@
 interface MenuItem {
     id: number;
     title: string;
-    class_name?:string;
+    class_name?: string;
     link: string;
     has_dropdown: boolean;
     sub_menus?: {
@@ -15,97 +15,80 @@ interface MenuItem {
             link: string;
             title: string;
         }[];
-    }[]
-}[];
+    }[];
+}
 
 const menu_data: MenuItem[] = [
-
-    // {
-    //     id: 1,
-    //     has_dropdown: true,
-    //     title: "Home",
-    //     link: "#",
-    //     sub_menus: [
-    //         { link: "/", title: "Home" },
-           
-    //     ],
-    // },
     {
         id: 2,
         has_dropdown: true,
         title: "Danh sách",
-        class_name:"mega-dropdown-sm",
+        class_name: "mega-dropdown-sm",
         link: "#",
         menu_column: [
             {
                 id: 1,
-                mega_title: "Listing Type",
+                mega_title: "Loại danh sách",
                 mega_menus: [
-                    { link: "/listing_04", title: "Bài đăng phòng" },
+                    { link: "/all-posts", title: "Tất cả bài đăng" },
                     { link: "/listing_02", title: "Grid Top Filter" },
                     
                 ]
             },
             {
                 id: 2,
-                mega_title: "Listing Type",
+                mega_title: "Loại danh sách",
                 mega_menus: [
-                   
-                    { link: "/listing_3", title: "List Banner Filter" },
-                    { link: "/listing_4", title: "Grid Fullwidth" },
-                    
-                    
-                ]
+                    { link: "/listing_3", title: "Danh sách có Banner" },
+                    { link: "/listing_4", title: "Lưới toàn màn hình" },
+                ],
             },
             {
                 id: 3,
-                mega_title: "Single Listing",
+                mega_title: "Danh sách chi tiết",
                 mega_menus: [
-                    { link: "/listing_details", title: "Listing Details" },
-                    
-                ]
+                    { link: "/listing_details", title: "Chi tiết danh sách" },
+                ],
             },
-        ]
+        ],
     },
     {
         id: 3,
         has_dropdown: true,
         title: "Các dịch vụ",
-        class_name:"mega-dropdown-sm",
+        class_name: "mega-dropdown-sm",
         link: "#",
         menu_column: [
             {
                 id: 1,
-                mega_title: "Essential",
+                mega_title: "Dịch vụ thiết yếu",
                 mega_menus: [
-                    { link: "/about_us_01", title: "About us -1" },
-                    { link: "/agency", title: "Agency" },
-                    { link: "/agency_details", title: "Agency Details" },
-                    
-                ]
+                    { link: "/about_us_01", title: "Giới thiệu - 1" },
+                    { link: "/agency", title: "Đại lý" },
+                    { link: "/agency_details", title: "Chi tiết đại lý" },
+                ],
             },
             {
                 id: 2,
-                mega_title: "Features",
+                mega_title: "Tính năng",
                 mega_menus: [
-                    { link: "/project_01", title: "Project" },
-                    { link: "/project_details_01", title: "Project Details" },
-                    { link: "/service_01", title: "Service" },
-                    { link: "/service_details", title: "Service Details" },
-                ]
+                    { link: "/project_01", title: "Dự án" },
+                    { link: "/project_details_01", title: "Chi tiết dự án" },
+                    { link: "/service_01", title: "Dịch vụ" },
+                    { link: "/service_details", title: "Chi tiết dịch vụ" },
+                ],
             },
             {
                 id: 3,
-                mega_title: "Others",
+                mega_title: "Khác",
                 mega_menus: [
-                    { link: "/compare", title: "Property Compare" },
-                    { link: "/pricing_01", title: "Pricing" },
-                    { link: "/contact", title: "Contact Us" },
-                    { link: "/faq", title: "FAQ's" },
-                 
-                ]
+                    { link: "/compare", title: "So sánh tài sản" },
+                    { link: "/pricing_01", title: "Bảng giá" },
+                    { link: "/contact", title: "Liên hệ" },
+                    { link: "/faq", title: "Câu hỏi thường gặp" },
+                ],
             },
-        ]
+        ],
     },
     {
         id: 4,
@@ -113,11 +96,12 @@ const menu_data: MenuItem[] = [
         title: "Blog",
         link: "#",
         sub_menus: [
-            { link: "/blog_01", title: "Blog Grid" },
-            { link: "/blog_02", title: "Blog List" },
-            { link: "/blog_03", title: "Blog 2 column" },
-            { link: "/blog_details", title: "Blog Details" },
+            { link: "/blog_01", title: "Lưới blog" },
+            { link: "/blog_02", title: "Danh sách blog" },
+            { link: "/blog_03", title: "Blog 2 cột" },
+            { link: "/blog_details", title: "Chi tiết blog" },
         ],
     },
 ];
+
 export default menu_data;

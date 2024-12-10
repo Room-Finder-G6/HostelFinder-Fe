@@ -1,12 +1,14 @@
 "use client";
-import React, {useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
-import {jwtDecode} from "jwt-decode";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import GoongMap from "@/components/map/GoongMap";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import ServicesList from "../../manage-service/ServiceList";
+import Loading from "@/components/Loading";
+
 interface CustomJwtPayload {
     landlordId: string;
     UserId: string;
@@ -32,8 +34,8 @@ interface FormData {
     size: number | string;
     numberOfRooms: number | string;
     coordinates: string;
-    serviceId: string[];
-    images: string[];
+    serviceId?: string[];
+    image: string;
 }
 
 const AddHostelForm: React.FC = () => {
@@ -44,6 +46,7 @@ const AddHostelForm: React.FC = () => {
     const router = useRouter();
     const [selectedServices, setSelectedServices] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<SelectedFile[]>([]);
+    const [loading, setLoading] = useState<boolean>(false)
 
     const handleCoordinatesChange = (newCoordinates: string) => {
         const [lng, lat] = newCoordinates.split(',').map(Number) as [number, number];
@@ -72,7 +75,7 @@ const AddHostelForm: React.FC = () => {
         numberOfRooms: 0,
         coordinates: "",
         serviceId: [],
-        images: [],
+        image: "",
     });
 
     const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
@@ -160,7 +163,7 @@ const AddHostelForm: React.FC = () => {
         setSelectedProvince(provinceCode);
         setFormData({
             ...formData,
-            address: {...formData.address, province: province?.text ?? ""},
+            address: { ...formData.address, province: province?.text ?? "" },
         });
         setSelectedDistrict(null);
         setCommunes([]);
@@ -172,7 +175,7 @@ const AddHostelForm: React.FC = () => {
         setSelectedDistrict(districtCode);
         setFormData({
             ...formData,
-            address: {...formData.address, district: district?.text ?? ""},
+            address: { ...formData.address, district: district?.text ?? "" },
         });
     };
 
@@ -181,21 +184,21 @@ const AddHostelForm: React.FC = () => {
         const commune = communes.find((c) => c.value === communeCode);
         setFormData({
             ...formData,
-            address: {...formData.address, commune: commune?.text ?? ""},
+            address: { ...formData.address, commune: commune?.text ?? "" },
         });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         if (name === "size" || name === "numberOfRooms") {
-            setFormData({...formData, [name]: parseInt(value)});
+            setFormData({ ...formData, [name]: parseInt(value) });
         } else if (name === "detailAddress") {
             setFormData({
                 ...formData,
-                address: {...formData.address, detailAddress: value},
+                address: { ...formData.address, detailAddress: value },
             });
         } else {
-            setFormData({...formData, [name]: value});
+            setFormData({ ...formData, [name]: value });
         }
     };
 
@@ -208,34 +211,23 @@ const AddHostelForm: React.FC = () => {
         router.push('/dashboard/manage-hostels');
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const filesArray = Array.from(e.target.files);
-
-            const filesWithPreviews = filesArray.map((file) => ({
-                file,
-                previewUrl: URL.createObjectURL(file),
-            }));
-
-            setSelectedFiles((prevFiles) => {
-                const existingFileNames = prevFiles.map((item) => item.file.name);
-                const newFiles = filesWithPreviews.filter(
-                    (item) => !existingFileNames.includes(item.file.name)
-                );
-                return [...prevFiles, ...newFiles];
-            });
+    const handleFileChange = (e:any) => {
+        const file = e.target.files[0]; // Lấy file đầu tiên từ danh sách
+        if (file) {
+            const previewUrl = URL.createObjectURL(file); // Tạo URL tạm thời cho file hình ảnh
+            setSelectedFiles([{ file, previewUrl }]); // Cập nhật state để lưu trữ file duy nhất
         }
     };
 
-    const handleRemoveFile = (index: number) => {
-        setSelectedFiles((prevFiles) => {
-            const newFiles = [...prevFiles];
-            const [removed] = newFiles.splice(index, 1);
-            // Revoke the data URL to avoid memory leaks
-            URL.revokeObjectURL(removed.previewUrl);
-            return newFiles;
-        });
+
+    const handleRemoveFile = () => {
+        // Nếu chỉ có một hình ảnh, xóa nó và giải phóng URL tạm
+        if (selectedFiles.length > 0) {
+            URL.revokeObjectURL(selectedFiles[0].previewUrl); // Giải phóng URL để tránh rò rỉ bộ nhớ
+            setSelectedFiles([]); // Xóa tất cả các file (chỉ có một file duy nhất)
+        }
     };
+
 
     useEffect(() => {
         return () => {
@@ -255,6 +247,8 @@ const AddHostelForm: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        setLoading(true)
 
         if (
             !formData.address.province ||
@@ -289,7 +283,7 @@ const AddHostelForm: React.FC = () => {
 
         // Append selected image files
         selectedFiles.forEach((item) => {
-            submissionData.append("images", item.file);
+            submissionData.append("image", item.file);
         });
 
         try {
@@ -299,28 +293,31 @@ const AddHostelForm: React.FC = () => {
                 },
             });
             if (response.status === 200 || response.data.succeeded) {
-                const {message} = response.data;
-                toast.success(message, {position: "top-center"});
-                // Optionally, redirect or reset the form here
+                const { message } = response.data;
+                toast.success(message, { position: "top-center" });
+                router.push("/dashboard/manage-hostels");
             }
         } catch (error: any) {
             if (error.response && error.response.status === 400) {
-                toast.error(error.response.data.message, {position: "top-center"});
+                toast.error(error.response.data.message, { position: "top-center" });
             } else {
-                toast.error("Something went wrong", {position: "top-center"});
+                toast.error("Something went wrong", { position: "top-center" });
             }
+        }finally {
+            setLoading(false)
         }
     };
 
 
     return (
         <form onSubmit={handleSubmit}>
+            {loading && <Loading/>}
             <div className="bg-white card-box border-20">
                 <div className="dash-input-wrapper mb-30">
                     <label htmlFor="">Tên nhà trọ*</label>
                     <input
                         type="text"
-                        placeholder="Nhập tên phòng trọ"
+                        placeholder="Nhập tên nhà trọ"
                         name="hostelName"
                         value={formData.hostelName}
                         onChange={handleInputChange}
@@ -332,7 +329,7 @@ const AddHostelForm: React.FC = () => {
                     <label htmlFor="">Chi tiết*</label>
                     <textarea
                         className="size-lg"
-                        placeholder="Hãy viết miêu tả chi tiết về phòng trọ..."
+                        placeholder="Hãy viết miêu tả chi tiết về nhà trọ..."
                         name="description"
                         value={formData.description.toString()}
                         onChange={handleInputChange}
@@ -432,25 +429,24 @@ const AddHostelForm: React.FC = () => {
                     </div>
 
                     <div className="bg-white border-20 col-md-12 mb-10">
-                        <ServicesList onServiceSelect={handleServiceSelect}/>
+                        <ServicesList onServiceSelect={handleServiceSelect} />
                     </div>
 
                     {/* Photo Attachment Section */}
                     <div className="bg-white border-20 col-md-12 mb-10">
-                        <h4 className="dash-title-three">Photo Attachment</h4>
+                        <h4 className="dash-title-three">Thêm ảnh của nhà trọ</h4>
                         <div className="dash-input-wrapper mb-20">
                             <label htmlFor="">File Attachment*</label>
 
                             <div className="d-flex align-items-center mb-15">
-                                {selectedFiles.map((item, index) => (
+                                {selectedFiles.length > 0 && (
                                     <div
-                                        key={index}
                                         className="image-preview-wrapper position-relative me-3 mb-1"
-                                        style={{width: '15%'}} // Set fixed dimensions
+                                        style={{ width: '15%' }} // Set fixed dimensions
                                     >
                                         <img
-                                            src={item.previewUrl}
-                                            alt={item.file.name}
+                                            src={selectedFiles[0].previewUrl}
+                                            alt={selectedFiles[0].file.name}
                                             className="image-preview"
                                             style={{
                                                 width: '100%',
@@ -461,12 +457,12 @@ const AddHostelForm: React.FC = () => {
                                         <button
                                             type="button"
                                             className="remove-btn position-absolute top-0 end-0"
-                                            onClick={() => handleRemoveFile(index)}
+                                            onClick={handleRemoveFile}
                                         >
                                             <i className="bi bi-x"></i>
                                         </button>
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
 
@@ -478,13 +474,14 @@ const AddHostelForm: React.FC = () => {
                                 id="uploadCV"
                                 name="uploadCV"
                                 placeholder=""
-                                multiple
                                 onChange={handleFileChange}
                                 accept="image/*"
+                                required
                             />
                         </div>
                         <small>Upload file .jpg, .png</small>
                     </div>
+
 
                     <div className="map-frame ">
                         <div className="dash-input-wrapper mb-30">
@@ -498,7 +495,7 @@ const AddHostelForm: React.FC = () => {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <GoongMap selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange}/>
+                        <GoongMap isMarkerFixed={false} selectedLocation={coordinates} onCoordinatesChange={handleCoordinatesChange} />
                         {/* <ServicesList onServiceSelect={handleServiceSelect} /> */}
                     </div>
 

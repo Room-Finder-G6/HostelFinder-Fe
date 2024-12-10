@@ -1,82 +1,162 @@
-import Image from "next/image";
-import Link from "next/link";
-import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
-import icon_4 from "@/assets/images/dashboard/icon/icon_21.svg";
+import styles from './UserPostsBody.module.css';
+import Image from 'next/image';
+import Link from 'next/link';
+import {getUserIdFromToken} from "@/utils/tokenUtils";
+import {toast} from "react-toastify";
+import apiInstance from "@/utils/apiInstance";
 
-interface PropertyTableBodyPostProps {
+interface UserPostsBodyProps {
     posts: {
         id: string;
         title: string;
+        description: string;
         status: boolean;
-        image: string | null;
+        firstImage: string | null;
         createdOn: string;
+        address: {
+            province: string;
+            district: string;
+            commune: string;
+            detailAddress: string;
+        };
     }[];
     loading: boolean;
+    onDeleteClick: (id: string) => void; // Hàm để xử lý sự kiện xóa bài viết
 }
 
-function PropertyTableBodyPost({ posts, loading }: PropertyTableBodyPostProps) {
-    if (loading) {
-        return (
-            <tbody>
-                <tr>
-                    <td colSpan={4} className="text-center">Loading...</td>
-                </tr>
-            </tbody>
-        );
-    }
+const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteClick}) => {
+    const handlePushPost = async (postId: string) => {
+        try {
+            const userId = getUserIdFromToken();
+
+            if (!userId) {
+                toast.error('Không thể xác thực người dùng');
+                return;
+            }
+
+            // Gửi userId trong URL như API endpoint mong đợi
+            const response = await apiInstance.patch(`/posts/${postId}/push?userId=${userId}`);
+
+            if (response.data.succeeded) {
+                toast.success('Đẩy bài thành công');
+            } else {
+                toast.error(response.data.message || 'Đẩy bài không thành công');
+            }
+        } catch (error: any) {
+            console.error('Error pushing post:', error);
+            toast.error(error.response?.data?.message || 'Có lỗi xảy ra khi đẩy bài');
+        }
+    };
 
     if (posts.length === 0) {
         return (
             <tbody>
-                <tr>
-                    <td colSpan={4} className="text-center">No posts found</td>
-                </tr>
+            <tr>
+                <td colSpan={5} className="text-center">Không có bài đăng nào</td>
+            </tr>
             </tbody>
         );
     }
 
     return (
         <tbody>
-            {posts.map((post) => (
+        {posts.map((post) => {
+            // Kiểm tra xem createdOn có phải là một ngày hợp lệ không
+            const formatDate = (dateString: any) => {
+                const date = new Date(dateString);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${day}/${month}/${year}`;
+            };
+
+            return (
                 <tr key={post.id}>
-                    <td>
-                        <div className="d-lg-flex align-items-center position-relative">
-                            {Array.isArray(post.image) && post.image.length > 0 && (
-                                <Image src={post.image[0]} alt="Post Image" width={100} height={100} className="p-img" />
+                    {/* Cột Hình ảnh và Tiêu đề */}
+                    <td style={{verticalAlign: 'middle'}}>
+                        <div className="d-flex align-items-start">
+                            {post.firstImage ? (
+                                <Image
+                                    src={post.firstImage}
+                                    alt="Post Image"
+                                    width={400}
+                                    height={250}
+                                    className={styles.image}
+                                />
+                            ) : (
+                                <div className={styles.placeholder}></div>
                             )}
-                            <div className="ps-lg-4 md-pt-10">
-                                <Link href="#" className="property-name tran3s color-dark fw-500 fs-20 stretched-link">
-                                    {post.title}
-                                </Link>
-                            
+                            <div>
+                                <span className={styles.title}>{post.title}</span>
+                                <p className={styles.address}>
+                                    {`${post.address.commune}, ${post.address.district}, ${post.address.province}`}
+                                </p>
+                                <p className={styles.description}>
+                                    {post.description.length > 100
+                                        ? `${post.description.substring(0, 100)}...`
+                                        : post.description}
+                                </p>
                             </div>
                         </div>
                     </td>
-                    <td>{new Date(post.createdOn).toLocaleDateString()}</td>
-                    <td>{post.status ? "Active" : "Inactive"}</td>
-                    <td>
-                        <div className="action-dots float-end">
-                            <button className="action-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <span></span>
+
+                    {/* Cột Ngày tạo */}
+                    <td style={{verticalAlign: 'middle'}}>
+                        {formatDate(post.createdOn)}
+                    </td>
+
+                    {/* Cột Trạng thái */}
+                    <td style={{verticalAlign: 'middle', whiteSpace: 'nowrap'}}>
+                        <span
+                            className={`${styles.badge} ${
+                                post.status ? styles.success : styles.danger
+                            }`}
+                        >
+                                {post.status ? 'Họat động' : 'Ẩn'}
+                        </span>
+                    </td>
+
+                    {/* Cột Hành động */}
+                    <td style={{verticalAlign: 'middle', textAlign: 'center'}}>
+                        <div className="action-dots">
+                            <button
+                                className="action-btn dropdown-toggle"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                <span>...</span>
                             </button>
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
-                                        <Image src={icon_3} alt="Edit Icon" className="lazy-img" /> Edit
+                                        Xem và sửa
                                     </Link>
                                 </li>
                                 <li>
-                                    <Link className="dropdown-item" href="#">
-                                        <Image src={icon_4} alt="Delete Icon" className="lazy-img" /> Delete
-                                    </Link>
+                                    <button
+                                        className="dropdown-item"
+                                        onClick={() => handlePushPost(post.id)}
+                                    >
+                                        Đẩy bài
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        className="dropdown-item"
+                                        onClick={() => onDeleteClick(post.id)}
+                                    >
+                                        Xóa
+                                    </button>
                                 </li>
                             </ul>
                         </div>
                     </td>
                 </tr>
-            ))}
+            );
+        })}
         </tbody>
     );
-}
+};
 
-export default PropertyTableBodyPost;
+export default UserPostsBody;

@@ -1,0 +1,88 @@
+.banner {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b, #f85f91);
+  padding: 50px 20px;
+  text-align: center;
+  color: white;
+  position: relative;
+  z-index: 1; /* Đảm bảo banner nằm dưới thẻ */
+  overflow: hidden; /* Để ẩn hiệu ứng bên ngoài */
+
+  /* Đổ bóng cho banner */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Hiệu ứng ánh sáng */
+.banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: skewX(-45deg);
+  animation: lightEffect 3s infinite linear;
+}
+
+/* Gradient động */
+@keyframes lightEffect {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Tiêu đề bên trong banner */
+.banner h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.banner h2 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.banner ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+  text-align: left;
+}
+
+.banner ul li {
+  margin: 10px 0;
+  font-size: 1rem;
+  font-weight: 400;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+  padding-left: 25px;
+}
+
+.banner ul li::before {
+  content: '✔';
+  color: #fff;
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+.Toastify__toast--success {
+  background-color: green; /* Xác định màu cho thành công */
+}
+
+.Toastify__toast--error {
+  background-color: red; /* Xác định màu cho lỗi */
+}
+
+.Toastify__toast--warning {
+  background-color: yellow; /* Xác định màu cho cảnh báo */
+}

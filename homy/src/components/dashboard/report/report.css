@@ -1,0 +1,49 @@
+.revenue-summary {
+    background-color: #e0f7fa; /* Nền xanh nhạt */
+    border-radius: 8px; /* Bo góc cho phần tử */
+    padding: 16px;
+    margin-top: 20px;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+}
+
+.text-end {
+    font-weight: bold;
+    flex: 1;
+}
+
+.value {
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+}
+
+.value .total {
+    font-size: 1.5rem;
+    margin-left: 8px;
+}
+
+.feather {
+    color: currentColor;
+}
+
+.receipt .value {
+    color: #4caf50; /* Màu xanh cho doanh thu */
+}
+
+.expense .value {
+    color: #f44336; /* Màu đỏ cho chi phí */
+}
+
+.profit .value {
+    color: #4caf50; /* Màu xanh cho lợi nhuận */
+}
+
+.item + .item {
+    margin-left: 20px; /* Khoảng cách giữa các item */
+}
+
+

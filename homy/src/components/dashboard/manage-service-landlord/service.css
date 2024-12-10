@@ -1,0 +1,180 @@
+/* General Styles */
+.main-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Hostel Selector */
+.hostel-selector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  margin-top: 50px;  /* Giảm khoảng cách từ trên */
+}
+
+.hostel-selector select {
+  padding: 8px 12px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  width: 200px;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.hostel-selector select:hover {
+  border-color: #007bff;
+  background-color: #e6f7ff;
+}
+
+/* Buttons */
+button.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+button.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+button.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+button.btn-success:hover {
+  background-color: #218838;
+}
+
+button.btn-danger {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+button.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* Service List */
+.service-list {
+  margin-top: 20px;
+}
+
+.service-list h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.service-list ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.service-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+}
+
+.service-list li span {
+  font-size: 1rem;
+  color: #555;
+}
+
+.service-list li span:first-child {
+  font-weight: 600;
+}
+
+.service-list span {
+  flex: 1; /* Giúp các phần tử chiếm không gian đều */
+}
+
+.service-list button {
+  margin-left: 10px; /* Khoảng cách giữa nút và các phần tử khác */
+}
+
+/* Modal */
+.modal-service {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Dark background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-service1 {
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+}
+
+.modal-service2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header button:hover {
+  color: #007bff;
+}
+
+.modal-dialog {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.modal.show {
+  display: block;
+}
+
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 768px) {
+  .hostel-selector {
+      flex-direction: column;
+  }
+
+  .hostel-selector select {
+      width: 100%;
+  }
+
+  .service-list {
+      margin-top: 20px;
+  }
+
+  /* Modal Styles for Mobile */
+  .modal-content {
+      width: 90%;
+      padding: 15px;
+  }
+}

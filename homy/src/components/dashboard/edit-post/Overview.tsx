@@ -1,9 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {PostData} from "@/components/dashboard/edit-post/EditPostForm";
+import React, { useEffect, useState } from "react";
 import NiceSelect from "@/ui/NiceSelect";
 import apiInstance from "@/utils/apiInstance";
-import {jwtDecode} from "jwt-decode";
-import {toast} from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
+
+interface PostData {
+    id: string;
+    hostelId: string;
+    roomId: string;
+    title: string;
+    description: string;
+    status: boolean;
+    imageUrls: string[];
+    dateAvailable: string;
+    membershipServiceId: string;
+}
 
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
@@ -24,87 +35,73 @@ interface DecodedToken {
     UserId: string;
 }
 
-const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
+const Overview: React.FC<OverviewProps> = ({ onDataChange, postData }) => {
     const [hostels, setHostels] = useState<Hostel[]>([]);
     const [rooms, setRooms] = useState<Room[]>([]);
-    const [hostelId, setHostelId] = useState<string>(postData.hostelId);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        if (token) {
+        const fetchHostels = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                toast.error("Token not found", { position: "top-center" });
+                return;
+            }
+
             try {
                 const decodedToken: DecodedToken = jwtDecode(token);
-                const userId = decodedToken.UserId;
-
-                if (userId) {
-                    const fetchHostels = async () => {
-                        try {
-                            const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${userId}`);
-                            if (response.status === 200) {
-                                setHostels(response.data.data);
-                            }
-                        } catch (error: any) {
-                            toast.error(`Error fetching hostels data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
-                        }
-                    };
-
-                    fetchHostels();
-                } else {
-                    toast.error("User ID not found in token", {position: "top-center"});
+                const response = await apiInstance.get(`hostels/getHostelsByLandlordId/${decodedToken.UserId}`);
+                if (response.status === 200) {
+                    setHostels(response.data.data);
                 }
-            } catch (error) {
-                toast.error("Invalid token", {position: "top-center"});
+            } catch (error: any) {
+                toast.error(`Error fetching hostels: ${error.response?.data?.message || error.message}`, { position: "top-center" });
             }
-        } else {
-            toast.error("Token not found in localStorage", {position: "top-center"});
-        }
+        };
+
+        fetchHostels();
     }, []);
 
     useEffect(() => {
-        if (hostelId) {
-            const fetchRooms = async () => {
+        const fetchRooms = async () => {
+            if (postData.hostelId) {
                 try {
-                    const response = await apiInstance.get(`rooms/hostels/${hostelId}`);
+                    const response = await apiInstance.get(`rooms/hostels/${postData.hostelId}`);
                     if (response.status === 200) {
                         setRooms(response.data.data);
                     }
                 } catch (error: any) {
-                    toast.error(`Chưa thêm phòng cho nhà trọ này`, {position: "top-center"});
+                    toast.error("No rooms found for this hostel", { position: "top-center" });
                 }
-            };
-            fetchRooms();
-        }
-    }, [hostelId]);
+            }
+        };
 
-    const handleSelectChange = (name: string, e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        onDataChange({[name]: value});
+        fetchRooms();
+    }, [postData.hostelId]);
 
-        if (name === 'hostelId') {
-            setHostelId(value);
-        }
+    const handleSelectChange = (name: string, e: any) => {
+        const value = typeof e === 'object' ? e.target.value : e;
+        onDataChange({ [name]: value });
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
-        onDataChange({[name]: value});
+        const { name, value } = e.target;
+        onDataChange({ [name]: value });
     };
 
     return (
         <div className="bg-white card-box border-20">
             <div className="row align-items-end">
-                {/* Hostel Selection */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="hostelId">Chọn nhà trọ*</label>
                         <select
                             name="hostelId"
-                            value={postData.hostelId || ''}
+                            value={postData.hostelId}
                             onChange={(e) => handleSelectChange("hostelId", e)}
                             className="form-control"
                         >
                             <option value="">Chọn nhà trọ</option>
-                            {Array.isArray(hostels) && hostels.map((hostel) => (
+                            {hostels.map((hostel) => (
                                 <option key={hostel.id} value={hostel.id}>
                                     {hostel.hostelName}
                                 </option>
@@ -113,18 +110,17 @@ const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
                     </div>
                 </div>
 
-                {/* Room Selection */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
                         <label htmlFor="roomId">Chọn phòng*</label>
                         <select
                             name="roomId"
-                            value={postData.roomId || ''}
+                            value={postData.roomId}
                             onChange={(e) => handleSelectChange("roomId", e)}
                             className="form-control"
+                            required
                         >
-                            <option value="">Chọn phòng</option>
-                            {Array.isArray(rooms) && rooms.map((room) => (
+                            {rooms.map((room) => (
                                 <option key={room.id} value={room.id}>
                                     {room.roomName}
                                 </option>
@@ -134,72 +130,60 @@ const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
                 </div>
             </div>
 
-            {/* Title */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="title">Tiêu đề bài đăng*</label>
+                <label htmlFor="title">Tiêu đề*</label>
                 <input
                     type="text"
                     name="title"
-                    value={postData.title || ''}
-                    placeholder="Nhập tiêu đề bài đăng..."
+                    id="title"
+                    value={postData.title}
+                    maxLength={255}
+                    placeholder="Nhập tiêu đề..."
                     onChange={handleInputChange}
+                    required
                 />
             </div>
 
-            {/* Description */}
             <div className="dash-input-wrapper mb-30">
-                <label htmlFor="description">Chi tiết*</label>
+                <label htmlFor="description">Mô tả chi tiết*</label>
                 <textarea
                     className="size-lg"
                     name="description"
-                    value={postData.description || ''}
-                    placeholder="Nhập chi tiết bài đăng..."
+                    maxLength={1000}
+                    value={postData.description}
+                    placeholder="Nhập mô tả chi tiết..."
                     onChange={handleInputChange}
+                    required
                 ></textarea>
             </div>
 
             <div className="row align-items-end">
-                {/* Membership Service ID */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="membershipServiceId">Mã dịch vụ*</label>
-                        <input
-                            type="text"
-                            name="membershipServiceId"
-                            value={postData.membershipServiceId || ''}
-                            placeholder="Mã dịch vụ member"
-                            onChange={handleInputChange}
-                        />
-                    </div>
-                </div>
-
-                {/* Availability */}
-                <div className="col-md-6">
-                    <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="status">Trạng thái*</label>
+                        <label htmlFor="status">Trạng thái bài đăng*</label>
                         <NiceSelect
-                            className="nice-select"
                             options={[
-                                {value: "true", text: "Còn trống"},
-                                {value: "false", text: "Hết phòng"},
+                                { value: "true", text: "Hoạt động" },
+                                { value: "false", text: "Ẩn bài đăng" },
                             ]}
-                            defaultCurrent={postData.status ? 0 : 1}
+                            value={postData.status ? "true" : "false"}
                             onChange={(e) => handleSelectChange("status", e)}
                             name="status"
-                            placeholder="Select Availability"
+                            placeholder={"Chọn trạng thái bài đăng"}
+                            required
                         />
                     </div>
                 </div>
 
-                {/* Date Available */}
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="dateAvailable">Ngày trống phòng*</label>
+                        <label htmlFor="dateAvailable">Available Date*</label>
                         <input
                             type="date"
                             name="dateAvailable"
-                            value={postData.dateAvailable ? new Date(postData.dateAvailable).toISOString().slice(0, 10) : ''}
+                            value={postData.dateAvailable}
                             onChange={handleInputChange}
+                            required
                         />
                     </div>
                 </div>

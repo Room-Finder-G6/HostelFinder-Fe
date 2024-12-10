@@ -4,13 +4,19 @@ import { useRouter } from "next/navigation"; // Sử dụng useRouter trong Next
 import profileIcon_1 from "@/assets/images/dashboard/icon/icon_23.svg";
 import profileIcon_2 from "@/assets/images/dashboard/icon/icon_24.svg";
 import profileIcon_3 from "@/assets/images/dashboard/icon/icon_25.svg";
+import { signOut } from "next-auth/react";
 
 const Profile: React.FC = () => {
    const router = useRouter();
 
    const handleLogout = () => {
+      localStorage.removeItem("userName");
       localStorage.removeItem("token");
-      router.push("/login");
+      // Lấy callbackUrl từ biến môi trường
+      const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
+
+      // Thực hiện đăng xuất với callbackUrl đúng
+      window.location.href = "/";
    };
 
    return (
@@ -33,7 +39,7 @@ const Profile: React.FC = () => {
                   <button
                      type="button"
                      className="dropdown-item d-flex align-items-center"
-                     onClick={handleLogout} // Gọi hàm logout
+                     onClick={handleLogout}
                   >
                      <Image src={profileIcon_3} alt="Logout Icon" className="lazy-img" />
                      <span className="ms-2 ps-1">Đăng xuất</span>

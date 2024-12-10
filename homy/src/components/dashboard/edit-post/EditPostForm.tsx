@@ -1,34 +1,42 @@
-"use client";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Overview from "./Overview";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import UploadImage from "@/components/UploadImage";
-import {jwtDecode} from "jwt-decode";
+import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
 
-export interface PostData {
+interface PostData {
+    id: string;
     hostelId: string;
     roomId: string;
     title: string;
     description: string;
     status: boolean;
-    imageUrls: File[];
+    imageUrls: string[];
     dateAvailable: string;
     membershipServiceId: string;
 }
 
-interface DecodedToken {
-    UserId: string;
+interface UpdatePostData {
+    hostelId: string;
+    roomId: string;
+    title: string;
+    description: string;
+    status: boolean;
+    dateAvailable: string;
 }
 
 interface EditPostFormProps {
     postId: string;
 }
 
-const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
-
+const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
     const [postData, setPostData] = useState<PostData>({
+        id: '',
         hostelId: '',
         roomId: '',
         title: '',
@@ -39,109 +47,150 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
         membershipServiceId: ''
     });
 
-    useEffect(() => {
-        const fetchPostData = async () => {
-            try {
-                const response = await apiInstance.get(`posts/${postId}`);
-                if (response.status === 200) {
-                    setPostData(response.data.data);
-                }
-            } catch (error: any) {
-                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
-            }
-        };
+    const [imageState, setImageState] = useState({
+        selectedFiles: [] as File[],
+        currentUrls: [] as string[],
+        deletedUrls: [] as string[]
+    });
 
+    const fetchPostData = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiInstance.get(`posts/${postId}`);
+            if (response.status === 200) {
+                const data = response.data.data;
+                setPostData({
+                    ...data,
+                    dateAvailable: new Date(data.dateAvailable).toISOString().slice(0, 10)
+                });
+                setImageState(prev => ({
+                    ...prev,
+                    currentUrls: data.imageUrls
+                }));
+            }
+        } catch (error: any) {
+            toast.error(`Lỗi khi tải dữ liệu: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
         if (postId) {
             fetchPostData();
         }
     }, [postId]);
 
-    const handleData = (data: Partial<PostData>) => {
-        setPostData((prevData) => ({
-            ...prevData,
+    const handleDataChange = (data: Partial<PostData>) => {
+        setPostData(prev => ({
+            ...prev,
             ...data,
         }));
     };
 
-    const handleImageUpload = (files: File[]) => {
-        handleData({imageUrls: files});
+    const handleImageChange = (files: File[], newUrls: string[], deletedUrls: string[]) => {
+        setImageState({
+            selectedFiles: files,
+            currentUrls: newUrls,
+            deletedUrls: deletedUrls
+        });
     };
 
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const prepareFormData = (updateData: UpdatePostData): FormData => {
+        const formData = new FormData();
 
-    const validateFileSize = (file: File): boolean => {
-        if (file.size > MAX_FILE_SIZE) {
-            toast.error(`File ${file.name} vượt quá kích thước cho phép (5MB)`);
-            return false;
-        }
-        return true;
+        // Add basic post data
+        Object.entries(updateData).forEach(([key, value]) => {
+            formData.append(key, value.toString());
+        });
+
+        // Add new images
+        imageState.selectedFiles.forEach(file => {
+            formData.append('images', file);
+        });
+
+        // Add existing image URLs
+        imageState.currentUrls
+            .filter(url => !url.startsWith("blob:"))
+            .forEach(url => formData.append('imageUrls', url));
+
+        // Add deleted image URLs
+        imageState.deletedUrls.forEach(url =>
+            formData.append('deletedImageUrls', url)
+        );
+
+        return formData;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-            toast.error("Token không tìm thấy", {position: "top-center"});
+        if (!postData.title || !postData.description) {
+            toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
             return;
         }
 
-        let userId = "";
         try {
-            const decodedToken: DecodedToken = jwtDecode(token);
-            userId = decodedToken.UserId;
-            if (!userId) {
-                toast.error("Không tìm thấy User ID trong token", {position: "top-center"});
-                return;
+            setIsLoading(true);
+
+            const updateData: UpdatePostData = {
+                hostelId: postData.hostelId,
+                roomId: postData.roomId,
+                title: postData.title,
+                description: postData.description,
+                status: postData.status,
+                dateAvailable: new Date(postData.dateAvailable).toISOString()
+            };
+
+            const formData = prepareFormData(updateData);
+
+            const response = await apiInstance.put(`posts/${postData.id}`, formData);
+
+            if (response.status === 200) {
+                toast.success('Cập nhật bài đăng thành công!');
+                setTimeout(() => router.push("/dashboard/manage-post"), 1000);
             }
-        } catch (error) {
-            toast.error("Token không hợp lệ", {position: "top-center"});
-            return;
-        }
-
-        for (const image of postData.imageUrls) {
-            if (!validateFileSize(image)) {
-                return;
-            }
-        }
-
-        const formData = new FormData();
-        formData.append("hostelId", postData.hostelId);
-        formData.append("roomId", postData.roomId);
-        formData.append("title", postData.title);
-        formData.append("status", postData.status ? "true" : "false");
-        formData.append("description", postData.description);
-        formData.append("dateAvailable", postData.dateAvailable);
-
-        postData.imageUrls.forEach((image) => {
-            formData.append("images", image);
-        });
-
-        try {
-            await apiInstance.put(`/posts/${postId}`, formData);
-            toast.success("Cập nhật bài đăng thành công", {position: "top-center"});
         } catch (error: any) {
-            toast.error(`Có lỗi xảy ra: ${error.response?.data?.detail || error.message}`, {position: "top-center"});
+            toast.error(`Lỗi khi cập nhật: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div>
-            <DashboardHeaderTwo title="Chỉnh sửa bài cho thuê"/>
-            <h2 className="main-title d-block d-lg-none">Chỉnh sửa bài cho thuê</h2>
-            <Overview onDataChange={handleData} postData={postData}/>
+        <div className="dashboard-form-container">
+            <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
+
+            {isLoading && <Loading />}
+
+            <Overview
+                onDataChange={handleDataChange}
+                postData={postData}
+            />
 
             <div className="bg-white card-box border-20 mt-40">
-                <h4 className="dash-title-three">Hình ảnh</h4>
-                <UploadImage onImageUpload={handleImageUpload} multiple={true} existingImages={postData.imageUrls}/>
+                <h4 className="dash-title-three">Thêm ảnh</h4>
+                <UploadImage
+                    onImageUpload={handleImageChange}
+                    multiple={true}
+                    existingImages={postData.imageUrls}
+                />
             </div>
 
             <form onSubmit={handleSubmit}>
                 <div className="button-group d-inline-flex align-items-center mt-30">
-                    <button type="submit" className="dash-btn-two tran3s me-3">
-                        Cập nhật bài
+                    <button
+                        type="submit"
+                        className="dash-btn-two tran3s me-3"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang cập nhật...' : 'Cập nhật'}
                     </button>
-                    <button type="button" className="dash-cancel-btn tran3s">
+                    <button
+                        type="button"
+                        className="dash-cancel-btn tran3s"
+                        onClick={() => router.push("/dashboard/manage-post")}
+                    >
                         Hủy
                     </button>
                 </div>

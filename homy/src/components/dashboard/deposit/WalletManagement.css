@@ -1,0 +1,181 @@
+/* Tổng thể Layout */
+.dashboard-container {
+    background-color: #ffffff;  /* Nền trắng sáng hoàn toàn */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* Tiêu đề chính */
+.dashboard-header {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(87, 92, 98, 0.8); 
+    padding-bottom: 15px;
+    border-bottom: 3px solid rgba(0, 0, 0, 0.1);  /* Đường chia mỏng, nhẹ */
+}
+
+/* Phần tên người dùng */
+.user-name {
+    background-color: rgba(233, 239, 244, 1);  /* Màu xanh nhạt như màu bầu trời sáng, dễ chịu */
+    color: rgba(70, 85, 99, 1);  /* Màu chữ xám nhẹ, dễ nhìn */
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* Container chính chứa thông tin ví */
+.wallet-container {
+    width: 100%;
+    max-width: 900px;
+    background-color: #ffffff;  /* Nền trắng sáng hoàn toàn */
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);  /* Shadow nhẹ nhàng */
+    margin-top: 20px;
+}
+
+/* Card số dư tài khoản */
+.wallet-card {
+    background-color: rgba(244, 248, 255, 1);  /* Nền xanh nhạt, tạo cảm giác mát mẻ */
+    padding: 25px 40px;
+    border-radius: 20px;
+    margin-bottom: 35px;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.wallet-header {
+    font-size: 22px;
+    font-weight: 600;
+    color: rgba(70, 85, 99, 0.9);  /* Màu xám nhẹ, dễ nhìn */
+    margin-bottom: 15px;
+}
+
+.wallet-balance p {
+    font-size: 28px;
+    font-weight: 700;
+    color: rgba(0, 136, 68, 0.8);  /* Màu xanh lá cây nhạt, tự nhiên */
+    margin: 0;
+}
+
+/* Phần nạp tiền */
+.deposit-card {
+    background-color: rgba(248, 250, 255, 1);  /* Màu xanh pastel nhẹ */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.deposit-header {
+    font-size: 22px;
+    font-weight: 600;
+    color: rgba(87, 92, 98, 0.8);  /* Màu xám nhẹ */
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.amount-selection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.amount-button {
+    background-color: rgba(144, 202, 249, 1);  /* Màu xanh da trời nhạt, dịu mắt */
+    color: white;
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%;
+    text-align: center;
+}
+
+.amount-button:hover {
+    background-color: rgba(100, 160, 255, 1);  /* Xanh đậm hơn khi hover */
+}
+
+.deposit-input {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    border: 2px solid rgba(211, 211, 211, 1);  /* Màu xám nhạt */
+    border-radius: 12px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.deposit-input:focus {
+    border-color: rgba(0, 136, 68, 1);  /* Màu xanh lá cây nhạt khi focus */
+}
+
+.deposit-button {
+    width: 100%;
+    padding: 18px;
+    background-color: rgba(0, 136, 68, 1);  /* Màu xanh lá cây nhạt */
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.deposit-button:hover {
+    background-color: rgba(0, 110, 54, 1);  /* Màu xanh lá cây đậm hơn khi hover */
+}
+
+.error-message {
+    background-color: rgba(255, 235, 235, 1);  /* Màu đỏ nhạt, dễ chịu */
+    color: rgba(211, 47, 47, 1);  /* Màu đỏ đậm */
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    font-size: 16px;
+    text-align: center;
+    border: 1px solid rgba(255, 205, 205, 1);  /* Màu đỏ nhạt sáng hơn */
+}
+
+/* Loading Animation */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(200, 200, 200, 1);  /* Màu xám nhẹ */
+    border-top: 5px solid rgba(0, 136, 68, 1);  /* Màu xanh lá cây nhạt */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
