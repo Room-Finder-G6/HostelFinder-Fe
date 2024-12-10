@@ -8,7 +8,7 @@ import Link from "next/link";
 import { jwtDecode } from 'jwt-decode';
 import apiInstance from '@/utils/apiInstance';
 import HeartButton from '../Menu/HeartButton';
-import useNavData from "../Menu/useNavData";
+import useNavData from '../Menu/useNavData';
 import { usePathname } from 'next/navigation';  // Import đúng hook usePathname
 
 interface JwtPayload {
