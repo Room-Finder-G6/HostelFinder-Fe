@@ -64,3 +64,65 @@
     margin: 5px 0;
   }
   
+
+
+  /* Overlay nền mờ phía sau */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup chi tiết thông báo */
+.notification-detail-popup {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 350px;
+  max-width: 90%;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+/* Nút đóng (X) */
+.notification-detail-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f44336; /* Màu đỏ nổi bật */
+  color: white; /* Màu chữ trắng */
+  border: none; /* Loại bỏ viền */
+  border-radius: 50%; /* Làm nút tròn */
+  padding: 5px; /* Giảm kích thước padding */
+  width: 24px; /* Đặt chiều rộng cụ thể */
+  height: 24px; /* Đặt chiều cao cụ thể */
+  display: flex; /* Để căn giữa chữ X */
+  justify-content: center;
+  align-items: center;
+  font-size: 14px; /* Giảm kích thước font */
+  cursor: pointer; /* Biểu tượng con trỏ */
+}
+
+.notification-detail-popup .close-btn:hover {
+  background-color: #d32f2f; /* Màu đậm hơn khi hover */
+}
+
+
+/* Nội dung trong popup */
+.notification-detail-popup h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.notification-detail-popup p {
+  margin: 10px 0;
+  font-size: 14px;
+  color: #333;
+}
