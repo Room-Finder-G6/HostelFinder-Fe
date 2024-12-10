@@ -64,7 +64,9 @@ const NavLink: React.FC<NavLinkProps> = React.memo(({href, activeIcon, inactiveI
             />
             <span>{label}</span>
         </Link>
+        
     );
+    
 });
 
 NavLink.displayName = 'NavLink';
@@ -113,7 +115,9 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                     activeIcon: dashboardIconActive_2,
                     inactiveIcon: dashboardIcon_2,
                     label: "Message"
-                }
+                },
+                
+
             ]
         },
         {
