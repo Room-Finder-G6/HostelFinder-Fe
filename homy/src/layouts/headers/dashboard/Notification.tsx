@@ -12,10 +12,10 @@ interface JwtPayload {
 }
 
 const Notification = () => {
-  const [notifications, setNotifications] = useState<any[]>([]); 
+  const [notifications, setNotifications] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null); 
+  const [userId, setUserId] = useState<string | null>(null);
   const [selectedNotification, setSelectedNotification] = useState<any | null>(null);
 
   const getUserIdFromToken = (): string | null => {
@@ -65,10 +65,14 @@ const Notification = () => {
     setSelectedNotification(notification);
   };
 
+  const handleCloseDetail = () => {
+    setSelectedNotification(null);
+  };
+
   return (
     <div className="profile-notification">
-      {/* Thông báo icon và dropdown */}
-    
+    <div className="notification-container">
+      {/* Danh sách thông báo */}
       <div className="dropdown-menu">
         <ul className="notify-list">
           {loading && <li>Loading notifications...</li>}
@@ -77,7 +81,11 @@ const Notification = () => {
             <li>No notifications</li>
           ) : (
             notifications.map((notification, index) => (
-              <li key={index} className={`notification-item ${notification.read ? "" : "unread"}`} onClick={() => handleNotificationClick(notification)}>
+              <li
+                key={index}
+                className={`notification-item ${notification.read ? "" : "unread"}`}
+                onClick={() => handleNotificationClick(notification)}
+              >
                 <div className="notification-icon">
                   <Image src={notification.icon || notificationIcon} alt="Notification" />
                 </div>
@@ -85,23 +93,25 @@ const Notification = () => {
                   <h6>{notification.message}</h6>
                   <span className="time">{notification.timeAgo || "Just now"}</span>
                 </div>
-                
               </li>
-              
             ))
-            
           )}
         </ul>
-        {/* Hiển thị chi tiết thông báo khi bấm */}
-        {selectedNotification && (
-          <div className="notification-detail">
+      </div>
+  
+      {/* Popup chi tiết thông báo */}
+      {selectedNotification && (
+        <div className="popup-overlay">
+          <div className="notification-detail-popup">
+            <button className="close-btn" onClick={handleCloseDetail}>x</button>
+            <h4>Chi tiết thông báo</h4>
             <p>{selectedNotification.message}</p>
             <p className="time">{selectedNotification.createdOn}</p>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
+  </div>
   );
 };
-
 export default Notification;
