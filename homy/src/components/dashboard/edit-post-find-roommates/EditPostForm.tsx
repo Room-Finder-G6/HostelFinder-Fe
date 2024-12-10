@@ -1,49 +1,34 @@
-import React, { useEffect, useState } from "react";
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import Overview from "./Overview";
+import React, {useEffect, useState} from 'react';
+import {Story} from "@/models/story";
+import {useRouter} from "next/navigation";
 import apiInstance from "@/utils/apiInstance";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
+import {EditStoryRequest} from "@/models/editStoryRequest";
+import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
+import Loading from "@/components/Loading";
 import UploadImage from "@/components/UploadImage";
-import { useRouter } from "next/navigation";
-import Loading from "@/components/Loading"; // Import component Loading
-
-interface PostData {
-    id: string;
-    hostelId: string;
-    roomId: string;
-    title: string;
-    description: string;
-    status: boolean;
-    imageUrls: string[];
-    dateAvailable: string;
-    membershipServiceId: string;
-}
-
-interface UpdatePostData {
-    hostelId: string;
-    roomId: string;
-    title: string;
-    description: string;
-    status: boolean;
-    dateAvailable: string;
-}
+import Overview from "@/components/dashboard/edit-post-find-roommates/Overview";
 
 interface EditPostFormProps {
     postId: string;
 }
 
-const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
-    const [postData, setPostData] = useState<PostData>({
-        id: '',
-        hostelId: '',
-        roomId: '',
+const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
+    const [postData, setPostData] = useState<Story>({
         title: '',
+        monthlyRentCost: 0,
         description: '',
-        status: true,
-        imageUrls: [],
+        size: 0,
+        roomType: 0,
         dateAvailable: '',
-        membershipServiceId: ''
-    });
+        address: {
+            province: '',
+            district: '',
+            commune: '',
+            detailAddress: ''
+        },
+        images: []
+    })
 
     const router = useRouter();
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -54,7 +39,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
     useEffect(() => {
         const fetchPostData = async () => {
             try {
-                const response = await apiInstance.get(`posts/${postId}`);
+                const response = await apiInstance.get(`story/${postId}`);
                 if (response.status === 200) {
                     const data = response.data.data;
                     setPostData({
@@ -64,7 +49,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
                     setImageUrls(data.imageUrls);
                 }
             } catch (error: any) {
-                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, { position: "top-center" });
+                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
             }
         };
 
@@ -73,7 +58,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
         }
     }, [postId]);
 
-    const handleData = (data: Partial<PostData>) => {
+    const handleData = (data: Partial<Story>) => {
         setPostData(prevData => ({
             ...prevData,
             ...data,
@@ -91,13 +76,14 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
 
         setLoading(true); // Show loading spinner
 
-        const updateData: UpdatePostData = {
-            hostelId: postData.hostelId,
-            roomId: postData.roomId,
+        const updateData: EditStoryRequest = {
             title: postData.title,
+            monthlyRentCost: postData.monthlyRentCost,
             description: postData.description,
-            status: postData.status,
-            dateAvailable: new Date(postData.dateAvailable).toISOString()
+            size: postData.size,
+            roomType: String(postData.roomType),
+            dateAvailable: new Date(postData.dateAvailable).toISOString(),
+            address: postData.address
         };
 
         try {
@@ -125,15 +111,15 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
                 deletedImageUrls.forEach(url => formData.append('deletedImageUrls', url));
             }
 
-            const response = await apiInstance.put(`posts/${postData.id}`, formData);
+            const response = await apiInstance.put(`story/${postId}`, formData);
             if (response.status === 200) {
-                toast.success('Post updated successfully!', { position: "top-center" });
+                toast.success('Post updated successfully!', {position: "top-center"});
                 setTimeout(() => {
                     router.push("/dashboard/manage-post");
                 }, 1000);
             }
         } catch (error: any) {
-            toast.error(`Error updating post: ${error.response?.data?.message || error.message}`, { position: "top-center" });
+            toast.error(`Error updating post: ${error.response?.data?.message || error.message}`, {position: "top-center"});
         } finally {
             setLoading(false);
         }
@@ -143,16 +129,16 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
         <div className="dashboard-form-container">
             <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
 
-            <Overview onDataChange={handleData} postData={postData} />
+            {loading && <Loading/>}
 
-            {loading && <Loading />} {/* Show loading overlay if loading is true */}
+            <Overview onDataChange={handleData} postData={postData}/>
 
             <div className="bg-white card-box border-20 mt-40">
                 <h4 className="dash-title-three">Thêm ảnh</h4>
                 <UploadImage
                     onImageUpload={handleImageUpload}
                     multiple={true}
-                    existingImages={postData.imageUrls}
+                    existingImages={postData.images}
                 />
             </div>
 
@@ -161,7 +147,8 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
                     <button type="submit" className="dash-btn-two tran3s me-3" disabled={loading}>
                         {loading ? 'Đang cập nhật...' : 'Cập nhật'} {/* Show loading text while submitting */}
                     </button>
-                    <button onClick={() => router.push("/dashboard/manage-post")} type="button" className="dash-cancel-btn tran3s">
+                    <button onClick={() => router.push("/dashboard/manage-find-rommates")} type="button"
+                            className="dash-cancel-btn tran3s">
                         Hủy
                     </button>
                 </div>

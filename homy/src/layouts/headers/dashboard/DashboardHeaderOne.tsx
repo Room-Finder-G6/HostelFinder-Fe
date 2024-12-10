@@ -241,8 +241,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                         <li className="plr">
                             <Link href="/dashboard/deposit"
                                   className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/deposit' ? dashboardIconActive_7 : dashboardIcon_7}
-                                       alt="Deposit"/>
+                                <i className="bi bi-cash"></i>
                                 <span>Nạp tiền</span>
                             </Link>
                         </li>
@@ -280,7 +279,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                     <Link href="/dashboard/manage-hostels"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
                                         <Image
-                                            src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : dashboardIcon_7}
+                                            src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : roomIcon}
                                             alt="Quản Lý Nhà Trọ"/>
                                         <span>Quản Lý Nhà Trọ</span>
                                     </Link>
@@ -288,54 +287,42 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                 <li className="plr">
                                     <Link href="/dashboard/manage-room"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/dashboard/manage-room' ? dashboardIconActive_1 : roomIcon}
-                                            alt="Quản Lý Phòng Trọ"/>
+                                        <i className="bi bi-houses"></i>
                                         <span>Quản Lý Phòng Trọ</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-post"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/dashboard/manage-post' ? dashboardIconActive_7 : dashboardIcon_7}
-                                            alt="Quản Lý Bài Đăng"/>
+                                        <i className="bi bi-card-text"></i>
                                         <span>Quản Lý Bài Đăng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/invoices"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/dashboard/invoices' ? dashboardIconActive_10 : dashboardIcon_10}
-                                            alt="Manage Invoices"/>
+                                        <i className="bi bi-receipt"></i>
                                         <span>Quản lí hóa đơn</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-service-landlord"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/manage-service-landlord' ? dashboardIconActive_1 : dashboardIcon_1}
-                                            alt="Reviews"/>
+                                        <i className="bi bi-bag-heart"></i>
                                         <span>Quản lí dịch vụ</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-rental-contract"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/dashboard/manage-rental-contract' ? dashboardIconActive_1 : dashboardIcon_1}
-                                            alt="Reviews"/>
+                                        <i className="bi bi-clipboard"></i>
                                         <span>Quản lí hợp đồng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-maintenance"
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10}
-                                            alt="Quản lý"/>
+                                        <i className="bi bi-gear-fill"></i>
                                         <span>Sửa chữa, bảo dưỡng</span>
                                     </Link>
                                 </li>
@@ -352,17 +339,15 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                 <li className="pt-20">
                                     <div className="nav-title">Tìm người ở ghép</div>
                                 </li>
-                                <li className="plr">
-                                    <Link href="/dashboard/manage-find-roommates"
-                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
-                                        <Image
-                                            src={pathname === '/manage-find-roommates' ? dashboardIconActive_3 : dashboardIcon_3}
-                                            alt="Find Roommates"/>
-                                        <span>Đăng bài ở ghép</span>
-                                    </Link>
-                                </li>
                             </>
                         )}
+                        <li className="plr">
+                            <Link href="/dashboard/manage-find-roommates"
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
+                                <i className="bi bi-card-text"></i>
+                                <span>Đăng bài ở ghép</span>
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
 
