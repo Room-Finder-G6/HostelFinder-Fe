@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Story} from "@/models/story";
 import NiceSelect from "@/ui/NiceSelect";
 
@@ -8,6 +8,10 @@ interface OverviewProps {
 }
 
 const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
+    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
+    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
+    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         onDataChange({[name]: value});
