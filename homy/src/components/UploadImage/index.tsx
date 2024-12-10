@@ -1,27 +1,31 @@
-﻿import React, {useEffect, useState} from "react";
-import {toast} from "react-toastify";
-
-interface UploadImageProps {
-    onImageUpload: (files: File[]) => void;
-    multiple?: boolean;
-    accept?: string;
-}
+﻿import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-const UploadImage: React.FC<UploadImageProps> = ({onImageUpload, multiple = false, accept = "image/*"}) => {
+const UploadImage: React.FC<UploadImageProps> = ({
+                                                     onImageUpload,
+                                                     multiple = false,
+                                                     accept = "image/*",
+                                                     existingImages = []
+                                                 }) => {
     const [previewUrls, setPreviewUrls] = useState<string[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [deletedUrls, setDeletedUrls] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (existingImages.length > 0) {
+            setPreviewUrls(existingImages);
+        }
+    }, [existingImages]);
 
     const validateFile = (file: File): boolean => {
-        // Check file type
         if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
             toast.error(`File ${file.name} không phải là file ảnh hợp lệ. Chỉ chấp nhận các file JPEG, PNG, GIF và WebP.`);
             return false;
         }
 
-        // Check file size
         if (file.size > MAX_FILE_SIZE) {
             toast.error(`File ${file.name} vượt quá kích thước tối đa (3MB).`);
             return false;
@@ -35,7 +39,6 @@ const UploadImage: React.FC<UploadImageProps> = ({onImageUpload, multiple = fals
         const validFiles: File[] = [];
         const newPreviewUrls: string[] = [];
 
-        // Process each file
         files.forEach(file => {
             if (validateFile(file)) {
                 validFiles.push(file);
@@ -43,7 +46,6 @@ const UploadImage: React.FC<UploadImageProps> = ({onImageUpload, multiple = fals
             }
         });
 
-        // Only update state if there are valid files
         if (validFiles.length > 0) {
             let updatedFiles: File[];
             let updatedUrls: string[];
@@ -52,37 +54,49 @@ const UploadImage: React.FC<UploadImageProps> = ({onImageUpload, multiple = fals
                 updatedFiles = [...selectedFiles, ...validFiles];
                 updatedUrls = [...previewUrls, ...newPreviewUrls];
             } else {
-                // Cleanup old preview URLs
-                previewUrls.forEach(url => URL.revokeObjectURL(url));
+                previewUrls.forEach(url => {
+                    if (url.startsWith('blob:')) {
+                        URL.revokeObjectURL(url);
+                    }
+                });
                 updatedFiles = [validFiles[0]];
                 updatedUrls = [newPreviewUrls[0]];
             }
 
             setSelectedFiles(updatedFiles);
             setPreviewUrls(updatedUrls);
-            onImageUpload(updatedFiles);
+            onImageUpload(updatedFiles, updatedUrls, deletedUrls);
         }
 
-        // Reset input value to allow selecting the same file again
         event.target.value = '';
     };
 
     const removeImage = (index: number) => {
-        // Cleanup removed preview URL
-        URL.revokeObjectURL(previewUrls[index]);
+        const urlToRemove = previewUrls[index];
+
+        if (urlToRemove.startsWith('blob:')) {
+            URL.revokeObjectURL(urlToRemove);
+            const newFiles = selectedFiles.filter((_, i) => {
+                const fileIndex = previewUrls.findIndex(url => url.startsWith('blob:')) + i;
+                return fileIndex !== index;
+            });
+            setSelectedFiles(newFiles);
+        } else {
+            setDeletedUrls(prev => [...prev, urlToRemove]);
+        }
 
         const newUrls = previewUrls.filter((_, i) => i !== index);
-        const newFiles = selectedFiles.filter((_, i) => i !== index);
-
         setPreviewUrls(newUrls);
-        setSelectedFiles(newFiles);
-        onImageUpload(newFiles);
+        onImageUpload(selectedFiles, newUrls, [...deletedUrls, urlToRemove]);
     };
 
-    // Cleanup preview URLs when component unmounts
-    React.useEffect(() => {
+    useEffect(() => {
         return () => {
-            previewUrls.forEach(url => URL.revokeObjectURL(url));
+            previewUrls.forEach(url => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
         };
     }, []);
 
