@@ -9,7 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {toast} from 'react-toastify'; // Import react-toastify
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-
+import useNavData from "@/layouts/headers/Menu/useNavData";
 const truncateText = (text: string, maxLength: number = 100) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + "...";
@@ -41,7 +41,8 @@ const FavoritesPage = () => {
     const [favoritePosts, setFavoritePosts] = useState<FilteredPosts[]>([]); // Changed type to FilteredPosts
     const [isLoading, setIsLoading] = useState(true);
     const [userId, setUserId] = useState<string | null>(null);
-const [wishlistCount, setWishlistCount] = useState<number>(0);
+  
+
     useEffect(() => {
         const userIdFromToken = getUserIdFromToken();
         if (userIdFromToken) {
@@ -69,28 +70,6 @@ const [wishlistCount, setWishlistCount] = useState<number>(0);
         }
     };
     
-    const updateWishlistCount = async () => {
-        const token = window.localStorage.getItem('token');
-        const userId = getUserIdFromToken(); 
-    
-        if (userId && token) {
-            try {
-                const response = await apiInstance.get(`/wishlists/count/${userId}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-    
-                if (response.status === 200 && response.data.count !== undefined) {
-                    setWishlistCount(response.data.count); // Cập nhật số lượng
-                } else {
-                    console.error("Invalid response data:", response.data);
-                }
-            } catch (error) {
-                console.error("Error fetching wishlist count:", error);
-            }
-        }
-    };
     
 
     const deleteFromWishlist = async (wishlistPostId: string) => {
@@ -107,10 +86,6 @@ const [wishlistCount, setWishlistCount] = useState<number>(0);
                 setFavoritePosts((prevPosts) =>
                     prevPosts.filter((post) => post.wishlistPostId !== wishlistPostId) // Lọc theo wishlistPostId
                 );
-              
-                // Cập nhật lại số lượng bài viết yêu thích
-                updateWishlistCount(); // Gọi hàm cập nhật lại số lượng wishlist     
-                // Hiển thị thông báo toast thành công
                 toast.success("Bài viết đã được xóa khỏi danh sách yêu thích!", {
                     autoClose: 3000,
                 });
@@ -125,6 +100,7 @@ const [wishlistCount, setWishlistCount] = useState<number>(0);
                 autoClose: 3000,
             });
         }
+      
     };
     
     

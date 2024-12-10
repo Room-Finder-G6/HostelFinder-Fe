@@ -3,11 +3,10 @@ import Image from "next/image"
 import Notification from "./Notification";
 import React, { useState } from "react";
 import DashboardHeaderOne from "./DashboardHeaderOne";
-
 import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_43.svg";
 import dashboardIcon_2 from "@/assets/images/dashboard/icon/icon_11.svg";
 import Authored from "@/layouts/headers/right-header/Authored";
-
+import './notification.css'
 const DashboardHeaderTwo = ({ title }: any) => {
 
    const [isActive, setIsActive] = useState<boolean>(false);

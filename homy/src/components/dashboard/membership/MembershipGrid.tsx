@@ -36,9 +36,7 @@ const MembershipGrid = () => {
               {Number(membership.price).toLocaleString("vi-VN")} đ/tháng
             </p>
             <ul>
-              <h6 style={{ fontSize: "17px", fontWeight: "bold", marginRight: "35px" }}>
-                Gói tin hàng tháng
-              </h6>
+              
               
               {membership.membershipServices.map((service, idx) => (
                 <ul key={idx} className={styles.serviceList}>
@@ -48,12 +46,13 @@ const MembershipGrid = () => {
                   </li>
                   <li className={styles.serviceItem}>
                     <span className={styles.icon}>✔</span>
-                    <span>{`Số bài đăng: ${service.maxPostsAllowed}`}</span>
+                    <span>{`Số lượt đẩy: ${service.maxPushTopAllowed}`}</span>
                   </li>
                   <li className={styles.serviceItem}>
                     <span className={styles.icon}>✔</span>
-                    <span>{`Số lượt đẩy: ${service.maxPushTopAllowed}`}</span>
+                    <span>{`Số bài đăng: ${service.maxPostsAllowed}`}</span>
                   </li>
+                
                   <li className={styles.serviceItem1}  style={{fontWeight: "700", textAlign: "center", fontSize: "14.5px"}}>
                     <span>{`Các dịch vụ khác`}</span>
                   </li>
@@ -67,7 +66,7 @@ const MembershipGrid = () => {
                   </li>
                   <li className={styles.serviceItem}>
                     <span className={styles.icon}>✔</span>
-                    <span>{`Top bài đăng`}</span>
+                    <span>{`Đẩy bài đăng`}</span>
                   </li>
                 </ul>
               ))}

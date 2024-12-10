@@ -27,6 +27,11 @@ interface Tenant {
     phone: string;
     moveInDate: string;
     status: string;
+    province:string;
+    district:string;
+    commune:string;
+    detailAddress:string;
+    identityCardNumber:string;
 }
 
 const TenantManagement = () => {
@@ -47,6 +52,7 @@ const TenantManagement = () => {
         phone: "",
         description: "",
         dateOfBirth: "",
+        moveInDate: "",
         province: "",
         district: "",
         commune: "",
@@ -54,7 +60,7 @@ const TenantManagement = () => {
         identityCardNumber: "",
         frontImage: null,
         backImage: null,
-        temporaryResidenceStatus: 0,
+        temporaryResidenceStatus: "",
     });
 
     // Hàm fetch danh sách tenants theo hostelId
@@ -65,13 +71,21 @@ const TenantManagement = () => {
                 `/Tenants/GetAllTenantsByHostel/${hostelId}?pageNumber=${page}&pageSize=10`
             );
             if (response.data.succeeded) {
-                const filteredTenants = response.data.data.filter((tenant: Tenant) => {
-                    return tenant.roomName.toLowerCase().includes(searchQuery.toLowerCase()); // Tìm kiếm theo tên phòng (hoặc trường khác)
+                const filteredTenants = response.data.data.map((tenant: any) => {
+                    // Kiểm tra MoveOutDate để xác định trạng thái
+                    const status = tenant.MoveOutDate 
+                        ? (new Date(tenant.MoveOutDate) < new Date() ? "Đã rời phòng" : "Đang thuê")
+                        : "Đang thuê"; // Nếu không có MoveOutDate, luôn là "Đang thuê"
+                    
+                    return {
+                        ...tenant,
+                        Status: status, // Cập nhật trạng thái
+                    };
                 });
     
                 setTenants(filteredTenants);
     
-                // Nếu API trả về tổng số bản ghi, bạn có thể tính toán totalPages
+                // Tính toán số trang nếu có
                 const totalRecords = response.data.totalRecords;
                 setTotalPages(Math.ceil(totalRecords / 10));
             } else {
@@ -80,12 +94,13 @@ const TenantManagement = () => {
                 setTenants([]); // Fallback to an empty array
             }
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message ;
+            const errorMessage = error.response?.data?.message;
             toast.error(errorMessage);
             setTenants([]); // Fallback to an empty array
         }
         setLoading(false);
     };
+    
     
     // Hàm fetch danh sách phòng theo hostelId
     const fetchRooms = async (hostelId: string) => {
@@ -95,11 +110,11 @@ const TenantManagement = () => {
             if (response.data.succeeded) {
                 setRooms(response.data.data);
             } else {
-                const errorMessage = response.data.message ;
+                const errorMessage = response.data.message;
                 toast.error(errorMessage);
             }
         } catch (error: any) {
-            const errorMessage = error.response?.data?.message ;
+            const errorMessage = error.response?.data?.message;
             toast.error(errorMessage);
         }
         setLoading(false);
@@ -137,8 +152,6 @@ const TenantManagement = () => {
 
             if (response.data.succeeded) {
                 // Sau khi move out thành công, làm mới trang
-                window.location.reload();  // Làm mới trang để tải lại dữ liệu
-
                 toast.success("Thành viên đã chuyển ra khỏi phòng thành công.");
             } else {
                 const errorMessage = response.data.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
@@ -193,6 +206,7 @@ const TenantManagement = () => {
         formData.append("Email", newTenant.email);
         formData.append("Phone", newTenant.phone);
         formData.append("DateOfBirth", newTenant.dateOfBirth);
+        formData.append("MoveInDate", newTenant.moveInDate);
         formData.append("Description", newTenant.description || "");
         formData.append("Province", newTenant.province);
         formData.append("District", newTenant.district);
@@ -362,6 +376,14 @@ const TenantManagement = () => {
                                     required
                                 />
                                 <input
+                                    type="date"
+                                    name="moveInDate"
+                                    value={newTenant.moveInDate}
+                                    onChange={handleInputChange}
+                                    className="form-control mb-2"
+                                    required
+                                />
+                                {/* <input
                                     type="text"
                                     name="province"
                                     placeholder="Tỉnh"
@@ -396,7 +418,7 @@ const TenantManagement = () => {
                                     onChange={handleInputChange}
                                     className="form-control mb-2"
                                     required
-                                />
+                                /> */}
                                 <input
                                     type="text"
                                     name="identityCardNumber"
@@ -464,13 +486,12 @@ const TenantManagement = () => {
                                                     className="avatar-image"
                                                 />
                                             </td>
-
-
                                             <td>{tenant.fullName}</td>
+                                           
                                             <td>{tenant.email}</td>
                                             <td>{tenant.phone}</td>
                                             <td>{tenant.roomName}</td>
-                                            <td>{new Date(tenant.moveInDate).toLocaleDateString()}</td>
+                                            <td>{tenant.moveInDate}</td>
                                             <td style={{ color: tenant.status === 'Đã rời phòng' ? 'red' : 'black' }}>
                                                 {tenant.status}
                                             </td>
@@ -480,7 +501,7 @@ const TenantManagement = () => {
 
                                                 <button
                                                     className="btn btn-danger"
-                                                    onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
+                                                    // onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
                                                 >
                                                     Chuyển ra
                                                 </button>
