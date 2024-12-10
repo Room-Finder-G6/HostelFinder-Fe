@@ -10,7 +10,9 @@ import apiInstance from '@/utils/apiInstance';
 import HeartButton from '../Menu/HeartButton';
 import useNavData from '../Menu/useNavData';
 import { usePathname } from 'next/navigation';  // Import đúng hook usePathname
-
+import Notification from '../dashboard/Notification';
+import dashboardIcon_2 from "@/assets/images/dashboard/icon/icon_2.svg";
+import './authored.css';
 interface JwtPayload {
     UserId: string;
 }
@@ -56,7 +58,7 @@ const Authored = () => {
         setError("No token found");
         return null;
     }, []);
-    
+
 
     // Lấy thông tin người dùng từ API
     const fetchUserProfile = useCallback(async () => {
@@ -80,7 +82,7 @@ const Authored = () => {
             setIsLoading(false);
         }
     }, [userId]);
-    
+
 
     useEffect(() => {
         const userId = getUserIdFromToken();
@@ -97,10 +99,18 @@ const Authored = () => {
 
     return (
         <div className="user-data d-flex align-items-center position-relative">
-            <ul className="nav-item favorites">
-                <HeartButton  wishlistCount={wishlistCount}  /> {/* Sử dụng HeartButton và truyền dữ liệu */}
-            </ul>
-       
+
+            <div className="profile-notification position-relative dropdown-center ms-3 ms-md-5 me-4">
+                <button className="nav-item favorites">
+                    <HeartButton wishlistCount={wishlistCount} />
+                </button>
+                
+                <button className="noti-btn dropdown-toggle" type="button" id="notification-dropdown" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                    <Image src={dashboardIcon_2} alt="" className="lazy-img" />
+                    <div className="badge-pill"></div>
+                </button>
+                <Notification />
+            </div>
             <button
                 className="user-avatar online position-relative rounded-circle dropdown-toggle"
                 type="button"
@@ -119,10 +129,6 @@ const Authored = () => {
                     style={{ borderRadius: "50%" }}
                 />
             </button>
-            {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">
-                <span>Create Post</span>
-                <i className="fa-thin fa-arrow-up-right"></i>
-            </Link> */}
             <Profile />
         </div>
     );
