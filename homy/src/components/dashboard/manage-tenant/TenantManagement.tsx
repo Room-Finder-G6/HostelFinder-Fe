@@ -82,6 +82,8 @@ const TenantManagement = () => {
                 toast.error("Không thể tải danh sách tenants.");
                 setTenants([]); // Fallback to an empty array
             }
+            const totalRecords = response.data.totalRecords;
+                setTotalPages(Math.ceil(totalRecords / 10));
         } catch (error) {
             toast.error("Lỗi khi tải danh sách tenants.");
             setTenants([]); // Fallback to an empty array
@@ -91,7 +93,6 @@ const TenantManagement = () => {
     const filteredTenants = tenants.filter(tenant =>
         tenant.fullName.toLowerCase().includes(searchQuery) // So sánh với tên tenant đã chuyển thành chữ thường
     );
-    
 
     // Hàm fetch danh sách phòng theo hostelId
     const fetchRooms = async (hostelId: string) => {
@@ -117,11 +118,9 @@ const TenantManagement = () => {
     };
     // Hàm tìm kiếm phòng trọ theo tên
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const query = e.target.value.toLowerCase();  
-        setSearchQuery(query);
-        fetchTenants(selectedHostelId, 1, query);
+        setSearchQuery(e.target.value);
+        fetchTenants(selectedHostelId, 1, e.target.value); // Tìm kiếm khi thay đổi từ khóa
     };
-    
     // Hàm xử lý thay đổi nhà trọ
     const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const hostelId = e.target.value;

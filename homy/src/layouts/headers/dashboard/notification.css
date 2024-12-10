@@ -1,12 +1,15 @@
 /* Cập nhật bảng thông báo để rộng hơn */
 .profile-notification .dropdown-menu {
-    width: 400px; /* Đặt chiều rộng lớn hơn */
-    max-height: none; /* Loại bỏ chiều cao tối đa */
-    padding: 10px; /* Thêm padding để tránh thông báo dính vào các cạnh */
-    border-radius: 8px; /* Bo tròn các góc của bảng */
-    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ cho bảng */
-    background-color: #fff; /* Màu nền của bảng thông báo */
-  }
+  width: 400px; /* Đặt chiều rộng lớn hơn */
+  max-height: 400px; /* Giới hạn chiều cao tối đa */
+  overflow-y: auto; /* Thêm thanh cuộn dọc khi vượt quá chiều cao tối đa */
+  overflow-x: auto; /* Thêm thanh cuộn ngang khi cần thiết */
+  padding: 10px; /* Thêm padding để tránh thông báo dính vào các cạnh */
+  border-radius: 8px; /* Bo tròn các góc của bảng */
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ cho bảng */
+  background-color: #fff; /* Màu nền của bảng thông báo */
+  position: relative; /* Đảm bảo nút đóng nằm trong vùng này */
+}
   
   /* Cập nhật kiểu cho thông báo */
   .profile-notification .dropdown-menu .notify-list {
@@ -14,7 +17,19 @@
     margin: 0;
     padding: 0;
   }
+  .profile-notification .dropdown-menu::-webkit-scrollbar {
+    height: 8px; /* Giảm độ cao của thanh cuộn ngang */
+  }
   
+  .profile-notification .dropdown-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* Màu thanh cuộn */
+    border-radius: 4px; /* Bo tròn các góc của thanh cuộn */
+  }
+  
+  .profile-notification .dropdown-menu::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Màu nền của track thanh cuộn */
+    border-radius: 4px; /* Bo tròn các góc của track */
+  }
   .profile-notification .dropdown-menu .notify-list li {
     display: flex;
     align-items: center;
