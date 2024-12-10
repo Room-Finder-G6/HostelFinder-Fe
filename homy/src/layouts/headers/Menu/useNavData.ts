@@ -1,4 +1,3 @@
-// hooks/useNavData.ts
 import { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
@@ -14,8 +13,11 @@ const useNavData = () => {
   const [role, setRole] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Khai báo intervalId ở phạm vi bên ngoài useEffect để có thể sử dụng trong cleanup
+  let intervalId: NodeJS.Timeout | null = null;
+
   // Hàm lấy userId từ token JWT
-  const getUserIdFromToken = () => {
+  const getUserIdFromToken = (): string | null => {
     const token = window.localStorage.getItem("token");
     if (token) {
       try {
@@ -33,10 +35,8 @@ const useNavData = () => {
   };
 
   // Hàm lấy số lượng wishlist
-  const updateWishlistCount = async () => {
+  const updateWishlistCount = async (userId: string) => {
     const token = window.localStorage.getItem('token');
-    const userId = getUserIdFromToken(); 
-
     if (userId && token) {
       try {
         const response = await apiInstance.get(`/wishlists/count/${userId}`, {
@@ -46,26 +46,39 @@ const useNavData = () => {
         });
 
         if (response.status === 200 && response.data.count !== undefined) {
-          setWishlistCount(response.data.count); // Cập nhật số lượng
+          setWishlistCount(response.data.count); // Cập nhật số lượng wishlist
         } else {
           console.error("Invalid response data:", response.data);
         }
-        updateWishlistCount(); // Gọi hàm cập nhật lại số lượng wishlist
       } catch (error) {
         console.error("Error fetching wishlist count:", error);
-
       }
     }
   };
 
+  // Cập nhật wishlist count khi component mount
   useEffect(() => {
-    updateWishlistCount(); // Cập nhật số lượng khi component mount
-  }, []);
+    const userId = getUserIdFromToken();
+    if (userId) {
+      intervalId = setInterval(() => {
+        updateWishlistCount(userId); // Cập nhật wishlist count mỗi giây
+      }, 800);
 
-  // Hàm xử lý xóa khỏi wishlist
+      // Dừng interval sau 5 giây
+      setTimeout(() => {
+        if (intervalId) {
+          clearInterval(intervalId); // Dừng interval
+        }
+      }, 10000); 
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId); 
+      }
+    };
+  }, []); 
 
-
-  return { wishlistCount, role };
+  return { wishlistCount, role, error };
 };
 
 export default useNavData;

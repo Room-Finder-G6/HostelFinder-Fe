@@ -20,10 +20,8 @@ const Authored = () => {
     const [error, setError] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [urlProfile, setUrlProfile] = useState<string>("");
-
     const pathname = usePathname();  // Sử dụng usePathname để lấy đường dẫn hiện tại
     const { wishlistCount, role } = useNavData(); // Sử dụng hook để lấy dữ liệu wishlist và role
-
     const currentRoute = pathname;  // Đặt giá trị của currentRoute bằng pathname
     const [navTitle, setNavTitle] = useState("");
 
@@ -102,8 +100,7 @@ const Authored = () => {
             <ul className="nav-item favorites">
                 <HeartButton  wishlistCount={wishlistCount}  /> {/* Sử dụng HeartButton và truyền dữ liệu */}
             </ul>
-            <span style={{ fontSize: '17px', marginRight: '14px',marginBottom: '10px'} }>Tin đã lưu</span>
-            
+       
             <button
                 className="user-avatar online position-relative rounded-circle dropdown-toggle"
                 type="button"
