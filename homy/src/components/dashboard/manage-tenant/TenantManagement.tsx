@@ -501,7 +501,7 @@ const TenantManagement = () => {
 
                                                 <button
                                                     className="btn btn-danger"
-                                                    // onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
+                                                    onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
                                                 >
                                                     Chuyển ra
                                                 </button>
