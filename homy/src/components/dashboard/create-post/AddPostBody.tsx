@@ -97,6 +97,7 @@ const AddPostBody: React.FC = () => {
         setLoading(true)
 
         if (!validateForm()) {
+            setLoading(false)
             return;
         }
 
