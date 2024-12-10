@@ -5,7 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import UploadImage from "@/components/UploadImage";
 import { useRouter } from "next/navigation";
-import Loading from "@/components/Loading"; // Import component Loading
+import Loading from "@/components/Loading";
 
 interface PostData {
     id: string;
@@ -33,6 +33,8 @@ interface EditPostFormProps {
 }
 
 const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
     const [postData, setPostData] = useState<PostData>({
         id: '',
         hostelId: '',
@@ -45,97 +47,113 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
         membershipServiceId: ''
     });
 
-    const router = useRouter();
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
-    const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
-    const [loading, setLoading] = useState<boolean>(false); // State for loading
+    const [imageState, setImageState] = useState({
+        selectedFiles: [] as File[],
+        currentUrls: [] as string[],
+        deletedUrls: [] as string[]
+    });
+
+    const fetchPostData = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiInstance.get(`posts/${postId}`);
+            if (response.status === 200) {
+                const data = response.data.data;
+                setPostData({
+                    ...data,
+                    dateAvailable: new Date(data.dateAvailable).toISOString().slice(0, 10)
+                });
+                setImageState(prev => ({
+                    ...prev,
+                    currentUrls: data.imageUrls
+                }));
+            }
+        } catch (error: any) {
+            toast.error(`Lỗi khi tải dữ liệu: ${error.response?.data?.message || error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchPostData = async () => {
-            try {
-                const response = await apiInstance.get(`posts/${postId}`);
-                if (response.status === 200) {
-                    const data = response.data.data;
-                    setPostData({
-                        ...data,
-                        dateAvailable: new Date(data.dateAvailable).toISOString().slice(0, 10)
-                    });
-                    setImageUrls(data.imageUrls);
-                }
-            } catch (error: any) {
-                toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, { position: "top-center" });
-            }
-        };
-
         if (postId) {
             fetchPostData();
         }
     }, [postId]);
 
-    const handleData = (data: Partial<PostData>) => {
-        setPostData(prevData => ({
-            ...prevData,
+    const handleDataChange = (data: Partial<PostData>) => {
+        setPostData(prev => ({
+            ...prev,
             ...data,
         }));
     };
 
-    const handleImageUpload = (files: File[], newImageUrls: string[], deletedImageUrls: string[]) => {
-        setSelectedFiles(files);
-        setImageUrls(newImageUrls);
-        setDeletedImageUrls(deletedImageUrls);
+    const handleImageChange = (files: File[], newUrls: string[], deletedUrls: string[]) => {
+        setImageState({
+            selectedFiles: files,
+            currentUrls: newUrls,
+            deletedUrls: deletedUrls
+        });
+    };
+
+    const prepareFormData = (updateData: UpdatePostData): FormData => {
+        const formData = new FormData();
+
+        // Add basic post data
+        Object.entries(updateData).forEach(([key, value]) => {
+            formData.append(key, value.toString());
+        });
+
+        // Add new images
+        imageState.selectedFiles.forEach(file => {
+            formData.append('images', file);
+        });
+
+        // Add existing image URLs
+        imageState.currentUrls
+            .filter(url => !url.startsWith("blob:"))
+            .forEach(url => formData.append('imageUrls', url));
+
+        // Add deleted image URLs
+        imageState.deletedUrls.forEach(url =>
+            formData.append('deletedImageUrls', url)
+        );
+
+        return formData;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        setLoading(true); // Show loading spinner
-
-        const updateData: UpdatePostData = {
-            hostelId: postData.hostelId,
-            roomId: postData.roomId,
-            title: postData.title,
-            description: postData.description,
-            status: postData.status,
-            dateAvailable: new Date(postData.dateAvailable).toISOString()
-        };
+        if (!postData.title || !postData.description) {
+            toast.error('Vui lòng điền đầy đủ thông tin bắt buộc');
+            return;
+        }
 
         try {
-            const formData = new FormData();
+            setIsLoading(true);
 
-            Object.entries(updateData).forEach(([key, value]) => {
-                formData.append(key, value.toString());
-            });
+            const updateData: UpdatePostData = {
+                hostelId: postData.hostelId,
+                roomId: postData.roomId,
+                title: postData.title,
+                description: postData.description,
+                status: postData.status,
+                dateAvailable: new Date(postData.dateAvailable).toISOString()
+            };
 
-            if (selectedFiles.length > 0) {
-                selectedFiles.forEach(file => {
-                    formData.append('images', file);
-                });
-            }
-
-            if (imageUrls && imageUrls.length > 0) {
-                imageUrls.forEach(url => {
-                    if (!url.startsWith("blob:")) {
-                        formData.append('imageUrls', url);
-                    }
-                });
-            }
-
-            if (deletedImageUrls && deletedImageUrls.length > 0) {
-                deletedImageUrls.forEach(url => formData.append('deletedImageUrls', url));
-            }
+            const formData = prepareFormData(updateData);
 
             const response = await apiInstance.put(`posts/${postData.id}`, formData);
+
             if (response.status === 200) {
-                toast.success('Post updated successfully!', { position: "top-center" });
-                setTimeout(() => {
-                    router.push("/dashboard/manage-post");
-                }, 1000);
+                toast.success('Cập nhật bài đăng thành công!');
+                setTimeout(() => router.push("/dashboard/manage-post"), 1000);
             }
         } catch (error: any) {
-            toast.error(`Error updating post: ${error.response?.data?.message || error.message}`, { position: "top-center" });
+            toast.error(`Lỗi khi cập nhật: ${error.response?.data?.message || error.message}`);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
@@ -143,14 +161,17 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
         <div className="dashboard-form-container">
             <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
 
-            <Overview onDataChange={handleData} postData={postData} />
+            {isLoading && <Loading />}
 
-            {loading && <Loading />} {/* Show loading overlay if loading is true */}
+            <Overview
+                onDataChange={handleDataChange}
+                postData={postData}
+            />
 
             <div className="bg-white card-box border-20 mt-40">
                 <h4 className="dash-title-three">Thêm ảnh</h4>
                 <UploadImage
-                    onImageUpload={handleImageUpload}
+                    onImageUpload={handleImageChange}
                     multiple={true}
                     existingImages={postData.imageUrls}
                 />
@@ -158,10 +179,18 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
 
             <form onSubmit={handleSubmit}>
                 <div className="button-group d-inline-flex align-items-center mt-30">
-                    <button type="submit" className="dash-btn-two tran3s me-3" disabled={loading}>
-                        {loading ? 'Đang cập nhật...' : 'Cập nhật'} {/* Show loading text while submitting */}
+                    <button
+                        type="submit"
+                        className="dash-btn-two tran3s me-3"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Đang cập nhật...' : 'Cập nhật'}
                     </button>
-                    <button onClick={() => router.push("/dashboard/manage-post")} type="button" className="dash-cancel-btn tran3s">
+                    <button
+                        type="button"
+                        className="dash-cancel-btn tran3s"
+                        onClick={() => router.push("/dashboard/manage-post")}
+                    >
                         Hủy
                     </button>
                 </div>
