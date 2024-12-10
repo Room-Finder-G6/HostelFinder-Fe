@@ -20,7 +20,7 @@ const PropertyListBody = () => {
                   </table>
                </div>
             </div>
-
+            {/* 
             <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
                <li className="me-3"><Link href="#">1</Link></li>
                <li className="selected"><Link href="#">2</Link></li>
@@ -29,7 +29,7 @@ const PropertyListBody = () => {
                <li>....</li>
                <li className="ms-2"><Link href="#" className="d-flex align-items-center">
                   Last <Image src={icon_1} alt="" className="ms-2" /></Link></li>
-            </ul>
+            </ul> */}
          </div>
       </div>
    )

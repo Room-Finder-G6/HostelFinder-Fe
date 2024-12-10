@@ -2,7 +2,6 @@ import styles from './UserPostsBody.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import {getUserIdFromToken} from "@/utils/tokenUtils";
-import {useEffect, useState} from "react";
 import {toast} from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
 

@@ -61,7 +61,7 @@ const useNavData = () => {
     const userId = getUserIdFromToken();
     if (userId) {
       intervalId = setInterval(() => {
-        updateWishlistCount(userId); // Cập nhật wishlist count mỗi giây
+        // updateWishlistCount(userId); // Cập nhật wishlist count mỗi giây
       }, 800);
 
       // Dừng interval sau 5 giây
