@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
+interface UploadImageProps {
+    onImageUpload: (files: File[], currentUrls: string[], deletedUrls: string[]) => void;
+    multiple?: boolean;
+    accept?: string;
+    existingImages?: string[];
+}
+
 const UploadImage: React.FC<UploadImageProps> = ({
                                                      onImageUpload,
                                                      multiple = false,
