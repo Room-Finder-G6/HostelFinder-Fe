@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {Story} from "@/models/story";
-import {useRouter} from "next/navigation";
+import React, { useEffect, useState } from 'react';
+import { Story } from "@/models/story";
+import { useRouter } from "next/navigation";
 import apiInstance from "@/utils/apiInstance";
-import {toast} from "react-toastify";
-import {EditStoryRequest} from "@/models/editStoryRequest";
+import { toast } from "react-toastify";
+import { EditStoryRequest } from "@/models/editStoryRequest";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Loading from "@/components/Loading";
 import UploadImage from "@/components/UploadImage";
@@ -28,13 +28,11 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
             detailAddress: ''
         },
         images: []
-    })
+    });
 
     const router = useRouter();
-    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-    const [imageUrls, setImageUrls] = useState<string[]>([]);
-    const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
     useEffect(() => {
         const fetchPostData = async () => {
@@ -46,7 +44,6 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
                         ...data,
                         dateAvailable: new Date(data.dateAvailable).toISOString().slice(0, 10)
                     });
-                    setImageUrls(data.imageUrls);
                 }
             } catch (error: any) {
                 toast.error(`Error fetching post data: ${error.response?.data?.message || error.message}`, {position: "top-center"});
@@ -65,16 +62,13 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
         }));
     };
 
-    const handleImageUpload = (files: File[], newImageUrls: string[], deletedImageUrls: string[]) => {
+    const handleImageUpload = (files: File[]) => {
         setSelectedFiles(files);
-        setImageUrls(newImageUrls);
-        setDeletedImageUrls(deletedImageUrls);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        setLoading(true); // Show loading spinner
+        setLoading(true);
 
         const updateData: EditStoryRequest = {
             title: postData.title,
@@ -89,27 +83,19 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
         try {
             const formData = new FormData();
 
+            // Append all form data
             Object.entries(updateData).forEach(([key, value]) => {
-                formData.append(key, value.toString());
+                if (key === 'address') {
+                    formData.append(key, JSON.stringify(value));
+                } else {
+                    formData.append(key, value.toString());
+                }
             });
 
-            if (selectedFiles.length > 0) {
-                selectedFiles.forEach(file => {
-                    formData.append('images', file);
-                });
-            }
-
-            if (imageUrls && imageUrls.length > 0) {
-                imageUrls.forEach(url => {
-                    if (!url.startsWith("blob:")) {
-                        formData.append('imageUrls', url);
-                    }
-                });
-            }
-
-            if (deletedImageUrls && deletedImageUrls.length > 0) {
-                deletedImageUrls.forEach(url => formData.append('deletedImageUrls', url));
-            }
+            // Append new images
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
 
             const response = await apiInstance.put(`story/${postId}`, formData);
             if (response.status === 200) {
@@ -138,17 +124,20 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
                 <UploadImage
                     onImageUpload={handleImageUpload}
                     multiple={true}
-                    existingImages={postData.images}
+                    accept="image/*"
                 />
             </div>
 
             <form onSubmit={handleSubmit}>
                 <div className="button-group d-inline-flex align-items-center mt-30">
                     <button type="submit" className="dash-btn-two tran3s me-3" disabled={loading}>
-                        {loading ? 'Đang cập nhật...' : 'Cập nhật'} {/* Show loading text while submitting */}
+                        {loading ? 'Đang cập nhật...' : 'Cập nhật'}
                     </button>
-                    <button onClick={() => router.push("/dashboard/manage-find-rommates")} type="button"
-                            className="dash-cancel-btn tran3s">
+                    <button
+                        onClick={() => router.push("/dashboard/manage-find-rommates")}
+                        type="button"
+                        className="dash-cancel-btn tran3s"
+                    >
                         Hủy
                     </button>
                 </div>
