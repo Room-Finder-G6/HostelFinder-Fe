@@ -5,11 +5,18 @@ import profileIcon_1 from "@/assets/images/dashboard/icon/icon_23.svg";
 import profileIcon_2 from "@/assets/images/dashboard/icon/icon_24.svg";
 import profileIcon_3 from "@/assets/images/dashboard/icon/icon_25.svg";
 import { signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const Profile: React.FC = () => {
     const router = useRouter();
 
-    const isLoggedIn = !!localStorage.getItem("token");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+            setIsLoggedIn(true);
+        }
+    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("userName");

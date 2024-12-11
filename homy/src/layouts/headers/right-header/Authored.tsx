@@ -25,7 +25,13 @@ const Authored = () => {
     const currentRoute = pathname;  // Đặt giá trị của currentRoute bằng pathname
     const [navTitle, setNavTitle] = useState("");
 
-    const isLoggedIn = !!localStorage.getItem("token");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && localStorage.getItem('token')) {
+          setIsLoggedIn(true);
+        }
+      }, []);
 
     const isMenuItemActive = (menuLink: string) => {
         return currentRoute === menuLink;
