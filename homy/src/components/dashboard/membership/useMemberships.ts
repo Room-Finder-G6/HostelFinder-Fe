@@ -26,6 +26,18 @@ const useMemberships = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]);
+  const handleLogout = () => {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("token");
+    // Lấy callbackUrl từ biến môi trường
+    const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
+
+    // Thực hiện đăng xuất với callbackUrl đúng
+    // signOut({
+    //   callbackUrl: callbackUrl,
+    // });
+    window.location.href = "/";
+  };
 
   const fetchMemberships = async () => {
     setLoading(true);
@@ -91,7 +103,8 @@ const useMemberships = () => {
       console.log("API Response:", response.data);
 
       if (response.status === 200) {
-        toast.success("Mua gói thành viên thành công!"); // Thành công thì dùng toast.success
+        toast.success("Mua gói thành viên thành công!");
+        handleLogout();
       } else {
         const errorMessage = response.data.message;
         console.log("Backend error message:", errorMessage);

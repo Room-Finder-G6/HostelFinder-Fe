@@ -36,7 +36,7 @@ const useNavData = () => {
   const updateWishlistCount = async () => {
     const token = window.localStorage.getItem('token');
     const userId = getUserIdFromToken(); 
-
+  
     if (userId && token) {
       try {
         const response = await apiInstance.get(`/wishlists/count/${userId}`, {
@@ -44,23 +44,22 @@ const useNavData = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         if (response.status === 200 && response.data.count !== undefined) {
           setWishlistCount(response.data.count); // Cập nhật số lượng
         } else {
           console.error("Invalid response data:", response.data);
         }
-        updateWishlistCount(); // Gọi hàm cập nhật lại số lượng wishlist
       } catch (error) {
         console.error("Error fetching wishlist count:", error);
-
       }
     }
   };
+  
 
-  // useEffect(() => {
-  //   updateWishlistCount(); // Cập nhật số lượng khi component mount
-  // }, []);
+  useEffect(() => {
+    updateWishlistCount(); // Cập nhật số lượng khi component mount
+  }, []);
 
   // Hàm xử lý xóa khỏi wishlist
 

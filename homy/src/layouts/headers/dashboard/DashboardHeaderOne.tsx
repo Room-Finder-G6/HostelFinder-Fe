@@ -302,7 +302,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-maintenance" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
-                                        <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý" />
+                                        <Image src={pathname === '/manage-maintenance' ? dashboardIconActive_10 : dashboardIcon_10} alt="Quản lý sửa chữa" />
                                         <span>Sửa chữa, bảo dưỡng</span>
                                     </Link>
                                 </li>
