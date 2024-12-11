@@ -14,17 +14,15 @@ const PasswordChangeBody = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("userName");
     localStorage.removeItem("token");
     // Lấy callbackUrl từ biến môi trường
-    const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
-
-    // Thực hiện đăng xuất với callbackUrl đúng
-    // signOut({
-    //   callbackUrl: callbackUrl,
-    // });
-    window.location.href = "/";
+    await signOut({
+      redirect: false,
+    });
+    const callbackUrl = process.env.NEXTAUTH_URL || "/";
+    window.location.href = callbackUrl;
   };
 
   // Hàm lấy userId từ token JWT

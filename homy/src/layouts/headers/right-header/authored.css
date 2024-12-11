@@ -1,0 +1,37 @@
+.profile-notification {
+    display: flex;            /* Dùng flexbox để căn chỉnh các phần tử con */
+    justify-content: space-between;  /* Đảm bảo hai nút có không gian đều nhau */
+    align-items: center;      /* Căn giữa các nút theo chiều dọc */
+}
+
+.profile-notification button {
+    flex: 2; /* Mỗi nút chiếm đều một phần không gian */
+    display: flex; /* Đảm bảo nội dung bên trong button không bị lệch */
+    justify-content: center; /* Căn giữa nội dung trong mỗi button */
+    align-items: center; /* Căn giữa nội dung theo chiều dọc */
+    margin-left: 10px;
+}
+.dropdown-menu {
+    display: block; /* Đảm bảo dropdown hiển thị */
+    position: absolute;
+    background: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 1000; /* Đảm bảo nội dung nằm trên các phần tử khác */
+    width: 200px; /* Đặt chiều rộng phù hợp */
+}
+
+
+.notification-btn,
+.profile-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.notification-btn img,
+.profile-btn img {
+    width: 30px;
+    height: 30px;
+}

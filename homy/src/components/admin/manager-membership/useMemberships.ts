@@ -53,6 +53,7 @@ const useMemberships = () => {
     
             if (response.data.succeeded) {
                 toast.success("Xóa membership thành công!"); // Thành công thì dùng toast.success
+                window.location.reload();
             } else {
                 const errorMessage = response.data.message;
                 console.log("Backend error message:", errorMessage);

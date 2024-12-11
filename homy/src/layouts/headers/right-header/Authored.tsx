@@ -1,4 +1,4 @@
-"use client";  // Đảm bảo là client-side component
+﻿"use client";  // Đảm bảo là client-side component
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from "next/image";
@@ -116,7 +116,7 @@ const Authored = () => {
                     className="lazy-img"
                     width={60}
                     height={60}
-                    style={{width: "100%", height: "100%", objectFit: "cover"}}
+                    style={{width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%"}}
                 />
             </button>
             {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">

@@ -11,7 +11,7 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const tabTitle: string[] = ["Login", "Signup"];
+const tabTitle: string[] = ["Đăng nhập", "Đăng ký"];
 
 const LoginModal = ({ loginModal, setLoginModal }: any) => {
    const router = useRouter();
@@ -94,9 +94,9 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                               activeTab === 0 && (
                                  <div className="tab-pane fade show active">
                                     <div className="text-center mb-20">
-                                       <h2>Welcome Back!</h2>
+                                       <h2>Chào mừng bạn!</h2>
                                        <p className="fs-20 color-dark">
-                                          Still don&apos;t have an account? <Link href="#" onClick={() => handleTabClick(1)}>Sign up</Link>
+                                          Nếu bạn chưa có tài khoản? <Link href="#" onClick={() => handleTabClick(1)}>Đăng ký</Link>
                                        </p>
                                     </div>
                                     <LoginForm setShowForgotPassword={setShowForgotPassword} />
@@ -108,9 +108,9 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                            {activeTab === 1 && (
                               <div className="tab-pane fade show active">
                                  <div className="text-center mb-20">
-                                    <h2>Register</h2>
+                                    <h2>Đăng ký</h2>
                                     <p className="fs-20 color-dark">
-                                       Already have an account? <Link href="#" onClick={() => handleTabClick(0)}>Login</Link>
+                                       Nếu bạn đã có tài khoản? <Link href="#" onClick={() => handleTabClick(0)}>Đăng nhập</Link>
                                     </p>
                                  </div>
                                  <RegisterForm />

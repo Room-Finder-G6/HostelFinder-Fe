@@ -86,7 +86,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
               <input
                 type="text"
                 {...register("userName")}
-                placeholder="User Name"
+                placeholder="Tên đăng nhập"
               />
               <p className="form_error">{errors.userName?.message}</p>
             </div>
@@ -97,7 +97,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
               <input
                 type={isPasswordVisible ? "text" : "password"}
                 {...register("password")}
-                placeholder="Enter Password"
+                placeholder="Nhập mật khẩu"
                 className="pass_log_id"
               />
               <span className="placeholder_icon">

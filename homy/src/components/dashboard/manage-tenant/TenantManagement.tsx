@@ -27,11 +27,11 @@ interface Tenant {
     phone: string;
     moveInDate: string;
     status: string;
-    province:string;
-    district:string;
-    commune:string;
-    detailAddress:string;
-    identityCardNumber:string;
+    province: string;
+    district: string;
+    commune: string;
+    detailAddress: string;
+    identityCardNumber: string;
 }
 
 const TenantManagement = () => {
@@ -44,6 +44,8 @@ const TenantManagement = () => {
     const [totalPages, setTotalPages] = useState<number>(0); // Tổng số trang
     const [searchQuery, setSearchQuery] = useState<string>(""); // Từ khóa tìm kiếm
     const [page, setPage] = useState(1); // Trang hiện tại
+    const [roomData, setRoomData] = useState<Room | null>(null);
+
     const [newTenant, setNewTenant] = useState<any>({
         roomId: "",
         fullName: "",
@@ -71,37 +73,27 @@ const TenantManagement = () => {
                 `/Tenants/GetAllTenantsByHostel/${hostelId}?pageNumber=${page}&pageSize=10`
             );
             if (response.data.succeeded) {
-                const filteredTenants = response.data.data.map((tenant: any) => {
-                    // Kiểm tra MoveOutDate để xác định trạng thái
-                    const status = tenant.MoveOutDate 
-                        ? (new Date(tenant.MoveOutDate) < new Date() ? "Đã rời phòng" : "Đang thuê")
-                        : "Đang thuê"; // Nếu không có MoveOutDate, luôn là "Đang thuê"
-                    
-                    return {
-                        ...tenant,
-                        Status: status, // Cập nhật trạng thái
-                    };
+                const filteredTenants = response.data.data.filter((tenant: Tenant) => {
+                    // Lọc tenant theo phòng nếu `roomName` hoặc `roomId` chứa `searchQuery`
+                    return tenant.roomName.includes(searchQuery); // Có thể thay "roomName" bằng trường phù hợp
                 });
-    
                 setTenants(filteredTenants);
-    
-                // Tính toán số trang nếu có
-                const totalRecords = response.data.totalRecords;
-                setTotalPages(Math.ceil(totalRecords / 10));
             } else {
-                const errorMessage = response.data.message || "Không thể tải danh sách tenants.";
-                toast.error(errorMessage);
+                toast.error("Không thể tải danh sách tenants.");
                 setTenants([]); // Fallback to an empty array
             }
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.message;
-            toast.error(errorMessage);
+            const totalRecords = response.data.totalRecords;
+                setTotalPages(Math.ceil(totalRecords / 10));
+        } catch (error) {
+            toast.error("Lỗi khi tải danh sách tenants.");
             setTenants([]); // Fallback to an empty array
         }
         setLoading(false);
     };
-    
-    
+    const filteredTenants = tenants.filter(tenant =>
+        tenant.fullName.toLowerCase().includes(searchQuery) // So sánh với tên tenant đã chuyển thành chữ thường
+    );
+
     // Hàm fetch danh sách phòng theo hostelId
     const fetchRooms = async (hostelId: string) => {
         setLoading(true);
@@ -119,22 +111,16 @@ const TenantManagement = () => {
         }
         setLoading(false);
     };
-
     // Hàm thay đổi trang
     const handlePageChange = (newPage: number) => {
-        // Kiểm tra nếu trang sau có hợp lệ hay không
-        if (newPage > totalPages || newPage < 1) return;
         setPage(newPage);
-        fetchTenants(selectedHostelId, newPage, searchQuery);
+        fetchTenants(selectedHostelId, newPage, searchQuery); 
     };
-
     // Hàm tìm kiếm phòng trọ theo tên
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         fetchTenants(selectedHostelId, 1, e.target.value); // Tìm kiếm khi thay đổi từ khóa
     };
-
-
     // Hàm xử lý thay đổi nhà trọ
     const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const hostelId = e.target.value;
@@ -144,19 +130,31 @@ const TenantManagement = () => {
         fetchRooms(hostelId); // Lấy phòng của hostel đã chọn
         fetchTenants(hostelId, 1, searchQuery); // Lấy tenants của hostel đã chọn
     };
+    useEffect(() => {
+        if (roomData) {
+            // Lúc này bạn có thể cập nhật giao diện hoặc thực hiện các hành động khi `roomData` thay đổi
+            console.log("Room data updated:", roomData);
+        }
+    }, [roomData]); // Chạy lại khi `roomData` thay đổi
     const handleMoveOut = async (tenantId: string, roomId: string) => {
         setLoading(true);
         try {
             // Gửi yêu cầu MoveOut đến API
             const response = await apiInstance.post(`/Tenants/moveout?tenantId=${tenantId}&roomId=${roomId}`);
-
+    
             if (response.data.succeeded) {
-                // Sau khi move out thành công, làm mới trang
+                // Sau khi move out thành công, làm mới dữ liệu về phòng
                 toast.success("Thành viên đã chuyển ra khỏi phòng thành công.");
+    
+                // Gọi lại API để lấy thông tin phòng cập nhật
+                const updatedRoom = await apiInstance.get(`/Rooms/${roomId}`);
+                console.log(updatedRoom.data);  // Kiểm tra dữ liệu trả về
+                setRoomData(updatedRoom.data); // Cập nhật state
             } else {
                 const errorMessage = response.data.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
                 toast.error(errorMessage);
             }
+            window.location.reload();
         } catch (error: any) {
             console.error("Move out error:", error);
             const errorMessage = error.response?.data?.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
@@ -164,7 +162,6 @@ const TenantManagement = () => {
         }
         setLoading(false);
     };
-
     const handleRoomChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const roomId = e.target.value;
         setNewTenant((prev: any) => ({
@@ -271,19 +268,15 @@ const TenantManagement = () => {
                 <RoomSelector
                     selectedHostel={selectedHostelId}
                     onHostelChange={handleHostelChange}
-                    selectedRoom={""} // Không cần chọn phòng
-                    onRoomChange={() => { }} // Không cần xử lý khi thay đổi phòng
+                    selectedRoom={""} 
+                    onRoomChange={() => { }} 
                 />
             </div>
             {loading &&
                 <Loading />
-
-                // <div>
-                //     {renderTenants()}
-                // </div>
             }
-            {/* Tìm kiếm theo tên phòng trọ */}
-            <input
+          
+          <input
                 type="text"
                 name="room"
                 placeholder="Tìm kiếm phòng"
@@ -307,7 +300,7 @@ const TenantManagement = () => {
                                 <button type="button" className="btn-close" onClick={toggleModal}></button>
                             </div>
                             <div className="modal-body">
-                                {/* Form input để thêm thành viên */}
+                               
                                 <div className="form-group">
                                     <label htmlFor="roomSelect">Chọn phòng:</label>
                                     <select
@@ -334,13 +327,17 @@ const TenantManagement = () => {
                                     className="form-control mb-2"
                                     required
                                 />
+                                 <div className="file-upload-container">
+                                 <label htmlFor="avatarImage" className="form-label">Ảnh đại diện:</label>
                                 <input
                                     type="file"
                                     name="avatarImage"
+                                    placeholder="Ảnh đại diện"
                                     onChange={handleInputChange}
                                     className="form-control mb-2"
                                     required
                                 />
+                                </div>
                                 <input
                                     type="email"
                                     name="email"
@@ -367,58 +364,20 @@ const TenantManagement = () => {
                                     onChange={handleInputChange}
                                     className="form-control mb-2"
                                 />
-                                <input
-                                    type="date"
-                                    name="dateOfBirth"
-                                    value={newTenant.dateOfBirth}
-                                    onChange={handleInputChange}
-                                    className="form-control mb-2"
-                                    required
-                                />
+                                
+                                 <div className="file-upload-container">
+                                 <label htmlFor="moveInDate" className="form-label">Ngày vào:</label>
                                 <input
                                     type="date"
                                     name="moveInDate"
+                                    placeholder="Ngày vào"
                                     value={newTenant.moveInDate}
                                     onChange={handleInputChange}
                                     className="form-control mb-2"
                                     required
                                 />
-                                {/* <input
-                                    type="text"
-                                    name="province"
-                                    placeholder="Tỉnh"
-                                    value={newTenant.province}
-                                    onChange={handleInputChange}
-                                    className="form-control mb-2"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="district"
-                                    placeholder="Quận/Huyện"
-                                    value={newTenant.district}
-                                    onChange={handleInputChange}
-                                    className="form-control mb-2"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="commune"
-                                    placeholder="Xã/Phường"
-                                    value={newTenant.commune}
-                                    onChange={handleInputChange}
-                                    className="form-control mb-2"
-                                    required
-                                />
-                                <input
-                                    type="text"
-                                    name="detailAddress"
-                                    placeholder="Địa chỉ cụ thể"
-                                    value={newTenant.detailAddress}
-                                    onChange={handleInputChange}
-                                    className="form-control mb-2"
-                                    required
-                                /> */}
+                                </div>
+                               
                                 <input
                                     type="text"
                                     name="identityCardNumber"
@@ -428,23 +387,28 @@ const TenantManagement = () => {
                                     className="form-control mb-2"
                                     required
                                 />
-                                <input
-                                    type="file"
-                                    name="frontImage"
-                                    accept="image/*"
-                                    onChange={handleInputChange}
-                                />
-                                <input
-                                    type="file"
-                                    name="backImage"
-                                    accept="image/*"
-                                    onChange={handleInputChange}
-                                />
-
-
+                                <div className="file-upload-container">
+                                    <label htmlFor="frontImage" className="form-label">Mặt trước CCCD: </label>
+                                    <input
+                                        type="file"
+                                        name="frontImage"
+                                        accept="image/*"
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="file-upload-container">
+                                    <label htmlFor="backImage" className="form-label">Mặt sau CCCD: </label>
+                                    <input
+                                        type="file"
+                                        name="backImage"
+                                        accept="image/*"
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
                                 <input
                                     type="number"
                                     name="temporaryResidenceStatus"
+                                    placeholder="Tình trạng tạm trú"
                                     value={newTenant.temporaryResidenceStatus}
                                     onChange={handleInputChange}
                                     className="form-control mb-2"
@@ -487,7 +451,7 @@ const TenantManagement = () => {
                                                 />
                                             </td>
                                             <td>{tenant.fullName}</td>
-                                           
+
                                             <td>{tenant.email}</td>
                                             <td>{tenant.phone}</td>
                                             <td>{tenant.roomName}</td>
@@ -497,7 +461,6 @@ const TenantManagement = () => {
                                             </td>
 
                                             <td>
-                                                {/* Kiểm tra nếu trạng thái là "Đã chuyển ra" thì ẩn nút */}
 
                                                 <button
                                                     className="btn btn-danger"

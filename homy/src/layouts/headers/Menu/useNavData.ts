@@ -50,7 +50,6 @@ const useNavData = () => {
         } else {
           console.error("Invalid response data:", response.data);
         }
-        updateWishlistCount(); // Gọi hàm cập nhật lại số lượng wishlist
       } catch (error) {
         console.error("Error fetching wishlist count:", error);
 
