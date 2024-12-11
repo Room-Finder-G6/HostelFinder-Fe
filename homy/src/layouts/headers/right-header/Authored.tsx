@@ -25,6 +25,8 @@ const Authored = () => {
     const currentRoute = pathname;  // Đặt giá trị của currentRoute bằng pathname
     const [navTitle, setNavTitle] = useState("");
 
+    const isLoggedIn = !!localStorage.getItem("token");
+
     const isMenuItemActive = (menuLink: string) => {
         return currentRoute === menuLink;
     };
@@ -56,7 +58,7 @@ const Authored = () => {
         setError("No token found");
         return null;
     }, []);
-    
+
 
     // Lấy thông tin người dùng từ API
     const fetchUserProfile = useCallback(async () => {
@@ -80,7 +82,7 @@ const Authored = () => {
             setIsLoading(false);
         }
     }, [userId]);
-    
+
 
     useEffect(() => {
         const userId = getUserIdFromToken();
@@ -96,35 +98,47 @@ const Authored = () => {
     }, [userId, fetchUserProfile]);
 
     return (
-        <div className="user-data d-flex align-items-center position-relative">
-            <ul className="nav-item favorites">
-                <HeartButton  wishlistCount={wishlistCount}  /> {/* Sử dụng HeartButton và truyền dữ liệu */}
-            </ul>
-       
-            <button
-                className="user-avatar online position-relative rounded-circle dropdown-toggle"
-                type="button"
-                id="profile-dropdown"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                aria-expanded="false"
-                aria-label="User Profile"
-            >
-                <Image
-                    src={urlProfile}
-                    alt="User Avatar"
-                    className="lazy-img"
-                    width={60}
-                    height={60}
-                    style={{ borderRadius: "50%" }}
-                />
-            </button>
-            {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">
-                <span>Create Post</span>
-                <i className="fa-thin fa-arrow-up-right"></i>
-            </Link> */}
-            <Profile />
-        </div>
+        <>
+            {isLoggedIn ? (
+                <div className="user-data d-flex align-items-center position-relative">
+                    <ul className="nav-item favorites">
+                        <HeartButton wishlistCount={wishlistCount} /> {/* Sử dụng HeartButton và truyền dữ liệu */}
+                    </ul>
+
+                    <button
+                        className="user-avatar online position-relative rounded-circle dropdown-toggle"
+                        type="button"
+                        id="profile-dropdown"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                        aria-label="User Profile"
+                    >
+                        <Image
+                            src={urlProfile}
+                            alt="User Avatar"
+                            className="lazy-img"
+                            width={60}
+                            height={60}
+                            style={{ borderRadius: "50%" }}
+                        />
+                    </button>
+                    {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">
+                   <span>Create Post</span>
+                   <i className="fa-thin fa-arrow-up-right"></i>
+               </Link> */}
+                    <Profile />
+                </div>
+            ) : (
+                <>
+                    <li>
+                        <Link href="/"
+                            className="btn-one"><i className="fa-regular fa-home"></i> <span
+                                style={{ fontFamily: "'Fira Code', sans-serif" }}>Trang chủ</span></Link>
+                    </li>
+                </>
+            )}
+        </>
     );
 };
 
