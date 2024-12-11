@@ -1,71 +1,131 @@
 ﻿import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
 interface UploadImageProps {
-    onImageUpload: (files: File[], imageUrls: string[], deletedImageUrls: string[]) => void;
+    onImageUpload: (files: File[], currentUrls: string[], deletedUrls: string[]) => void;
     multiple?: boolean;
-    existingImages?: string[]; // Sử dụng mảng chuỗi URL cho ảnh đã tồn tại
+    accept?: string;
+    existingImages?: string[];
 }
 
-const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = false, existingImages = [] }) => {
-    const [filePreviews, setFilePreviews] = useState<{ file?: File; previewUrl: string }[]>([]);
-    const [remainingImageUrls, setRemainingImageUrls] = useState<string[]>(existingImages);  // Tên ảnh hiện tại không thay đổi
-    const [deletedImageUrls, setDeletedImageUrls] = useState<string[]>([]); // Mảng ảnh bị xóa
+const UploadImage: React.FC<UploadImageProps> = ({
+                                                     onImageUpload,
+                                                     multiple = false,
+                                                     accept = "image/*",
+                                                     existingImages = []
+                                                 }) => {
+    const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+    const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [deletedUrls, setDeletedUrls] = useState<string[]>([]);
 
     useEffect(() => {
-        if (existingImages.length) {
-            const previews = existingImages.map(url => ({ previewUrl: url }));
-            setFilePreviews(previews);
-            setRemainingImageUrls(existingImages); // Set các ảnh đã tồn tại
+        if (existingImages.length > 0) {
+            setPreviewUrls(existingImages);
         }
     }, [existingImages]);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = Array.from(event.target.files || []);
-        if (files.length) {
-            const newPreviews = files.map(file => ({
-                file,
-                previewUrl: URL.createObjectURL(file) // Chỉ tạo previewUrl cho ảnh mới
-            }));
-            setFilePreviews(prevPreviews => [...prevPreviews, ...newPreviews]);
-            setRemainingImageUrls(prevUrls => [...prevUrls, ...files.map(file => URL.createObjectURL(file))]);  // Thêm ảnh mới vào URLs
-            onImageUpload([...filePreviews.map(fp => fp.file).filter(Boolean) as File[], ...files], remainingImageUrls, deletedImageUrls);
+    const validateFile = (file: File): boolean => {
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            toast.error(`File ${file.name} không phải là file ảnh hợp lệ. Chỉ chấp nhận các file JPEG, PNG, GIF và WebP.`);
+            return false;
         }
+
+        if (file.size > MAX_FILE_SIZE) {
+            toast.error(`File ${file.name} vượt quá kích thước tối đa (3MB).`);
+            return false;
+        }
+
+        return true;
     };
 
-    const handleRemoveFile = (index: number) => {
-        setFilePreviews(prevPreviews => {
-            const updatedPreviews = prevPreviews.filter((_, i) => i !== index);
-            const updatedUrls = updatedPreviews.map(fp => fp.previewUrl);  // Cập nhật lại URLs đã xóa
-            const removedFile = prevPreviews[index].previewUrl;
-            setDeletedImageUrls(prevDeletedUrls => [...prevDeletedUrls, removedFile]);  // Thêm ảnh bị xóa vào mảng deletedImageUrls
-            setRemainingImageUrls(updatedUrls);
-            onImageUpload(updatedPreviews.map(fp => fp.file).filter(Boolean) as File[], updatedUrls, deletedImageUrls);
-            return updatedPreviews;
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(event.target.files || []);
+        const validFiles: File[] = [];
+        const newPreviewUrls: string[] = [];
+
+        files.forEach(file => {
+            if (validateFile(file)) {
+                validFiles.push(file);
+                newPreviewUrls.push(URL.createObjectURL(file));
+            }
         });
+
+        if (validFiles.length > 0) {
+            let updatedFiles: File[];
+            let updatedUrls: string[];
+
+            if (multiple) {
+                updatedFiles = [...selectedFiles, ...validFiles];
+                updatedUrls = [...previewUrls, ...newPreviewUrls];
+            } else {
+                previewUrls.forEach(url => {
+                    if (url.startsWith('blob:')) {
+                        URL.revokeObjectURL(url);
+                    }
+                });
+                updatedFiles = [validFiles[0]];
+                updatedUrls = [newPreviewUrls[0]];
+            }
+
+            setSelectedFiles(updatedFiles);
+            setPreviewUrls(updatedUrls);
+            onImageUpload(updatedFiles, updatedUrls, deletedUrls);
+        }
+
+        event.target.value = '';
     };
+
+    const removeImage = (index: number) => {
+        const urlToRemove = previewUrls[index];
+
+        if (urlToRemove.startsWith('blob:')) {
+            URL.revokeObjectURL(urlToRemove);
+            const newFiles = selectedFiles.filter((_, i) => {
+                const fileIndex = previewUrls.findIndex(url => url.startsWith('blob:')) + i;
+                return fileIndex !== index;
+            });
+            setSelectedFiles(newFiles);
+        } else {
+            setDeletedUrls(prev => [...prev, urlToRemove]);
+        }
+
+        const newUrls = previewUrls.filter((_, i) => i !== index);
+        setPreviewUrls(newUrls);
+        onImageUpload(selectedFiles, newUrls, [...deletedUrls, urlToRemove]);
+    };
+
+    useEffect(() => {
+        return () => {
+            previewUrls.forEach(url => {
+                if (url.startsWith('blob:')) {
+                    URL.revokeObjectURL(url);
+                }
+            });
+        };
+    }, []);
 
     return (
         <div className="dash-input-wrapper mb-20">
-            <div className="image-preview-container mb-5" style={{ display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto' }}>
-                {filePreviews.map((item, index) => (
-                    <div key={index} className="image-preview-wrapper position-relative" style={{ width: '15%', minWidth: '100px' }}>
+            <div className="image-preview-container mb-5"
+                 style={{display: 'flex', gap: '10px', flexWrap: 'nowrap', overflowX: 'auto'}}>
+                {previewUrls.map((url, index) => (
+                    <div key={index} className="preview-image-container position-relative">
                         <img
-                            src={item.previewUrl}
-                            alt={item.file ? item.file.name : `existing-${index}`}
-                            className="image-preview"
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                borderRadius: '15px'
-                            }}
+                            src={url}
+                            alt={`Preview ${index + 1}`}
+                            className="preview-image"
+                            style={{width: '100px', height: '100px', objectFit: 'cover'}}
                         />
                         <button
                             type="button"
-                            className="remove-btn position-absolute top-0 end-0"
-                            onClick={() => handleRemoveFile(index)}
+                            className="remove-image-btn position-absolute top-0 end-0 bg-danger text-white border-0 rounded-circle"
+                            onClick={() => removeImage(index)}
+                            style={{width: '20px', height: '20px', padding: 0, lineHeight: '1'}}
                         >
-                            <i className="bi bi-x"></i>
+                            ×
                         </button>
                     </div>
                 ))}
@@ -74,10 +134,11 @@ const UploadImage: React.FC<UploadImageProps> = ({ onImageUpload, multiple = fal
                 <i className="bi bi-plus"></i>
                 Tải ảnh lên
                 <input
-                    key={filePreviews.map(fp => fp.previewUrl).join(",")}
                     type="file"
-                    multiple={multiple}
+                    accept={accept}
                     onChange={handleFileChange}
+                    multiple={multiple}
+                    className="upload-input"
                 />
             </div>
         </div>

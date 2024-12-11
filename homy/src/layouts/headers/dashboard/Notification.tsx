@@ -1,40 +1,117 @@
-import Image from "next/image"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { jwtDecode } from "jwt-decode";
+import apiInstance from "@/utils/apiInstance";
+import notificationIcon from "@/assets/images/dashboard/icon/icon_36.svg";
+import './notification.css';
 
-import notificationIcon_1 from "@/assets/images/dashboard/icon/icon_36.svg";
-import notificationIcon_2 from "@/assets/images/dashboard/icon/icon_37.svg";
-import notificationIcon_3 from "@/assets/images/dashboard/icon/icon_38.svg";
-
-const Notification = () => {
-   return (
-      <ul className="dropdown-menu" aria-labelledby="notification-dropdown">
-         <li>
-            <h4>Notification</h4>
-            <ul className="style-none notify-list">
-               <li className="d-flex align-items-center unread">
-                  <Image src={notificationIcon_1} alt="" className="lazy-img icon" />
-                  <div className="flex-fill ps-2">
-                     <h6>You have 3 new mails</h6>
-                     <span className="time">3 hours ago</span>
-                  </div>
-               </li>
-               <li className="d-flex align-items-center">
-                  <Image src={notificationIcon_2} alt="" className="lazy-img icon" />
-                  <div className="flex-fill ps-2">
-                     <h6>Your listing post has been approved</h6>
-                     <span className="time">1 day ago</span>
-                  </div>
-               </li>
-               <li className="d-flex align-items-center unread">
-                  <Image src={notificationIcon_3} alt="" className="lazy-img icon" />
-                  <div className="flex-fill ps-2">
-                     <h6>Your meeting is cancelled</h6>
-                     <span className="time">3 days ago</span>
-                  </div>
-               </li>
-            </ul>
-         </li>
-      </ul>
-   )
+// Khai báo interface cho JWT Payload
+interface JwtPayload {
+  UserId: string;
+  Role: string;
 }
 
-export default Notification
+const Notification = () => {
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [selectedNotification, setSelectedNotification] = useState<any | null>(null);
+
+  const getUserIdFromToken = (): string | null => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return null;
+    }
+    try {
+      const decodedToken: JwtPayload = jwtDecode(token);
+      return decodedToken.UserId || null;
+    } catch (error) {
+      console.error("Invalid token", error);
+      return null;
+    }
+  };
+
+  const fetchNotifications = async (userId: string) => {
+    setLoading(true);
+    try {
+      const response = await apiInstance.get(`/Notification/messages/${userId}`);
+      if (response.status === 200) {
+        const data = response.data;
+        if (Array.isArray(data)) {
+          setNotifications(data);
+        } else {
+          setError("Unexpected response format");
+        }
+      }
+    } catch (error) {
+      setError("Failed to fetch notifications.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchedUserId = getUserIdFromToken();
+    if (fetchedUserId) {
+      setUserId(fetchedUserId);
+      fetchNotifications(fetchedUserId);
+    } else {
+      setError("No user ID found");
+    }
+  }, []);
+
+  const handleNotificationClick = (notification: any) => {
+    setSelectedNotification(notification);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedNotification(null);
+  };
+
+  return (
+    <div className="profile-notification">
+    <div className="notification-container">
+      {/* Danh sách thông báo */}
+      <div className="dropdown-menu">
+        <ul className="notify-list">
+          {loading && <li>Loading notifications...</li>}
+          {error && <li>{error}</li>}
+          {notifications.length === 0 ? (
+            <li>No notifications</li>
+          ) : (
+            notifications.map((notification, index) => (
+              <li
+                key={index}
+                className={`notification-item ${notification.read ? "" : "unread"}`}
+                onClick={() => handleNotificationClick(notification)}
+              >
+                <div className="notification-icon">
+                  <Image src={notification.icon || notificationIcon} alt="Notification" />
+                </div>
+                <div className="notification-text">
+                  <h6>{notification.message}</h6>
+                  <span className="time">{notification.timeAgo || "Just now"}</span>
+                </div>
+              </li>
+            ))
+          )}
+        </ul>
+      </div>
+  
+      {/* Popup chi tiết thông báo */}
+      {selectedNotification && (
+        <div className="popup-overlay">
+          <div className="notification-detail-popup">
+            <button className="close-btn" onClick={handleCloseDetail}>x</button>
+            <h4>Chi tiết thông báo</h4>
+            <p>{selectedNotification.message}</p>
+            <p className="time">{selectedNotification.createdOn}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+  );
+};
+export default Notification;

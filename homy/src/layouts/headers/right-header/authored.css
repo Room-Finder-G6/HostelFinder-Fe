@@ -1,0 +1,13 @@
+.profile-notification {
+    display: flex;            /* Dùng flexbox để căn chỉnh các phần tử con */
+    justify-content: space-between;  /* Đảm bảo hai nút có không gian đều nhau */
+    align-items: center;      /* Căn giữa các nút theo chiều dọc */
+}
+
+.profile-notification button {
+    flex: 2; /* Mỗi nút chiếm đều một phần không gian */
+    display: flex; /* Đảm bảo nội dung bên trong button không bị lệch */
+    justify-content: center; /* Căn giữa nội dung trong mỗi button */
+    align-items: center; /* Căn giữa nội dung theo chiều dọc */
+    margin-left: 10px;
+}

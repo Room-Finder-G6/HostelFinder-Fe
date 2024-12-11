@@ -1,18 +1,20 @@
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Link from "next/link";
 import Image from "next/image";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
-import usePostsByUser from "./usePost";
-import UserPostsBody from "./PropertyTableBodyPost";
+import useStorieByUser from "./useStorie";
+import StoriePostsBody from "./StorieTableBodyPost";
 import DeleteModal from "@/modals/DeleteModal";
+import apiInstance from "@/utils/apiInstance";
 
-
-const UserPostManagement = () => {
-    const { posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser } = usePostsByUser();
+const FindRoommatesManagement = () => {
+    const { posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser } = useStorieByUser();
     const [sortOption, setSortOption] = useState<string>("1");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+    const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+
     const prevPageIndexRef = useRef(pageIndex);
     const prevSortOptionRef = useRef(sortOption);
 
@@ -24,21 +26,18 @@ const UserPostManagement = () => {
 
 
     const handleDeletePost = async () => {
-        if (!selectedPostId) return;
+        if (!selectedStoryId) return;
 
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`/v1/posts/${selectedPostId}`, {
+            const response = await apiInstance.delete(`/Story/${selectedStoryId}`, {
                 method: "DELETE",
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            if (!response.ok) {
-                throw new Error("Failed to delete the post.");
-            }
-
+           
             alert("Xóa bài viết thành công!");
             await fetchPostsByUser(pageIndex, sortOption);
 
@@ -47,12 +46,12 @@ const UserPostManagement = () => {
             alert("Đã xảy ra lỗi khi xóa bài viết!");
         } finally {
             setShowDeleteModal(false);
-            setSelectedPostId(null);
+            setSelectedStoryId(null);
         }
     };
 
     const handleDeleteClick = (postId: string) => {
-        setSelectedPostId(postId);
+        setSelectedStoryId(postId);
         setShowDeleteModal(true);
     };
 
@@ -79,28 +78,27 @@ const UserPostManagement = () => {
     }, [posts, sortOption]);
     const sortedPosts = sortPosts();
 
-
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Bài đăng của tôi" />
-                <div className="d-flex align-items-center justify-content-between mb-25">
-                    <div className="d-flex align-items-center ms-auto">
-                        <div className="short-filter d-flex align-items-center me-3">
-                            <div className="fs-16 me-2">Sắp xếp theo:</div>
-                            <select
-                                className="nice-select"
-                                value={sortOption}
-                                onChange={selectHandler}
-                            >
-                                <option value="1">Mới nhất</option>
-                                <option value="2">Cũ nhất</option>
-                            </select>
+                <DashboardHeaderTwo title="Bài đăng tìm ở ghép của tôi" />
+                <div className="d-sm-flex align-items-center justify-content-between mb-25">
+                    <div className="short-filter d-flex align-items-center me-3">
+                        <div className="fs-16 me-2">Sắp xếp theo:</div>
+                        <select
+                            className="nice-select"
+                            value={sortOption}
+                            onChange={selectHandler}
+                        >
+                            <option value="1">Mới nhất</option>
+                            <option value="2">Cũ nhất</option>
+                        </select>
 
-                        </div>
+                    </div>
 
-                        <Link href="/dashboard/create-post" className="btn-two">
-                            <span>Tạo bài đăng</span>
+                    <div className="d-none d-md-inline-block ms-auto">
+                        <Link href="/dashboard/create-post-roommates" className="btn-two">
+                            <span>Thêm bài đăng</span>
                         </Link>
                     </div>
                 </div>
@@ -116,38 +114,38 @@ const UserPostManagement = () => {
                                     <th scope="col"></th>
                                 </tr>
                             </thead>
-                            <UserPostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick} />
+                            <StoriePostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick} />
                         </table>
                     </div>
                 </div>
-
-                <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
-                    {[...Array(totalPages)].map((_, index) => (
-                        <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
-                            <Link href="#" onClick={() => setPageIndex(index + 1)}>
-                                {index + 1}
-                            </Link>
-                        </li>
-                    ))}
-                    {totalPages > 1 && (
-                        <li className="ms-2">
-                            <Link href="#" onClick={() => setPageIndex(totalPages)}>
-                                Last <Image src={icon_1} alt="" className="ms-2" />
-                            </Link>
-                        </li>
-                    )}
-                </ul>
-
-                <DeleteModal
-                    show={showDeleteModal}
-                    title="Xác nhận xóa"
-                    message="Bạn có chắc chắn muốn xóa bài viết này không?"
-                    onConfirm={handleDeletePost}
-                    onCancel={() => setShowDeleteModal(false)}
-                />
             </div>
+
+            <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
+                {[...Array(totalPages)].map((_, index) => (
+                    <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
+                        <Link href="#" onClick={() => setPageIndex(index + 1)}>
+                            {index + 1}
+                        </Link>
+                    </li>
+                ))}
+                {totalPages > 1 && (
+                    <li className="ms-2">
+                        <Link href="#" onClick={() => setPageIndex(totalPages)}>
+                            Last <Image src={icon_1} alt="" className="ms-2" />
+                        </Link>
+                    </li>
+                )}
+            </ul>
+
+            <DeleteModal
+                show={showDeleteModal}
+                title="Xác nhận xóa"
+                message="Bạn có chắc chắn muốn xóa bài viết này không?"
+                onConfirm={handleDeletePost}
+                onCancel={() => setShowDeleteModal(false)}
+            />
         </div>
     );
 };
 
-export default UserPostManagement;
+export default FindRoommatesManagement;

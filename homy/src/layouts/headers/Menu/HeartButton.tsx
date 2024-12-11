@@ -12,7 +12,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ wishlistCount }) => {
       <FaRegHeart size={24} />
       {/* Chỉ hiển thị số lượng nếu có wishlist */}
       {wishlistCount > 0 && (
-        <span className="wishlist-badge" style={{ fontSize: '14px', color: 'white', backgroundColor: 'red' }}>
+        <span className="wishlist-badge" >
           {wishlistCount}
           
         </span>

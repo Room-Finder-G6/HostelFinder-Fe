@@ -114,7 +114,7 @@ button.btn-danger:hover {
 }
 
 /* Modal */
-.modal-overlay {
+.modal-service {
   position: fixed;
   top: 0;
   left: 0;
@@ -127,7 +127,7 @@ button.btn-danger:hover {
   z-index: 1000;
 }
 
-.modal-content {
+.modal-service1 {
   border-radius: 8px;
   padding: 20px;
   background-color: #fff;
@@ -136,24 +136,10 @@ button.btn-danger:hover {
   width: 100%;
 }
 
-.modal-header {
+.modal-service2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #007bff;
-}
-
-.modal-header button {
-  font-size: 1.25rem;
-  color: #333;
-  background: none;
-  border: none;
-  cursor: pointer;
 }
 
 .modal-header button:hover {

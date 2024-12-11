@@ -1,4 +1,3 @@
-// NavMenu.tsx
 "use client";
 import menu_data from "@/data/home-data/MenuData";
 import Link from "next/link.js";
