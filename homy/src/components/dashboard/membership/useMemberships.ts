@@ -62,6 +62,7 @@ const useMemberships = () => {
 
     if (!userId) {
       toast.error("Vui lòng đăng nhập trước khi mua membership.");
+      window.location.href = "/";
       return;
     }
 
