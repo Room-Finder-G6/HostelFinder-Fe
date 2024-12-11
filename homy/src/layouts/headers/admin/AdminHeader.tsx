@@ -96,6 +96,12 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                     label: "Thống Kê Gói Người Dùng"
                 },
                 {
+                    href: "https://my.payos.vn/a1cd337babcb11ef964c0242ac110002/payment-link",
+                    activeIcon: dashboardIconActive_4,
+                    inactiveIcon: dashboardIcon_4,
+                    label: "Thống Kê Tiền Nạp Hệ Thống"
+                },
+                {
                     href: "/admin/manager-membership",
                     activeIcon: dashboardIconActive_8,
                     inactiveIcon: dashboardIcon_8,
