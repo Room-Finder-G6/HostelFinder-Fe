@@ -34,6 +34,12 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
+    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
+    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
+    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
+    const [selectedProvince, setSelectedProvince] = useState<string | null>(null);
+    const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+
     useEffect(() => {
         const fetchPostData = async () => {
             try {
@@ -111,13 +117,111 @@ const EditPostForm: React.FC<EditPostFormProps> = ({postId}) => {
         }
     };
 
+    useEffect(() => {
+        fetchProvinces();
+    }, []);
+
+    useEffect(() => {
+        if (selectedProvince) {
+            fetchDistricts(selectedProvince);
+        }
+    }, [selectedProvince]);
+
+    useEffect(() => {
+        if (selectedDistrict) {
+            fetchCommunes(selectedDistrict);
+        }
+    }, [selectedDistrict]);
+
+    const fetchProvinces = async () => {
+        const response = await fetch("https://provinces.open-api.vn/api");
+        const data = await response.json();
+        setProvinces(
+            data.map((province: any) => ({
+                value: province.code,
+                text: province.name,
+            }))
+        );
+    };
+
+    const fetchDistricts = async (provinceCode: string) => {
+        const response = await fetch(
+            `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
+        );
+        const data = await response.json();
+        setDistricts(
+            data.districts.map((district: any) => ({
+                value: district.code,
+                text: district.name,
+            }))
+        );
+    };
+
+    const fetchCommunes = async (districtCode: string) => {
+        const response = await fetch(
+            `https://provinces.open-api.vn/api/d/${districtCode}?depth=2`
+        );
+        const data = await response.json();
+        setCommunes(
+            data.wards.map((ward: any) => ({
+                value: ward.code,
+                text: ward.name,
+            }))
+        );
+    };
+
+
+    const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const provinceCode = e.target.value;
+        console.log(provinceCode)
+        const province = provinces.find((p) => p.value === provinceCode);
+        console.log(province);
+        console.log(province?.text);
+        setSelectedProvince(provinceCode);
+        setPostData({
+            ...postData,
+            address: { ...postData.address, province: province?.text ?? "" },
+        });
+        setSelectedDistrict(null);
+        setCommunes([]);
+    };
+
+    const selectDistrictHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const districtCode = e.target.value;
+        const district = districts.find((d) => d.value === districtCode);
+        setSelectedDistrict(districtCode);
+        setPostData({
+            ...postData,
+            address: { ...postData.address, district: district?.text ?? "" },
+        });
+    };
+
+    const selectCommuneHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const communeCode = e.target.value;
+        const commune = communes.find((c) => c.value === communeCode);
+        setPostData({
+            ...postData,
+            address: { ...postData.address, commune: commune?.text ?? "" },
+        });
+    };
+
     return (
         <div className="dashboard-form-container">
             <DashboardHeaderTwo title="Cập nhật thông tin bài đăng"/>
 
             {loading && <Loading/>}
 
-            <Overview onDataChange={handleData} postData={postData}/>
+            <Overview
+                onDataChange={handleData}
+                postData={postData}
+                provinces={provinces}
+                districts={districts}
+                communes={communes}
+                onSelectProvince={selectProvinceHandler}
+                onSelectDistrict={selectDistrictHandler}
+                onSelectCommune={selectCommuneHandler}
+            />
+
 
             <div className="bg-white card-box border-20 mt-40">
                 <h4 className="dash-title-three">Thêm ảnh</h4>

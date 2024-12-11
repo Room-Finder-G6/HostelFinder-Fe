@@ -44,7 +44,7 @@ const NavMenu = () => {
                 </div>
             </li>
                 <li className="nav-item dashboard-menu">
-                    <Link className="nav-link" href="/dashboard/manage-hostels">Quản lý</Link>
+                    <Link className="nav-link" href="/dashboard/profile">Quản lý</Link>
                 </li>
             {role === 'Admin' && (
                 <li className="nav-item admin-menu">

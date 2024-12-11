@@ -107,6 +107,7 @@ const Overview: React.FC<OverviewProps> = ({
                             onChange={handleInputChange}
                             className="form-control"
                             required
+                            min={0}
                         />
                     </div>
                 </div>
@@ -127,33 +128,39 @@ const Overview: React.FC<OverviewProps> = ({
                     </div>
                 </div>
             </div>
+            <div className="row align-items-end">
+                <div className="col-md-6">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="roomType">Loại phòng<span style={{color: 'red'}}>*</span></label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={[
+                                {value: "1", text: "Phòng trọ"},
+                                {value: "2", text: "Chung cư"},
+                                {value: "3", text: "Chung cư mini"},
+                            ]}
+                            placeholder="Chọn loại phòng"
+                            onChange={(e) => onDataChange({roomType: e.target.value})}
+                            name="roomType"
+                            value={roomType}
+                        />
+                    </div>
+                </div>
 
-            <div className="dash-input-wrapper mb-30">
-                <label htmlFor="roomType">Loại phòng<span style={{color: 'red'}}>*</span></label>
-                <NiceSelect
-                    className="nice-select"
-                    options={[
-                        {value: "1", text: "Phòng trọ"},
-                        {value: "2", text: "Chung cư"},
-                        {value: "3", text: "Chung cư mini"},
-                    ]}
-                    placeholder="Chọn loại phòng"
-                    onChange={(e) => onDataChange({roomType: e.target.value})}
-                    name="roomType"
-                    value={roomType}
-                />
-            </div>
-
-            <div className="dash-input-wrapper mb-30">
-                <label htmlFor="dateAvailable">Ngày có thể thuê<span style={{color: 'red'}}>*</span></label>
-                <input
-                    type="date"
-                    name="dateAvailable"
-                    value={dateAvailable}
-                    onChange={handleInputChange}
-                    className="form-control"
-                    required
-                />
+                <div className="col-md-6">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="dateAvailable">Ngày có thể chuyển vào<span
+                            style={{color: 'red'}}>*</span></label>
+                        <input
+                            type="date"
+                            name="dateAvailable"
+                            value={dateAvailable}
+                            onChange={handleInputChange}
+                            className="form-control"
+                            required
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="row">
