@@ -265,7 +265,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
                                 <Image
                                     src={pathname === '/dashboard/membership' ? dashboardIconActive_5 : dashboardIcon_5}
-                                    alt="Membership" />
+                                    alt="Membership"/>
                                 <span>Gói hội viên</span>
                             </Link>
                         </li>
@@ -363,7 +363,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 {/* Profile Completion Section */}
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-line position-relative">
-                        <div className="inner-line" style={{ width: "100%" }}></div>
+                        <div className="inner-line" style={{width: "100%"}}></div>
                     </div>
                 </div>
             </div>

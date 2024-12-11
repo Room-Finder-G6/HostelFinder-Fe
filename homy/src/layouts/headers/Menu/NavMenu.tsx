@@ -21,12 +21,12 @@ const NavMenu = () => {
   const [role, setRole] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const currentRoute = usePathname();
-  const [navTitle, setNavTitle] = useState("");
+    const currentRoute = usePathname();
+    const [navTitle, setNavTitle] = useState("");
 
-  const isMenuItemActive = (menuLink: string) => {
-    return currentRoute === menuLink;
-  };
+    const isMenuItemActive = (menuLink: string) => {
+        return currentRoute === menuLink;
+    };
 
   const isSubMenuItemActive = (subMenuLink: string) => {
     return currentRoute === subMenuLink;
