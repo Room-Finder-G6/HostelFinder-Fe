@@ -19,6 +19,9 @@ const nextConfig = {
             },
         ],
     },
+    env: {
+        NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'https://phongtro247.net', // Đảm bảo NEXTAUTH_URL chính xác
+    },
 };
 
 module.exports = nextConfig;
