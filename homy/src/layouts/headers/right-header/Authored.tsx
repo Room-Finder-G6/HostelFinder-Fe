@@ -116,7 +116,7 @@ const Authored = () => {
                     className="lazy-img"
                     width={60}
                     height={60}
-                    style={{ borderRadius: "50%" }}
+                    style={{width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%"}}
                 />
             </button>
             {/* <Link href="/dashboard/create-post" className="btn-two ms-3" target="_blank">

@@ -248,7 +248,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                             className="nice-select"
                             options={membershipServices.map((service) => ({
                                 value: service.id,
-                                text: `Bài đăng Vip ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
+                                text: `Bài đăng Vip ${service.typeOfPost ? service.typeOfPost : "dùng thử"} (${service.numberOfPostsRemaining} bài còn lại)`,
                             }))}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange("membershipServiceId", e)}

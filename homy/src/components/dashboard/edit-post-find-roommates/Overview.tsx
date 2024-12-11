@@ -1,17 +1,29 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Story} from "@/models/story";
 import NiceSelect from "@/ui/NiceSelect";
 
 interface OverviewProps {
     onDataChange: (data: Partial<Story>) => void;
     postData: Story;
+    provinces: { value: string; text: string }[];
+    districts: { value: string; text: string }[];
+    communes: { value: string; text: string }[];
+    onSelectProvince: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    onSelectDistrict: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    onSelectCommune: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
-    const [provinces, setProvinces] = useState<{ value: string; text: string }[]>([]);
-    const [districts, setDistricts] = useState<{ value: string; text: string }[]>([]);
-    const [communes, setCommunes] = useState<{ value: string; text: string }[]>([]);
 
+const Overview: React.FC<OverviewProps> = ({
+                                               onDataChange,
+                                               postData,
+                                               provinces,
+                                               districts,
+                                               communes,
+                                               onSelectProvince,
+                                               onSelectCommune,
+                                               onSelectDistrict
+                                           }) => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         onDataChange({[name]: value});
@@ -84,7 +96,8 @@ const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
 
                 <div className="col-md-6">
                     <div className="dash-input-wrapper mb-30">
-                        <label htmlFor="dateAvailable">Ngày có thể chuyển vào<span style={{color: 'red'}}>*</span></label>
+                        <label htmlFor="dateAvailable">Ngày có thể chuyển vào<span
+                            style={{color: 'red'}}>*</span></label>
                         <input
                             type="date"
                             name="dateAvailable"
@@ -96,9 +109,54 @@ const Overview: React.FC<OverviewProps> = ({onDataChange, postData}) => {
                     </div>
                 </div>
 
+                <div className="col-md-4">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="province">Tỉnh/Thành phố*</label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={provinces}
+                            onChange={onSelectProvince}
+                            value={postData.address.province}
+                            placeholder="Chọn Tỉnh/Thành phố"
+                            name="province"
+                            defaultCurrent={0}
+                            required
+                        />
+                    </div>
+                </div>
 
+                <div className="col-md-4">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="district">Quận/Huyện*</label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={districts}
+                            onChange={onSelectDistrict}
+                            value={postData.address.district}
+                            placeholder="Chọn Quận/Huyện"
+                            name="district"
+                            defaultCurrent={0}
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="dash-input-wrapper mb-30">
+                        <label htmlFor="commune">Xã/Phường*</label>
+                        <NiceSelect
+                            className="nice-select"
+                            options={communes}
+                            onChange={onSelectCommune}
+                            value={postData.address.commune}
+                            placeholder="Chọn Xã/Phường"
+                            name="commune"
+                            defaultCurrent={0}
+                            required
+                        />
+                    </div>
+                </div>
             </div>
-
         </div>
 
     );
