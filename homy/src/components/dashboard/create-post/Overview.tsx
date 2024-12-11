@@ -5,7 +5,6 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import { getUserIdFromToken } from "@/utils/tokenUtils";
 import "./style.css";
-
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
 }

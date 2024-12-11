@@ -1,4 +1,4 @@
-"use client";  // Đảm bảo là client-side component
+﻿"use client";  // Đảm bảo là client-side component
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from "next/image";
