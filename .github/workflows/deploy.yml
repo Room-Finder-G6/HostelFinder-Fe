@@ -34,7 +34,7 @@ jobs:
           echo "GOOGLE_SECRET=${{ secrets.GOOGLE_SECRET }}" >> homy/.env
           echo "NEXT_PUBLIC_GOONG_MAPTILES_KEY=${{ secrets.NEXT_PUBLIC_GOONG_MAPTILES_KEY }}" >> homy/.env
           echo "NEXT_PUBLIC_GOONG_API_KEY=${{ secrets.NEXT_PUBLIC_GOONG_API_KEY }}" >> homy/.env
-          echo "NEXTAUTH___URL=${{ secrets.NEXTAUTH___URL }}" >> homy/.env
+          echo "NEXTAUTH_URL=${{ secrets.NEXTAUTH_URL }}" >> homy/.env
           
       # Step 4: Build the application
       - name: Build the application
