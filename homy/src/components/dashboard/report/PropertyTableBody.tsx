@@ -114,8 +114,12 @@ const PropertyTableBody = () => {
                setMonthlyRevenue(response.data.data);
                setYearlyRevenue(null);
             }
+            if (response.data.data == null) {
+               setIsLoading(false);
+            }
          } else {
             console.error("Failed to load revenue data", response.data.errors);
+            setIsLoading(false);
          }
       } catch (error) {
          console.error("Error fetching revenue data:", error);
@@ -209,7 +213,8 @@ const PropertyTableBody = () => {
 
                </>
             ) : (
-               <Loading />
+               // <Loading />
+               <></>
             )
          ) : monthlyRevenue ? (
             <>
@@ -268,7 +273,8 @@ const PropertyTableBody = () => {
 
             </>
          ) : (
-            <Loading />
+            // <Loading />
+            <></>
          )}
 
 
@@ -379,7 +385,8 @@ const PropertyTableBody = () => {
                               </Table>
                            </>
                         ) : (
-                           <Loading />
+                           // <Loading />
+                           <></>
                         )
                      ) : monthlyRevenue ? (
                         <>
@@ -401,7 +408,8 @@ const PropertyTableBody = () => {
                            </Table>
                         </>
                      ) : (
-                        <Loading />
+                        // <Loading />
+                        <></>
                      )}
                   </Card.Body>
                </Card>

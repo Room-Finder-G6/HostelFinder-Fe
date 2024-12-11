@@ -261,9 +261,9 @@ const MainTenanceBody = () => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={7} className="text-center">
+                                            {/* <td colSpan={7} className="text-center">
                                                 <Loading />
-                                            </td>
+                                            </td> */}
                                         </tr>
                                     )}
                                 </tbody>

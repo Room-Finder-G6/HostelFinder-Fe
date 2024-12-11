@@ -9,14 +9,14 @@ import { signOut } from "next-auth/react";
 const Profile: React.FC = () => {
    const router = useRouter();
 
-   const handleLogout = () => {
+   const handleLogout = async () => {
       localStorage.removeItem("userName");
       localStorage.removeItem("token");
-      // Lấy callbackUrl từ biến môi trường
-      const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
-
-      // Thực hiện đăng xuất với callbackUrl đúng
-      window.location.href = "/";
+      await signOut({
+         redirect: false,
+      });
+      const callbackUrl = process.env.NEXTAUTH_URL || "/";
+      window.location.href = callbackUrl;
    };
 
    return (
@@ -26,13 +26,7 @@ const Profile: React.FC = () => {
                <li>
                   <Link className="dropdown-item d-flex align-items-center" href="/profile">
                      <Image src={profileIcon_1} alt="Profile Icon" className="lazy-img" />
-                     <span className="ms-2 ps-1">Profile</span>
-                  </Link>
-               </li>
-               <li>
-                  <Link className="dropdown-item d-flex align-items-center" href="/account-settings">
-                     <Image src={profileIcon_2} alt="Account Settings Icon" className="lazy-img" />
-                     <span className="ms-2 ps-1">Account Settings</span>
+                     <span className="ms-2 ps-1">Trang cá nhân</span>
                   </Link>
                </li>
                <li>

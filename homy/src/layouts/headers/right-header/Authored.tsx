@@ -1,4 +1,4 @@
-"use client";  // Đảm bảo là client-side component
+﻿"use client";  // Đảm bảo là client-side component
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Image from "next/image";
@@ -10,8 +10,7 @@ import apiInstance from '@/utils/apiInstance';
 import HeartButton from '../Menu/HeartButton';
 import useNavData from '../Menu/useNavData';
 import { usePathname } from 'next/navigation';  // Import đúng hook usePathname
-import Notification from '../dashboard/Notification';
-import dashboardIcon_2  from "@/assets/images/dashboard/icon/icon_11.svg";
+
 interface JwtPayload {
     UserId: string;
 }
@@ -100,7 +99,8 @@ const Authored = () => {
         <div className="user-data d-flex align-items-center position-relative">
             <ul className="nav-item favorites">
                 <HeartButton  wishlistCount={wishlistCount}  /> {/* Sử dụng HeartButton và truyền dữ liệu */}
-            </ul>       
+            </ul>
+       
             <button
                 className="user-avatar online position-relative rounded-circle dropdown-toggle"
                 type="button"

@@ -61,6 +61,9 @@ const useMemberships = () => {
     const userId = getUserIdFromToken();
 
     if (!userId) {
+      toast.error("Vui lòng đăng nhập trước khi mua membership.");
+      window.location.href = "/";
+      return;
         toast.error("Vui lòng đăng nhập trước khi mua membership.");
         return;
     }
