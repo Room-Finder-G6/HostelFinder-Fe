@@ -61,7 +61,7 @@ const HostelManagement = () => {
             <DashboardHeaderTwo title="Nhà trọ của tôi" />
             <h2 className="main-title d-block d-lg-none">Quản lý nhà trọ</h2>
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-               <div className="d-flex ms-auto xs-mt-30">
+              {/* <div className="d-flex ms-auto xs-mt-30">
                   <div className="fs-16 me-2">Sắp xếp theo:</div>
                   <input
                      type="text"
@@ -70,8 +70,8 @@ const HostelManagement = () => {
                      onChange={handleSearchChange}
                      className="form-control ms-3"
                   />
-               </div>
-               <div className="d-none d-md-inline-block ms-3">
+               </div>*/}
+               <div className="d-none d-md-inline-block ms-auto">
                   <Link href="/dashboard/add-hostel" className="btn-two">
                      <span>Thêm nhà trọ</span>
                   </Link>
