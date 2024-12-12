@@ -114,13 +114,13 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         formData.append("AddTenantDto.Phone", data.tenant.phone);
 
         if (data.tenant.avatarImage?.[0]) {
-            formData.append("AddTenantDto.AvatarImage", data.tenant.avatarImage[0]);
+            formData.append("AddTenantDto.AvatarImage", data.tenant.avatarImage[0] || null);
         }
         if (data.tenant.frontImageImage?.[0]) {
-            formData.append("AddTenantDto.FrontImageImage", data.tenant.frontImageImage[0]);
+            formData.append("AddTenantDto.FrontImageImage", data.tenant.frontImageImage[0] || null);
         }
         if (data.tenant.backImageImage?.[0]) {
-            formData.append("AddTenantDto.BackImageImage", data.tenant.backImageImage[0]);
+            formData.append("AddTenantDto.BackImageImage", data.tenant.backImageImage[0] || null);
         }
 
         formData.append("AddTenantDto.IdentityCardNumber", data.tenant.identityCard);
@@ -378,7 +378,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 {services.map((service: any) => (
                                     <tr key={service.serviceId}>
                                         <td>{service.serviceName}</td>
-                                        <td>{service.unitCost ? `${service.unitCost} đ` : "Miễn phí"}</td>
+                                        <td>{service.unitCost ? `${service.unitCost.toLocaleString('vi-VN')} đ` : "Miễn phí"}</td>
                                         <td>{service.unit || "N/A"}</td>
                                         <td>{service.previousReading}</td>
                                         <td>
