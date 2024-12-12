@@ -26,7 +26,9 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
    };
 
    const handleGoogleSign = () => {
-      signIn("google");
+      signIn("google", {
+         callbackUrl: process.env.NEXTAUTH_URL
+      });
    }
    useEffect(() => {
       const sendIdTokenToBackend = async () => {
