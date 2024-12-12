@@ -148,7 +148,7 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ postId }) => {
 
             if (response.status === 200) {
                 toast.success('Cập nhật bài đăng thành công!');
-                setTimeout(() => router.push("/dashboard/manage-post"), 1000);
+                setTimeout(() => router.push("/dashboard/manage-post"), 2000);
             }
         } catch (error: any) {
             toast.error(`Lỗi khi cập nhật: ${error.response?.data?.message || error.message}`);
