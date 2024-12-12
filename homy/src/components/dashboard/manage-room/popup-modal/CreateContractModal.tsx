@@ -286,8 +286,6 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 }}
                             />
                         </div>
-
-
                         <div className="mb-3">
                             <label className="form-label">Điều khoản hợp đồng</label>
                             <textarea
@@ -348,11 +346,18 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                             <label className="form-label">CCCD <span style={{ color: 'red' }}>*</span></label>
                             <input
                                 type="text"
-                                {...register("tenant.identityCard")}
+                                {...register("tenant.identityCard", {
+                                    required: true,
+                                    pattern: {
+                                        value: /^[0-9]{12}$/, // Biểu thức chính quy để kiểm tra 12 chữ số
+                                        message: "Số CCCD phải gồm 12 chữ số"
+                                    }
+                                })}
                                 className="form-control"
                                 required
                             />
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">Mặt trước CCCD</label>
                             <input
