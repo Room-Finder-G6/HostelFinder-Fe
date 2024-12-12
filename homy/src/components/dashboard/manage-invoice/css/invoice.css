@@ -31,3 +31,28 @@
     border-color: #1e7e34;
   }
   
+
+  /*Modal hóa đơn thành công */
+  .invoice-details-modal .modal-header {
+          border-bottom: none;
+          border-top-left-radius: 0.5rem;
+          border-top-right-radius: 0.5rem;
+        }
+        .invoice-details-container {
+          padding: 1rem;
+        }
+        .invoice-info p {
+          margin-bottom: 0.5rem;
+        }
+        .invoice-services p {
+          margin-bottom: 0.5rem;
+        }
+        .table-secondary th {
+          background-color: #f8f9fa;
+        }
+        @media (max-width: 992px) {
+          .invoice-details-modal .modal-dialog {
+            max-width: 100%;
+            margin: 0;
+          }
+        }
