@@ -200,7 +200,7 @@ const PropertyTableHostel = ({
                     alt=""
                     width={200}
                     height={200}
-                    style={{ objectFit: "cover", borderRadius: "15px" }}
+                    style={{ objectFit: "cover", borderRadius: "15px", aspectRatio: '18 / 12' }}
                   />
                 )}
                 <div className="ps-lg-4 md-pt-10">

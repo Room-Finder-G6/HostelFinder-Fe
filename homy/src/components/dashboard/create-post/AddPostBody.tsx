@@ -138,7 +138,7 @@ const AddPostBody: React.FC = () => {
             setLoading(false)
             setTimeout(() => {
                 router.push("/dashboard/manage-post");
-            }, 1000);
+            }, 2000);
         }
     };
 

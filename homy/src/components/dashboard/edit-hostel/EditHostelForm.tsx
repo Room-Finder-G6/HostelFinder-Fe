@@ -207,9 +207,9 @@ const EditHostelForm: React.FC<EditHostelFormProps> = ({hostelId}) => {
             });
 
             toast.success("Cập nhật nhà trọ thành công", {position: "top-center"});
-            /*setTimeout(() => {
+            setTimeout(() => {
                 router.push("/dashboard/manage-hostels");
-            }, 3000);*/
+            }, 2000);
         } catch (error: any) {
             if (error.response?.data?.message) {
                 toast.error(error.response.data.message, {position: "top-center"});
