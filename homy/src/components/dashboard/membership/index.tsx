@@ -18,7 +18,6 @@ const MembershipPage = () => {
   
         <div className={styles.banner}>
        <h1 style={{ color: "white" }}>GÓI HỘI VIÊN</h1>
-          <h2>Tiết kiệm đến 20% chi phí so với đăng tin lẻ</h2>
           <ul>
             <li>Thảnh thơi đăng tin mà không lo biến động giá</li>
             <li>Sử dụng các tiện ích nâng cao dành cho hội viên</li>
