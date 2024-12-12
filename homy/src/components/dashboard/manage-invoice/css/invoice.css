@@ -56,3 +56,156 @@
             margin: 0;
           }
         }
+
+        .invoice-container {
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          overflow: hidden;
+        }
+
+        .invoice-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+        }
+
+        .invoice-table th {
+          background: black;
+          padding: 1rem 1.5rem;
+          font-weight: 200;
+          color: white;
+          border-bottom: 2px solid #e2e8f0;
+          white-space: nowrap;
+        }
+
+        .invoice-table td {
+          padding: 1.25rem 1.5rem;
+          vertical-align: middle;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .invoice-row {
+          transition: background-color 0.2s ease;
+        }
+
+        .invoice-row:hover {
+          background-color: #f8fafc;
+        }
+
+        .room-info {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .icon-wrapper {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(59, 130, 246, 0.1);
+          border-radius: 10px;
+          font-size: 1.25rem;
+        }
+
+        .room-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .room-name {
+          color: #1e293b;
+          font-weight: 500;
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+
+        .room-name:hover {
+          color: #3b82f6;
+        }
+
+        .invoice-id {
+          font-size: 0.875rem;
+        }
+
+        .date-info {
+          font-size: 0.938rem;
+          color: #64748b;
+        }
+
+        .amount {
+          font-weight: 600;
+          color: #10b981;
+          font-size: 1rem;
+        }
+
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-size: 0.875rem;
+          font-weight: 500;
+        }
+
+        .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+        }
+
+        .paid {
+          background: rgba(16, 185, 129, 0.1);
+          color: #10b981;
+        }
+
+        .paid .status-dot {
+          background: #10b981;
+        }
+
+        .unpaid {
+          background: rgba(239, 68, 68, 0.1);
+          color: #ef4444;
+        }
+
+        .unpaid .status-dot {
+          background: #ef4444;
+        }
+
+        .action-buttons {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+        }
+
+        .btn-icon {
+          width: 36px;
+          height: 36px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          border: none;
+          transition: background-color 0.2s ease;
+        }
+
+        .btn-icon:hover {
+          background-color: #f1f5f9;
+        }
+
+        @media (max-width: 768px) {
+          .invoice-table th,
+          .invoice-table td {
+            padding: 1rem;
+          }
+
+          .icon-wrapper {
+            width: 32px;
+            height: 32px;
+            font-size: 1rem;
+          }
+        }
