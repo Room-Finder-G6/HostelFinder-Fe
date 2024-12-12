@@ -1,8 +1,8 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
 
 // Importing dashboard assets
 import dashboardIconActive_1 from "@/assets/images/dashboard/icon/icon_1_active.svg";
@@ -27,7 +27,7 @@ import dashboardIconActive_10 from "@/assets/images/dashboard/icon/icon_10_activ
 import dashboardIcon_10 from "@/assets/images/dashboard/icon/icon_10.svg";
 import dashboardIcon_11 from "@/assets/images/dashboard/icon/icon_31.svg";
 import roomIcon from "@/assets/images/dashboard/icon/roomIconActive.svg";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 interface DashboardHeaderOneProps {
     isActive: boolean;
@@ -48,7 +48,7 @@ interface JwtPayload {
 }
 
 // Tạo component NavLink riêng để tối ưu việc render
-const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactiveIcon, label, currentPath }) => {
+const NavLink: React.FC<NavLinkProps> = React.memo(({href, activeIcon, inactiveIcon, label, currentPath}) => {
     const isActive = currentPath === href;
 
     return (
@@ -71,7 +71,7 @@ const NavLink: React.FC<NavLinkProps> = React.memo(({ href, activeIcon, inactive
 
 NavLink.displayName = 'NavLink';
 
-const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIsActive }) => {
+const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsActive}) => {
     const pathname = usePathname();
     const [role, setRole] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -199,7 +199,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         href="/"
                         prefetch={true}
                         className="logo-container"
-                        style={{ display: "flex", alignItems: "center" }}
+                        style={{display: "flex", alignItems: "center"}}
                     >
                         <Image
                             src="/assets/images/logo/logo_06.svg"
@@ -208,7 +208,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                             height={50}
                             priority={true}
                         />
-                        <span className="logo-text" style={{ fontSize: "25px", color: "black", marginRight: "10px" }}>
+                        <span className="logo-text" style={{fontSize: "25px", color: "black", marginRight: "10px"}}>
                             <strong>&nbsp;PhongTro24/7</strong>
                         </span>
                     </Link>
@@ -229,7 +229,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <span>Dashboard</span>
                             </Link>
                         </li>*/}
-                        {(role === 'Landlord' || role === "Admin" || role === "User")  && (
+                        {(role === 'Landlord' || role === "Admin" || role === "User") && (
                             <>
                                 <li className="bottom-line pt-20 lg-pt-20 mb-30 lg-mb-30"></li>
                                 <li>
@@ -237,15 +237,16 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/profile"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
-                                        <Image src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3}
-                                            alt="Profile" />
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/profile' ? 'active' : ''}`}>
+                                        <Image
+                                            src={pathname === '/dashboard/profile' ? dashboardIconActive_3 : dashboardIcon_3}
+                                            alt="Profile"/>
                                         <span>Thông tin cá nhân</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/deposit"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/deposit' ? 'active' : ''}`}>
                                         <i className="bi bi-cash"></i>
                                         <span>Nạp tiền</span>
                                     </Link>
@@ -262,85 +263,85 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                         </li> */}
                         <li className="plr">
                             <Link href="/dashboard/membership"
-                                className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
+                                  className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>
                                 <Image
                                     src={pathname === '/dashboard/membership' ? dashboardIconActive_5 : dashboardIcon_5}
-                                    alt="Membership" />
+                                    alt="Membership"/>
                                 <span>Gói hội viên</span>
                             </Link>
                         </li>
-                        <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
-                        <li>
-                            <div className="nav-title">Dành cho hội viên</div>
-                        </li>
                         {(role === 'Landlord') && (
                             <>
+                        <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
+                                <li>
+                                    <div className="nav-title">Dành cho hội viên</div>
+                                </li>
                                 <li className="plr">
                                     <Link href="/dashboard/reports"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6}
-                                            alt="List Room" />
+                                            alt="List Room"/>
                                         <span>Thống kê</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-hostels"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-hostels' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/dashboard/manage-hostels' ? dashboardIconActive_7 : roomIcon}
-                                            alt="Quản Lý Nhà Trọ" />
+                                            alt="Quản Lý Nhà Trọ"/>
                                         <span>Quản Lý Nhà Trọ</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-room"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
                                         <i className="bi bi-houses"></i>
                                         <span>Quản Lý Phòng Trọ</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-post"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
                                         <i className="bi bi-card-text"></i>
                                         <span>Quản Lý Bài Đăng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/invoices"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/invoices' ? 'active' : ''}`}>
                                         <i className="bi bi-receipt"></i>
                                         <span>Quản lí hóa đơn</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-service-landlord"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
                                         <i className="bi bi-bag-heart"></i>
                                         <span>Quản lí dịch vụ</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-rental-contract"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-rental-contract' ? 'active' : ''}`}>
                                         <i className="bi bi-clipboard"></i>
                                         <span>Quản lí hợp đồng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-maintenance"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-maintenance' ? 'active' : ''}`}>
                                         <i className="bi bi-gear-fill"></i>
                                         <span>Sửa chữa, bảo dưỡng</span>
                                     </Link>
                                 </li>
                                 <li className="plr bottom-line">
                                     <Link href="/dashboard/manage-tenant"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3}
-                                            alt="Reviews" />
+                                            alt="Reviews"/>
                                         <span>Quản lý người thuê</span>
                                     </Link>
                                 </li>
@@ -348,22 +349,22 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 <li className="pt-20">
                                     <div className="nav-title">Tìm người ở ghép</div>
                                 </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-find-roommates"
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
+                                        <i className="bi bi-card-text"></i>
+                                        <span>Đăng bài ở ghép</span>
+                                    </Link>
+                                </li>
                             </>
                         )}
-                        <li className="plr">
-                            <Link href="/dashboard/manage-find-roommates"
-                                className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
-                                <i className="bi bi-card-text"></i>
-                                <span>Đăng bài ở ghép</span>
-                            </Link>
-                        </li>
                     </ul>
                 </nav>
 
                 {/* Profile Completion Section */}
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-line position-relative">
-                        <div className="inner-line" style={{ width: "100%" }}></div>
+                        <div className="inner-line" style={{width: "100%"}}></div>
                     </div>
                 </div>
             </div>

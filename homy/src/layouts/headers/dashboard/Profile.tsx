@@ -21,13 +21,12 @@ const Profile: React.FC = () => {
     const handleLogout = async () => {
         localStorage.removeItem("userName");
         localStorage.removeItem("token");
-        // Đăng xuất khỏi NextAuth
-        await signOut({
-            redirect: false,
-        });
-        const callbackUrl = process.env.NEXTAUTH_URL || "/";
-        window.location.href = callbackUrl;
-    };
+        // Lấy callbackUrl từ biến môi trường
+        const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
+
+      // Thực hiện đăng xuất với callbackUrl đúng
+      window.location.href = "/";
+   };
 
     return (
         <>

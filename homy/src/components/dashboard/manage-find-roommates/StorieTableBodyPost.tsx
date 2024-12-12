@@ -131,7 +131,7 @@ const StoriePostsBody: React.FC<UserPostsBodyProps> = ({ posts, loading, onDelet
                                 </button>
                                 <ul className="dropdown-menu dropdown-menu-end">
                                     <li>
-                                        <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
+                                        <Link className="dropdown-item" href={`/dashboard/edit-post-find-roommates/${post.id}`}>
                                             Xem và sửa
                                         </Link>
                                     </li>

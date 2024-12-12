@@ -125,7 +125,6 @@ const AddHostelForm: React.FC = () => {
         );
     };
 
-
     const fetchDistricts = async (provinceCode: string) => {
         const response = await fetch(
             `https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`
@@ -138,7 +137,6 @@ const AddHostelForm: React.FC = () => {
             }))
         );
     };
-
 
     const fetchCommunes = async (districtCode: string) => {
         const response = await fetch(
@@ -156,10 +154,7 @@ const AddHostelForm: React.FC = () => {
 
     const selectProvinceHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const provinceCode = e.target.value;
-        console.log(provinceCode)
         const province = provinces.find((p) => p.value === provinceCode);
-        console.log(province);
-        console.log(province?.text);
         setSelectedProvince(provinceCode);
         setFormData({
             ...formData,

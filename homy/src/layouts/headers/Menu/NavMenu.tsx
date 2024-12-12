@@ -21,12 +21,12 @@ const NavMenu = () => {
   const [role, setRole] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const currentRoute = usePathname();
-  const [navTitle, setNavTitle] = useState("");
+    const currentRoute = usePathname();
+    const [navTitle, setNavTitle] = useState("");
 
-  const isMenuItemActive = (menuLink: string) => {
-    return currentRoute === menuLink;
-  };
+    const isMenuItemActive = (menuLink: string) => {
+        return currentRoute === menuLink;
+    };
 
   const isSubMenuItemActive = (subMenuLink: string) => {
     return currentRoute === subMenuLink;
@@ -71,8 +71,8 @@ const NavMenu = () => {
         </div>
       </li>
       {(role === 'Landlord' || role === 'Admin') && (
-        <li className="nav-item">
-          <Link className="nav-link dashboard-menu" href="/dashboard/manage-hostels">Quản lý</Link>
+        <li className="nav-item dashboard-menu">
+          <Link className="nav-link" href="/dashboard/profile">Quản lý</Link>
         </li>
       )}
       {role === 'Admin' && (

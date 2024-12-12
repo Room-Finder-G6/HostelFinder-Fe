@@ -18,7 +18,6 @@ const AddMembership = () => {
         maxPostsAllowed: 0,
     });
     const router = useRouter(); // Cập nhật router từ next/navigation
-
     const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = Math.max(0, Number(e.target.value));
         setPrice(value);

@@ -461,7 +461,6 @@ const TenantManagement = () => {
                                             </td>
 
                                             <td>
-                                             
 
                                                 <button
                                                     className="btn btn-danger"

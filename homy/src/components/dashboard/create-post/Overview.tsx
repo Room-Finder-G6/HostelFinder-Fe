@@ -5,6 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import { getUserIdFromToken } from "@/utils/tokenUtils";
 import "./style.css";
+
 interface OverviewProps {
     onDataChange: (data: Partial<PostData>) => void;
 }
@@ -247,7 +248,7 @@ const Overview: React.FC<OverviewProps> = ({ onDataChange }) => {
                             className="nice-select"
                             options={membershipServices.map((service) => ({
                                 value: service.id,
-                                text: `Bài đăng Vip ${service.typeOfPost} (${service.numberOfPostsRemaining} bài còn lại)`,
+                                text: `Bài đăng Vip ${service.typeOfPost ? service.typeOfPost : "dùng thử"} (${service.numberOfPostsRemaining} bài còn lại)`,
                             }))}
                             defaultCurrent={0}
                             onChange={(e) => handleSelectChange("membershipServiceId", e)}
