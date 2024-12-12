@@ -210,6 +210,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 className="form-control"
                             />
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">Tiền thuê *</label>
                             <CurrencyInput
@@ -221,7 +222,16 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 decimalsLimit={0}
                                 groupSeparator="."
                                 decimalSeparator=","
-                                onValueChange={(value) => setValue('monthlyRent', value)}
+                                onValueChange={(value: string | undefined) => {
+                                    const numericValue = value ? parseInt(value.replace(/\./g, '').replace(/,/g, '')) : 0;
+                                    setValue('monthlyRent', numericValue);
+                                }}
+                                onKeyDown={(e) => {
+                                    // Ngăn không cho nhập dấu "-"
+                                    if (e.key === '-') {
+                                        e.preventDefault(); // Ngăn chặn hành động nhập
+                                    }
+                                }}
                                 required
                             />
                             {errors.monthlyRent && (
@@ -231,6 +241,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 Giá thuê phòng hiện tại: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(watch('monthlyRentNow') || 0)}
                             </small>
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">Tiền đặt cọc <span style={{ color: 'red' }}>*</span></label>
                             <CurrencyInput
@@ -242,13 +253,23 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 decimalsLimit={0}
                                 groupSeparator="."
                                 decimalSeparator=","
-                                onValueChange={(value) => setValue('depositAmount', value)}
+                                onValueChange={(value: string | undefined) => {
+                                    const numericValue = value ? parseInt(value.replace(/\./g, '').replace(/,/g, '')) : 0;
+                                    setValue('depositAmount', numericValue);
+                                }}
+                                onKeyDown={(e) => {
+                                    // Ngăn không cho nhập dấu "-"
+                                    if (e.key === '-') {
+                                        e.preventDefault(); // Ngăn chặn hành động nhập
+                                    }
+                                }}
                                 required
                             />
                             <div className="alert alert-warning mt-2" role="alert">
                                 Chú ý: Đây là số tiền cọc ở phòng trọ và sẽ không được tính vào hóa đơn.
                             </div>
                         </div>
+
                         <div className="mb-3">
                             <label className="form-label">Kỳ thanh toán (tháng)<span style={{ color: 'red' }}>*</span></label>
                             <input
@@ -256,8 +277,17 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                 {...register("paymentCycleDays")}
                                 className="form-control"
                                 required
+                                min="1"
+                                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                    // Ngăn không cho nhập dấu "-"
+                                    if (e.key === '-') {
+                                        e.preventDefault(); // Ngăn chặn hành động nhập
+                                    }
+                                }}
                             />
                         </div>
+
+
                         <div className="mb-3">
                             <label className="form-label">Điều khoản hợp đồng</label>
                             <textarea
