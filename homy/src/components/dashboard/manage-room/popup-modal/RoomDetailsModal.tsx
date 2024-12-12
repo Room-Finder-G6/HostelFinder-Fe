@@ -215,11 +215,11 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     }
 
     return (
-        <Modal show={isOpen} onHide={onClose} size="xl" centered>
+        <Modal show={isOpen} onHide={onClose} size="xl" dialogClassName="modal-150w" contentClassName="modal-custom" centered>
             <Modal.Header closeButton>
-                <Modal.Title className="text-dark fw-bold">Thông tin phòng</Modal.Title>
+                <Modal.Title className="text-dark fw-bold modal-120w">Thông tin phòng</Modal.Title>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body >
                 {loading ? (
                     <Loading />
                 ) : error ? (
@@ -653,33 +653,163 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     <h5>Lịch sử hợp đồng</h5>
                                     {roomDetails.contractDetailInRoom ? (
                                         <div>
-                                            <p hidden><strong>Id:</strong> {roomDetails.contractDetailInRoom.id}</p>
-                                            <p><strong>Ngày bắt đầu:</strong> {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString('vi-Vn')}</p>
-                                            <p><strong>Ngày kết thúc:</strong> {roomDetails.contractDetailInRoom.endDate ? new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString('vi-VN') : "N/A"}</p>
-                                            <p><strong>Tiền thuê hàng tháng:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.monthlyRent)} đ</p>
-                                            <p><strong>Số tiền đặt cọc:</strong> {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.depositAmount)} đ</p>
-                                            <p><strong>Chu kỳ thanh toán (ngày):</strong> {roomDetails.contractDetailInRoom.paymentCycleDays}</p>
-                                            {roomDetails.contractDetailInRoom.contractTerms && (
-                                                <p><strong>Điều khoản hợp đồng:</strong> {roomDetails.contractDetailInRoom.contractTerms}</p>
-                                            )}
-                                            {roomDetails?.contractDetailInRoom?.id && (
-                                                <button
-                                                    className="btn btn-danger me-2"
-                                                    onClick={() => handleShowConfirmModal(roomDetails.contractDetailInRoom!.id!)}
-                                                >
-                                                    Kết thúc hợp đồng
-                                                </button>
-                                            )}
+                                            {/* Contract Information Display */}
+                                            <div className="contract-info-container">
+                                                <div className="row g-4">
+                                                    {/* Thông tin thời gian */}
+                                                    <div className="col-md-6">
+                                                        <div className="info-card">
+                                                            <div className="card-header">
+                                                                <i className="bi bi-calendar-event text-primary"></i>
+                                                                <h6 className="mb-0">Thời gian hợp đồng</h6>
+                                                            </div>
+                                                            <div className="card-content">
+                                                                <div className="timeline">
+                                                                    <div className="timeline-item">
+                                                                        <div className="timeline-point bg-success"></div>
+                                                                        <div className="timeline-content">
+                                                                            <small className="text-muted">Ngày bắt đầu</small>
+                                                                            <div className="fw-bold">
+                                                                                {new Date(roomDetails.contractDetailInRoom.startDate).toLocaleDateString('vi-VN')}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="timeline-item">
+                                                                        <div className="timeline-point bg-danger"></div>
+                                                                        <div className="timeline-content">
+                                                                            <small className="text-muted">Ngày kết thúc</small>
+                                                                            <div className="fw-bold">
+                                                                                {roomDetails.contractDetailInRoom.endDate
+                                                                                    ? new Date(roomDetails.contractDetailInRoom.endDate).toLocaleDateString('vi-VN')
+                                                                                    : <span className="badge bg-warning text-dark">Chưa xác định</span>
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
+                                                    {/* Thông tin tài chính */}
+                                                    <div className="col-md-6">
+                                                        <div className="info-card">
+                                                            <div className="card-header">
+                                                                <i className="bi bi-wallet2 text-primary"></i>
+                                                                <h6 className="mb-0">Thông tin tài chính</h6>
+                                                            </div>
+                                                            <div className="card-content">
+                                                                <div className="finance-info">
+                                                                    <div className="finance-item">
+                                                                        <div className="icon-box bg-primary bg-opacity-10">
+                                                                            <i className="bi bi-cash text-primary"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <small className="text-muted">Tiền thuê tháng</small>
+                                                                            <div className="amount">
+                                                                                {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.monthlyRent)} đ
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="finance-item">
+                                                                        <div className="icon-box bg-success bg-opacity-10">
+                                                                            <i className="bi bi-shield-check text-success"></i>
+                                                                        </div>
+                                                                        <div>
+                                                                            <small className="text-muted">Tiền đặt cọc</small>
+                                                                            <div className="amount">
+                                                                                {new Intl.NumberFormat('vi-VN').format(roomDetails.contractDetailInRoom.depositAmount)} đ
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                            {/* Button Gia hạn hợp đồng */}
-                                            <button
-                                                className="btn btn-success"
-                                                onClick={() => handleExtendContract(roomDetails.contractDetailInRoom!.id!)}
-                                                disabled={loading}
-                                            >
-                                                Gia hạn hợp đồng
-                                            </button>
+                                                    {/* Chu kỳ thanh toán */}
+                                                    <div className="col-md-6">
+                                                        <div className="info-card">
+                                                            <div className="card-header">
+                                                                <i className="bi bi-clock-history text-primary"></i>
+                                                                <h6 className="mb-0">Chu kỳ thanh toán</h6>
+                                                            </div>
+                                                            <div className="card-content">
+                                                                <div className="payment-cycle">
+                                                                    <div className="cycle-number">
+                                                                        {roomDetails.contractDetailInRoom.paymentCycleDays}
+                                                                    </div>
+                                                                    <div className="cycle-text">tháng/lần</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Điều khoản hợp đồng */}
+                                                    {roomDetails.contractDetailInRoom.contractTerms && (
+                                                        <div className="col-12">
+                                                            <div className="info-card">
+                                                                <div className="card-header">
+                                                                    <i className="bi bi-file-text text-primary"></i>
+                                                                    <h6 className="mb-0">Điều khoản hợp đồng</h6>
+                                                                </div>
+                                                                <div className="card-content">
+                                                                    <div className="terms-content">
+                                                                        {roomDetails.contractDetailInRoom.contractTerms}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <p hidden><strong>Id:</strong> {roomDetails.contractDetailInRoom.id}</p>
+                                            </div>
+                                            <div className="contract-actions mt-4 d-flex flex-wrap gap-3">
+                                                {roomDetails?.contractDetailInRoom?.id && (
+                                                    <>
+                                                        {/* Kết thúc hợp đồng */}
+                                                        <button
+                                                            className="btn btn-soft-danger btn-action"
+                                                            onClick={() => handleShowConfirmModal(roomDetails.contractDetailInRoom!.id!)}
+                                                        >
+                                                            <div className="btn-content">
+                                                                <div className="icon-wrapper">
+                                                                    <i className="bi bi-file-earmark-x"></i>
+                                                                </div>
+                                                                <div className="text-content">
+                                                                    <span className="action-title">Kết thúc hợp đồng</span>
+                                                                    <small className="action-desc">Thanh lý hợp đồng hiện tại</small>
+                                                                </div>
+                                                            </div>
+                                                        </button>
+
+                                                        {/* Gia hạn hợp đồng */}
+                                                        <button
+                                                            className="btn btn-soft-success btn-action"
+                                                            onClick={() => handleExtendContract(roomDetails.contractDetailInRoom!.id!)}
+                                                            disabled={loading}
+                                                        >
+                                                            <div className="btn-content">
+                                                                <div className="icon-wrapper">
+                                                                    <i className="bi bi-arrow-clockwise"></i>
+                                                                </div>
+                                                                <div className="text-content">
+                                                                    <span className="action-title">Gia hạn hợp đồng</span>
+                                                                    <small className="action-desc">Kéo dài thời hạn hợp đồng</small>
+                                                                </div>
+                                                            </div>
+                                                            {loading && (
+                                                                <div className="spinner-wrapper">
+                                                                    <div className="spinner-border spinner-border-sm" role="status">
+                                                                        <span className="visually-hidden">Loading...</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
 
                                             {/* Modal xác nhận */}
                                             <Modal show={showConfirmModal} onHide={handleCloseConfirmModal}>

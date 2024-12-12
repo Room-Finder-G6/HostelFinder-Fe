@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner, Badge } from "react-bootstrap";
 import { MdEmail } from 'react-icons/md';
 import Loading from "@/components/Loading";
+import { FaEye, FaFileInvoiceDollar, FaTrashAlt } from "react-icons/fa";
 
 interface Invoice {
    id: string;
@@ -241,45 +242,72 @@ const InvoiceBody = () => {
                </div>
             )}
 
-            <div className="bg-white card-box p0 border-20">
-               <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
-                  <table className="table saved-search-table">
+            <div className="invoice-container">
+               <div className="table-responsive">
+                  <table className="invoice-table">
                      <thead>
                         <tr>
-                           {/* <th scope="col">Mã hóa đơn</th> */}
-                           <th scope="col">Tên phòng</th>
-                           <th scope="col">Thời gian</th>
-                           <th scope="col">Số tiền</th>
-                           <th scope="col">Trạng thái</th>
-                           <th scope="col">Hành động</th>
+                           <th>Tên phòng</th>
+                           <th>Thời gian</th>
+                           <th>Số tiền</th>
+                           <th>Trạng thái</th>
+                           <th className="text-end">Hành động</th>
                         </tr>
                      </thead>
-                     <tbody className="border-0">
+                     <tbody>
                         {invoices.map((invoice) => (
-                           <tr key={invoice.id}>
-                              {/* <td>{invoice.id}</td> */}
+                           <tr key={invoice.id} className="invoice-row">
                               <td>
-                                 <Link href="#" className="property-name tran3s color-dark fw-500">
-                                    {invoice.roomName}
-                                 </Link>
+                                 <div className="room-info">
+                                    <div className="icon-wrapper">
+                                       <FaFileInvoiceDollar className="text-primary" />
+                                    </div>
+                                    <div className="room-details">
+                                       <Link
+                                          href="#"
+                                          className="room-name"
+                                       >
+                                          {invoice.roomName}
+                                       </Link>
+                                       <small className="invoice-id text-muted">
+                                          #{invoice.id}
+                                       </small>
+                                    </div>
+                                 </div>
                               </td>
                               <td>
-                                 {invoice.billingMonth}/{invoice.billingYear}
+                                 <div className="date-info">
+                                    <div className="month-year">
+                                       Tháng {invoice.billingMonth}/{invoice.billingYear}
+                                    </div>
+                                 </div>
                               </td>
-                              <td>{invoice.totalAmount.toLocaleString('vi-VN')} ₫</td>
                               <td>
-                                 <span className={invoice.isPaid ? "badge bg-success" : "badge bg-danger"}>
+                                 <div className="amount">
+                                    {invoice.totalAmount.toLocaleString('vi-VN')} ₫
+                                 </div>
+                              </td>
+                              <td>
+                                 <div className={`status-badge ${invoice.isPaid ? 'paid' : 'unpaid'}`}>
+                                    <span className="status-dot"></span>
                                     {invoice.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                                 </span>
+                                 </div>
                               </td>
                               <td>
-                                 <div className="d-flex justify-content-end btns-group">
-                                    <ButtonToolbar onClick={() => handleViewClick(invoice.id)}>
-                                       <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                    </ButtonToolbar>
-                                    <ButtonToolbar className="ms-5" data-bs-toggle="tooltip" title="Delete">
-                                       <i className="fa-regular fa-trash"></i>
-                                    </ButtonToolbar>
+                                 <div className="action-buttons">
+                                    <button
+                                       className="btn btn-icon btn-light"
+                                       onClick={() => handleViewClick(invoice.id)}
+                                       title="Xem chi tiết"
+                                    >
+                                       <FaEye className="text-primary" />
+                                    </button>
+                                    <button
+                                       className="btn btn-icon btn-light ms-2"
+                                       title="Xóa hóa đơn"
+                                    >
+                                       <FaTrashAlt className="text-danger" />
+                                    </button>
                                  </div>
                               </td>
                            </tr>
@@ -481,7 +509,7 @@ const InvoiceBody = () => {
                               <div className="col-md-6 mb-2 text-md-end">
                                  <strong>Trạng Thái:</strong>{' '}
                                  <Badge bg={invoiceDetails.isPaid ? 'success' : 'danger'}>
-                                    {invoiceDetails.isPaid ?  'Đã Thanh Toán' : 'Chưa Thanh Toán'}
+                                    {invoiceDetails.isPaid ? 'Đã Thanh Toán' : 'Chưa Thanh Toán'}
                                  </Badge>
                               </div>
                            </div>
