@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { getUserIdFromToken } from "@/utils/tokenUtils";
 import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
 
 interface MembershipService {
   serviceName: string;
@@ -26,6 +27,7 @@ const useMemberships = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]);
+  const router = useRouter();
 
   const fetchMemberships = async () => {
     setLoading(true);
@@ -61,15 +63,17 @@ const useMemberships = () => {
     const userId = getUserIdFromToken();
 
     if (!userId) {
-      toast.error("Vui lòng đăng nhập trước khi mua membership.");
-      window.location.href = "/";
+      toast.error("Vui lòng đăng nhập trước khi mua gói thành viên.");
+      
+      setTimeout(() => {
+        router.push('/');
+      }, 2000); 
+      
       return;
-        toast.error("Vui lòng đăng nhập trước khi mua membership.");
-        return;
     }
 
     if (!membershipId) {
-        toast.error("Không có thông tin gói membership.");
+        toast.error("Không có thông tin gói thành viên.");
         return;
     }
 
