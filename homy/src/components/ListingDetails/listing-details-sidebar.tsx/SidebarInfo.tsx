@@ -35,7 +35,7 @@ const SidebarInfo = () => {
                     <li>Phone: <span><Link href={`tel:${user.phone}`}>{user.phone}</Link></span></li>
                 </ul>
             </div>
-            <Link href="/contact" className="btn-nine text-uppercase rounded-3 w-100 mb-10">CONTACT AGENT</Link>
+            {/*<Link href="/contact" className="btn-nine text-uppercase rounded-3 w-100 mb-10">CONTACT AGENT</Link>*/}
         </>
     );
 };
