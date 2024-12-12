@@ -6,7 +6,9 @@ import icon_1 from "@/assets/images/icon/icon_46.svg";
 import usePostsByUser from "./usePost";
 import UserPostsBody from "./PropertyTableBodyPost";
 import DeleteModal from "@/modals/DeleteModal";
-
+import apiInstance from "@/utils/apiInstance";
+import { toast } from "react-toastify";
+import { useRouter } from 'next/navigation';
 
 const UserPostManagement = () => {
     const { posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser } = usePostsByUser();
@@ -15,6 +17,7 @@ const UserPostManagement = () => {
     const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
     const prevPageIndexRef = useRef(pageIndex);
     const prevSortOptionRef = useRef(sortOption);
+    const router = useRouter();
 
     const selectHandler = (e: any) => {
         const selectedValue = e.target.value;
@@ -27,20 +30,16 @@ const UserPostManagement = () => {
         if (!selectedPostId) return;
 
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`/v1/posts/${selectedPostId}`, {
-                method: "DELETE",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+            const response = await apiInstance.delete(`/posts/${selectedPostId}`, {
+                params: {
+                    postId: selectedPostId
+                }
             });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete the post.");
+            if (response.data.succeeded) {
+                toast.success(response.data.message);
             }
-
-            alert("Xóa bài viết thành công!");
             await fetchPostsByUser(pageIndex, sortOption);
+            window.location.reload();
 
         } catch (error) {
             console.error("Error deleting post:", error);
