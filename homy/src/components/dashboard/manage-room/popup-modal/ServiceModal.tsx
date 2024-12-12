@@ -13,7 +13,7 @@ const ServiceModal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
     return (
         <div className="modal-overlay">
             <div className="modal-content">
-                <h3 className="modal-title">{title}</h3>
+                <h3 className="modal-title" style={{ color: 'black' }}>{title}</h3>
                 <button className="modal-close-button" onClick={onClose}>×</button>
                 {children}
             </div>

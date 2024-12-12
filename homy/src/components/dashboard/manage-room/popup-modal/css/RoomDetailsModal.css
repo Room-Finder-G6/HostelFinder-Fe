@@ -1,0 +1,205 @@
+.tenants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .tenant-card {
+    transition: transform 0.2s ease;
+  }
+  
+  .tenant-card:hover {
+    transform: translateY(-3px);
+  }
+  
+  .tenant-avatar {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .representative-badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    background: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .tenant-badges .badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+  
+  .quick-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+  }
+  
+  .info-row svg {
+    font-size: 0.875rem;
+    flex-shrink: 0;
+  }
+  
+  .description {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .action-buttons .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+  }
+  
+  .empty-state-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .empty-state-icon svg {
+    font-size: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .tenants-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+  }
+
+  .icon-wrapper {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+  }
+  
+  .image-hover-zoom {
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+  
+  .image-hover-zoom:hover {
+    transform: scale(1.02);
+  }
+  
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  
+  .image-hover-zoom:hover .image-overlay {
+    opacity: 1;
+  }
+  
+  .room-gallery .btn-light {
+    padding: 0.5rem;
+    line-height: 1;
+  }
+  
+  .card {
+    transition: all 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  .invoice-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .summary-item .label {
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .meter-reading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+  
+  .usage-badge {
+    background: #e9ecef;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+  }
+  
+  .empty-state-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .empty-state-icon svg {
+    font-size: 20px;
+  }
+  
+  @media (max-width: 768px) {
+    .table-responsive {
+      margin: 0 -1rem;
+    }
+    
+    .invoice-summary {
+      gap: 1rem;
+    }
+  }

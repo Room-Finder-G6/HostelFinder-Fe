@@ -451,7 +451,7 @@ const InvoiceBody = () => {
             <Modal
                show={showModal}
                onHide={() => setShowModal(false)}
-               size="xl"
+               size="lg"
                centered
                className="invoice-details-modal"
                dialogClassName="modal-90w"
@@ -481,7 +481,7 @@ const InvoiceBody = () => {
                               <div className="col-md-6 mb-2 text-md-end">
                                  <strong>Trạng Thái:</strong>{' '}
                                  <Badge bg={invoiceDetails.isPaid ? 'success' : 'danger'}>
-                                    {invoiceDetails.isPaid ? 'Đã Thanh Toán' : 'Chưa Thanh Toán'}
+                                    {invoiceDetails.isPaid ?  'Đã Thanh Toán' : 'Chưa Thanh Toán'}
                                  </Badge>
                               </div>
                            </div>
