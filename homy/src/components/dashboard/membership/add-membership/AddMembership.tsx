@@ -1,18 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { toast } from "react-toastify";
+import React, {useState} from "react";
+import {toast} from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
-import { useRouter } from "next/navigation"; // Đổi import từ next/router sang next/navigation
+import {useRouter} from "next/navigation"; // Đổi import từ next/router sang next/navigation
 import styles from "./AddMembership.module.css";
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
+
 const AddMembership = () => {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState<number>(0);
     const [duration, setDuration] = useState<number>(0);
-    const [service, setService] = useState<{ serviceName: string; maxPushTopAllowed: number; maxPostsAllowed: number }>({
+    const [service, setService] = useState<{
+        serviceName: string;
+        maxPushTopAllowed: number;
+        maxPostsAllowed: number
+    }>({
         serviceName: "",
         maxPushTopAllowed: 0,
         maxPostsAllowed: 0,
@@ -62,7 +66,9 @@ const AddMembership = () => {
 
             if (response.data.succeeded) {
                 toast.success("Thêm Gói Thành Viên Thành Công!");
-                router.push("/dashboard/membership"); // Chuyển hướng đến trang quản lý Membership
+                setTimeout(() => {
+                    router.push("/dashboard/membership"); // Chuyển hướng đến trang quản lý Membership
+                }, 1000);
             } else {
                 toast.error(response.data.message || "Có lỗi khi thêm gói thành viên.");
             }
@@ -75,10 +81,9 @@ const AddMembership = () => {
     return (
 
 
-
         <div className="dashboard-body">
             <div className="position-relative">
-                <AdminHeaderTwo title="Thêm gói thành viên" />
+                <AdminHeaderTwo title="Thêm gói thành viên"/>
                 <h2 className="main-title d-block d-lg-none">Thêm gói thành viên</h2>
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className="bg-white card-box border-20">
@@ -178,10 +183,10 @@ const AddMembership = () => {
                             </div>
                         </div>
                         <div className="button-group d-inline-flex align-items-center mt-30">
-                    <button type="submit" className="dash-btn-two tran3s me-3">Thêm Gói Thành Viên</button>
+                            <button type="submit" className="dash-btn-two tran3s me-3">Thêm Gói Thành Viên</button>
+                        </div>
                     </div>
-                    </div>
-                    
+
                 </form>
             </div>
         </div>

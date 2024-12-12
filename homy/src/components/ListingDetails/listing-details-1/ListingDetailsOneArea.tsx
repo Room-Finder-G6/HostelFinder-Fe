@@ -127,17 +127,7 @@ const ListingDetailsOneArea = () => {
                         <div className="property-amenities bg-white shadow4 border-20 p-40 mb-50">
                             <CommonAmenities amenities={amenities ?? []}/>
                         </div>
-                        {/*<div className="property-video-tour mb-50">
-                            <CommonPropertyVideoTour/>
-                        </div>
-                        <CommonPropertyFloorPlan style={false}/>
-                        <div className="property-nearby bg-white shadow4 border-20 p-40 mb-50">
-                            <CommonNearbyList/>
-                        </div>
-                        <CommonSimilarProperty/>
-                        <div className="property-score bg-white shadow4 border-20 p-40 mb-50">
-                            <CommonProPertyScore/>
-                        </div>*/}
+
                         <div className="property-location mb-50">
                             <h4 className="mb-20">Xem trên bản đồ</h4>
                             <GoongMap selectedLocation={coordinateHostel}
@@ -146,29 +136,6 @@ const ListingDetailsOneArea = () => {
                             />
                         </div>
 
-                       {/* <div className="review-panel-one bg-white shadow4 border-20 p-40 mb-50">
-                            <div className="position-relative z-1">
-                                <div className="d-sm-flex justify-content-between align-items-center mb-10">
-                                    <h4 className="m0 xs-pb-30">Reviews</h4>
-                                    <NiceSelect
-                                        className="nice-select"
-                                        options={[
-                                            { value: "01", text: "Newest" },
-                                            { value: "02", text: "Best Seller" },
-                                            { value: "03", text: "Best Match" },
-                                        ]}
-                                        defaultCurrent={0}
-                                        onChange={() => { }}
-                                        name=""
-                                        placeholder=""
-                                    />
-                                </div>
-                                <Review style={true} />
-                            </div>
-                        </div>
-                        <div className="review-form bg-white shadow4 border-20 p-40">
-                            <CommonReviewForm/>
-                        </div>*/}
                     </div>
                     <UserContext.Provider value={user}>
                         <Sidebar/>
