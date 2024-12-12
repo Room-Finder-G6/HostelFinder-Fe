@@ -1,6 +1,3 @@
-import FeatureListing from "../listing-details-sidebar.tsx/FeatureListing"
-import MortgageCalculator from "../listing-details-sidebar.tsx/MortgageCalculator"
-import ScheduleForm from "../listing-details-sidebar.tsx/ScheduleForm"
 import SidebarInfo from "../listing-details-sidebar.tsx/SidebarInfo"
 
 const Sidebar = () => {

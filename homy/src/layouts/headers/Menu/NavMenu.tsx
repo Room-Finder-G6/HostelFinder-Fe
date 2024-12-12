@@ -70,7 +70,7 @@ const NavMenu = () => {
           </Link>
         </div>
       </li>
-      {(role === 'Landlord' || role === 'Admin') && (
+      {(role === 'Landlord' || role === 'Admin' || role === 'User') && (
         <li className="nav-item dashboard-menu">
           <Link className="nav-link" href="/dashboard/profile">Quản lý</Link>
         </li>

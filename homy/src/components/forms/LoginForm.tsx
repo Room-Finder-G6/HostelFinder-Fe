@@ -31,8 +31,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
 
   const schema = yup
     .object({
-      userName: yup.string().required("User name is required"),
-      password: yup.string().required("Password is required"),
+      userName: yup.string().required("Tên đăng nhập không được để trống"),
+      password: yup.string().required("Mật khẩu không được để trống"),
     })
     .required();
 
@@ -82,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         <div className="row">
           <div className="col-12">
             <div className="input-group-meta position-relative mb-25">
-              <label>Tên đăng nhập*</label>
+              <label>Tên đăng nhập<span style={{color:'red'}}>*</span></label>
               <input
                 type="text"
                 {...register("userName")}
@@ -93,9 +93,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
           </div>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-20">
-              <label>Mật khẩu*</label>
+              <label>Mật khẩu<span style={{color: 'red'}}>*</span></label>
               <input
-                type={isPasswordVisible ? "text" : "password"}
+                  type={isPasswordVisible ? "text" : "password"}
                 {...register("password")}
                 placeholder="Nhập mật khẩu"
                 className="pass_log_id"
