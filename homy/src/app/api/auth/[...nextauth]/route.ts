@@ -1,8 +1,6 @@
 import NextAuth, { DefaultSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { AuthOptions } from "next-auth";
-import { pages } from "next/dist/build/templates/app-page";
-import { DefaultJWT } from "next-auth/jwt";
 // Configure NextAuth options
 const authOptions: AuthOptions = {
   providers: [
