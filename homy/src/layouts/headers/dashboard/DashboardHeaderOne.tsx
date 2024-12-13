@@ -265,7 +265,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                         </li>
                         {(role === 'Landlord') && (
                             <>
-                        <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
+                                <li className="bottom-line pt-30 lg-pt-20 mb-40 lg-mb-30"></li>
                                 <li>
                                     <div className="nav-title">Dành cho hội viên</div>
                                 </li>
@@ -276,6 +276,13 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                             src={pathname === '/dashboard/reports' ? dashboardIconActive_6 : dashboardIcon_6}
                                             alt="List Room"/>
                                         <span>Thống kê</span>
+                                    </Link>
+                                </li>
+                                <li className="plr">
+                                    <Link href="/dashboard/manage-post"
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
+                                        <i className="bi bi-card-text"></i>
+                                        <span>Quản Lý Bài Đăng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
@@ -292,13 +299,6 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                           className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-room' ? 'active' : ''}`}>
                                         <i className="bi bi-houses"></i>
                                         <span>Quản Lý Phòng Trọ</span>
-                                    </Link>
-                                </li>
-                                <li className="plr">
-                                    <Link href="/dashboard/manage-post"
-                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-post' ? 'active' : ''}`}>
-                                        <i className="bi bi-card-text"></i>
-                                        <span>Quản Lý Bài Đăng</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
