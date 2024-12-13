@@ -71,7 +71,7 @@ const HostelManagement = () => {
                      className="form-control ms-3"
                   />
                </div>*/}
-               <div className="d-none d-md-inline-block ms-auto">
+               <div className="d-md-inline-block ms-auto">
                   <Link href="/dashboard/add-hostel" className="btn-two">
                      <span>Thêm nhà trọ</span>
                   </Link>
