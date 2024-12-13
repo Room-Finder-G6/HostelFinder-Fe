@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import ServiceModal from './ServiceModal';
 import apiInstance from '@/utils/apiInstance';
 import { toast } from 'react-toastify';
+import "./css/ServicePriceModal.css";
 
 interface Service {
     serviceId: string;
@@ -201,166 +202,240 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
         return new Date(dateString).toLocaleDateString('vi-VN');
     };
 
-    return (
-        <ServiceModal isOpen={isOpen} onClose={onClose} title=" Quản lý giá dịch vụ">
-            {/* Display current service prices */}
-            <div className="alert alert-warning mt-2" role="alert">
-                <div>
-                    <i className="bi-exclamation-triangle-fill me-2"></i>Chú ý:
-                </div>
-                Nếu bạn sửa giá của 1 dịch vụ đang áp dụng, giá sẽ được áp dụng cho các hoá đơn được tạo ra sau lần sửa này. Các hoá đơn cũ không thay đổi.
-            </div>
-            <table className="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope='col'>Dịch vụ</th>
-                        <th className="text-end">Đơn giá</th>
-                        <th>Đơn vị</th>
-                        <th>Hiệu lực từ</th>
-                        <th>Hiệu lực đến</th>
-                        <th className="text-center">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {servicePrices.length > 0 ? (
-                        servicePrices.map((servicePrice: ServicePrice) => {
-                            const formattedUnitCost = new Intl.NumberFormat('vi-VN', {
-                                style: 'currency',
-                                currency: 'VND',
-                            }).format(servicePrice.unitCost);
 
-                            return (
-                                <tr key={servicePrice.id}>
-                                    <td>{servicePrice.serviceName}</td>
-                                    <td className="text-end">
-                                        {servicePrice.unitCost === 0
-                                            ? 'Miễn phí'
-                                            : formattedUnitCost}
-                                    </td>
-                                    <td>{servicePrice.unitCost === 0 ? 'N/A' : getUnitLabel(servicePrice.unit)}</td>
-                                    <td>{formatDate(servicePrice.effectiveFrom)}</td>
-                                    <td>{servicePrice.effectiveTo ? formatDate(servicePrice.effectiveTo) : 'N/A'}</td>
-                                    <td className="text-center">
-                                        <button
-                                            className="btn btn-sm btn-outline-primary me-2"
-                                            onClick={() => handleEditButtonClick(servicePrice)}
-                                            title="Chỉnh sửa"
-                                        >
-                                            <i className="bi bi-pencil-square"></i>
-                                        </button>
-                                        <button
-                                            className="btn btn-sm btn-outline-danger"
-                                            onClick={() => handleDeleteServicePrice(servicePrice.id)}
-                                            title="Xóa"
-                                        >
-                                            <i className="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            );
-                        })
-                    ) : (
-                        <tr>
-                            <td colSpan={6} style={{ textAlign: 'center' }}>
-                                Không có dịch vụ nào cho nhà trọ này.
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-            {/* Form to add or edit service price */}
-            <h4>{isEditing ? 'Cập nhật giá dịch vụ' : 'Thêm giá dịch vụ mới'}</h4>
-            <form onSubmit={handleFormSubmit}>
-                <div className="form-group">
-                    <label>Dịch vụ</label>
-                    <select
-                        name="serviceId"
-                        value={formData.serviceId}
-                        onChange={handleInputChange}
-                        className="form-control"
-                        required
-                        disabled={isEditing}
-                    >
-                        <option value="">Chọn dịch vụ</option>
-                        {availableServices.length > 0 ? (
-                            availableServices.map((service: Service) => (
-                                <option key={service.serviceId} value={service.serviceId}>
-                                    {service.serviceName}
-                                </option>
-                            ))
-                        ) : (
-                            <option value="">Không có dịch vụ nào</option>
-                        )}
-                    </select>
-                </div>
-                <div className="form-group">
-                    <label>
-                        <input
-                            type="checkbox"
-                            checked={isFree}
-                            onChange={handleIsFreeChange}
-                            className="me-2"
-                        />
-                        Miễn phí
-                    </label>
-                </div>
-                <div className="form-group">
-                    <label>Đơn giá</label>
-                    {isFree ? (
-                        <p className="form-control-static">Miễn phí</p>
-                    ) : (
-                        <input
-                            type="number"
-                            name="unitCost"
-                            value={formData.unitCost}
-                            onChange={handleInputChange}
-                            className="form-control"
-                            required
-                            min="0"
-                        />
-                    )}
-                </div>
-                {!isFree && (
-                    <div className="form-group">
-                        <label>Đơn vị</label>
-                        <select
-                            name="unit"
-                            value={formData.unit}
-                            onChange={handleInputChange}
-                            className="form-control"
-                            required
-                        >
-                            <option value="">Chọn đơn vị</option>
-                            {unitOptions.map((unit) => (
-                                <option key={unit.value} value={unit.value}>
-                                    {unit.label}
-                                </option>
-                            ))}
-                        </select>
+
+    return (
+        <ServiceModal isOpen={isOpen} onClose={onClose} title="Quản lý giá dịch vụ">
+            <div className="container-fluid px-4 py-3">
+                {/* Alert with modern styling */}
+                <div className="alert alert-warning border-0 shadow-sm mb-4" role="alert">
+                    <div className="d-flex align-items-center">
+                        <i className="bi bi-exclamation-triangle-fill fs-4 me-3 text-warning"></i>
+                        <div>
+                            <h6 className="alert-heading mb-1">Chú ý quan trọng</h6>
+                            <p className="mb-0 small">
+                                Giá dịch vụ mới sẽ chỉ được áp dụng cho các hoá đơn được tạo sau khi cập nhật.
+                                Các hoá đơn cũ sẽ giữ nguyên giá trị.
+                            </p>
+                        </div>
                     </div>
-                )}
-                <div className="form-group">
-                    <label>Hiệu lực từ</label>
-                    <input
-                        type="date"
-                        name="effectiveFrom"
-                        value={formData.effectiveFrom}
-                        onChange={handleInputChange}
-                        className="form-control"
-                        required
-                    />
                 </div>
-                <div className="modal-footer">
-                    <button type="submit" className="btn btn-primary me-2">
-                        {isEditing ? 'Cập nhật' : 'Thêm'}
-                    </button>
-                    {isEditing && (
-                        <button type="button" className="btn btn-secondary" onClick={handleCancelEdit}>
-                            Hủy
-                        </button>
-                    )}
+
+                {/* Service Prices Table with modern styling */}
+                <div className="card shadow-sm border-0 mb-4">
+                    <div className="card-header bg-transparent border-bottom-0 py-3">
+                        <h5 className="mb-0">Danh sách giá dịch vụ</h5>
+                    </div>
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0">
+                            <thead className="bg-light">
+                                <tr>
+                                    <th scope="col" className="border-0">Dịch vụ</th>
+                                    <th scope="col" className="border-0 text-end">Đơn giá</th>
+                                    <th scope="col" className="border-0">Đơn vị</th>
+                                    <th scope="col" className="border-0">Hiệu lực từ</th>
+                                    <th scope="col" className="border-0">Hiệu lực đến</th>
+                                    <th scope="col" className="border-0 text-center" style={{ width: '120px' }}>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {servicePrices.length > 0 ? (
+                                    servicePrices.map((servicePrice: ServicePrice) => {
+                                        const formattedUnitCost = new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND',
+                                        }).format(servicePrice.unitCost);
+
+
+                                        return (
+                                            <tr key={servicePrice.id}>
+                                                <td className="align-middle">
+                                                    <span className="fw-medium">{servicePrice.serviceName}</span>
+                                                </td>
+                                                <td className="align-middle text-end">
+                                                    <span className={`badge ${servicePrice.unitCost === 0 ? 'bg-success' : 'bg-primary'}`}>
+                                                        {servicePrice.unitCost === 0 ? 'Miễn phí' : formattedUnitCost}
+                                                    </span>
+                                                </td>
+                                                <td className="align-middle">
+                                                    {servicePrice.unitCost === 0 ? '-' : getUnitLabel(servicePrice.unit)}
+                                                </td>
+                                                <td className="align-middle">
+                                                    <i className="bi bi-calendar3 me-2 text-muted"></i>
+                                                    {formatDate(servicePrice.effectiveFrom)}
+                                                </td>
+                                                <td className="align-middle">
+                                                    {servicePrice.effectiveTo ? (
+                                                        <><i className="bi bi-calendar3 me-2 text-muted"></i>{formatDate(servicePrice.effectiveTo)}</>
+                                                    ) : (
+                                                        <span className="badge bg-light text-dark">Không có</span>
+                                                    )}
+                                                </td>
+                                                <td className="align-middle text-center">
+                                                    <div className="btn-group">
+                                                        <button
+                                                            className="btn btn-light btn-sm"
+                                                            onClick={() => handleEditButtonClick(servicePrice)}
+                                                            title="Chỉnh sửa"
+                                                        >
+                                                            <i className="bi bi-pencil text-primary"></i>
+                                                        </button>
+                                                        <button
+                                                            className="btn btn-light btn-sm"
+                                                            onClick={() => handleDeleteServicePrice(servicePrice.id)}
+                                                            title="Xóa"
+                                                        >
+                                                            <i className="bi bi-trash text-danger"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan={6} className="text-center py-4 text-muted">
+                                            <i className="bi bi-inbox fs-4 d-block mb-2"></i>
+                                            Không có dịch vụ nào cho nhà trọ này
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </form>
+
+                {/* Form Card with modern styling */}
+                <div className="card shadow-sm border-0">
+                    <div className="card-header bg-transparent py-3">
+                        <h5 className="mb-0">
+                            {isEditing ? 'Cập nhật giá dịch vụ' : 'Thêm giá dịch vụ mới'}
+                        </h5>
+                    </div>
+                    <div className="card-body">
+                        <form onSubmit={handleFormSubmit}>
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <select
+                                            name="serviceId"
+                                            value={formData.serviceId}
+                                            onChange={handleInputChange}
+                                            className="form-select"
+                                            required
+                                            disabled={isEditing}
+                                            id="serviceSelect"
+                                        >
+                                            <option value="">Chọn dịch vụ</option>
+                                            {availableServices.map((service: Service) => (
+                                                <option key={service.serviceId} value={service.serviceId}>
+                                                    {service.serviceName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <label htmlFor="serviceSelect">Dịch vụ</label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-check form-switch ps-0">
+                                        <div className="d-flex align-items-center">
+                                            <label className="form-check-label me-3">Tính phí</label>
+                                            <div className="form-check form-switch mb-0">
+                                                <input
+                                                    className="form-check-input"
+                                                    type="checkbox"
+                                                    role="switch"
+                                                    id="isFreeSwitch"
+                                                    checked={isFree}
+                                                    onChange={handleIsFreeChange}
+                                                />
+                                                <label className="form-check-label" htmlFor="isFreeSwitch">
+                                                    Miễn phí
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {!isFree && (
+                                    <>
+                                        <div className="col-md-6">
+                                            <div className="form-floating">
+                                                <input
+                                                    type="number"
+                                                    name="unitCost"
+                                                    value={formData.unitCost}
+                                                    onChange={handleInputChange}
+                                                    className="form-control"
+                                                    required
+                                                    min="0"
+                                                    id="unitCost"
+                                                    placeholder="Nhập đơn giá"
+                                                />
+                                                <label htmlFor="unitCost">Đơn giá (VND)</label>
+                                            </div>
+                                        </div>
+
+                                        <div className="col-md-6">
+                                            <div className="form-floating">
+                                                <select
+                                                    name="unit"
+                                                    value={formData.unit}
+                                                    onChange={handleInputChange}
+                                                    className="form-select"
+                                                    required
+                                                    id="unitSelect"
+                                                >
+                                                    <option value="">Chọn đơn vị</option>
+                                                    {unitOptions.map((unit) => (
+                                                        <option key={unit.value} value={unit.value}>
+                                                            {unit.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+
+                                                <label htmlFor="unitSelect">Đơn vị tính</label>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="date"
+                                            name="effectiveFrom"
+                                            value={formData.effectiveFrom}
+                                            onChange={handleInputChange}
+                                            className="form-control"
+                                            required
+                                            id="effectiveFrom"
+                                        />
+                                        <label htmlFor="effectiveFrom">Ngày hiệu lực</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="d-flex justify-content-end gap-2 mt-4">
+                                {isEditing && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-light"
+                                        onClick={handleCancelEdit}
+                                    >
+                                        <i className="bi bi-x-lg me-2"></i>Hủy
+                                    </button>
+                                )}
+                                <button type="submit" className="btn btn-primary">
+                                    <i className={`bi ${isEditing ? 'bi-check-lg' : 'bi-plus-lg'} me-2`}></i>
+                                    {isEditing ? 'Cập nhật' : 'Thêm mới'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </ServiceModal>
     );
 };

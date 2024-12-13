@@ -153,10 +153,7 @@ const RoomSelector: React.FC<HostelSelectorProps> = ({
             </select>
           )} */}
 
-          {/* Thông báo nếu không có phòng */}
-          {selectedHostel && rooms.length === 0 && (
-            <p>Không có phòng trong nhà trọ này.</p>
-          )}
+        
         </>
       )}
     </div>

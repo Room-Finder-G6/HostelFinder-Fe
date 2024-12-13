@@ -9,8 +9,10 @@ import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import HostelSelector from "../manage-room/HostelSelector";
 import { toast } from "react-toastify";
-import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner, Badge } from "react-bootstrap";
 import { MdEmail } from 'react-icons/md';
+import Loading from "@/components/Loading";
+import { FaEye, FaFileInvoiceDollar, FaTrashAlt } from "react-icons/fa";
 
 interface Invoice {
    id: string;
@@ -240,45 +242,72 @@ const InvoiceBody = () => {
                </div>
             )}
 
-            <div className="bg-white card-box p0 border-20">
-               <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
-                  <table className="table saved-search-table">
+            <div className="invoice-container">
+               <div className="table-responsive">
+                  <table className="invoice-table">
                      <thead>
                         <tr>
-                           {/* <th scope="col">Mã hóa đơn</th> */}
-                           <th scope="col">Tên phòng</th>
-                           <th scope="col">Thời gian</th>
-                           <th scope="col">Số tiền</th>
-                           <th scope="col">Trạng thái</th>
-                           <th scope="col">Hành động</th>
+                           <th>Tên phòng</th>
+                           <th>Thời gian</th>
+                           <th>Số tiền</th>
+                           <th>Trạng thái</th>
+                           <th className="text-end">Hành động</th>
                         </tr>
                      </thead>
-                     <tbody className="border-0">
+                     <tbody>
                         {invoices.map((invoice) => (
-                           <tr key={invoice.id}>
-                              {/* <td>{invoice.id}</td> */}
+                           <tr key={invoice.id} className="invoice-row">
                               <td>
-                                 <Link href="#" className="property-name tran3s color-dark fw-500">
-                                    {invoice.roomName}
-                                 </Link>
+                                 <div className="room-info">
+                                    <div className="icon-wrapper">
+                                       <FaFileInvoiceDollar className="text-primary" />
+                                    </div>
+                                    <div className="room-details">
+                                       <Link
+                                          href="#"
+                                          className="room-name"
+                                       >
+                                          {invoice.roomName}
+                                       </Link>
+                                       <small className="invoice-id text-muted">
+                                          #{invoice.id}
+                                       </small>
+                                    </div>
+                                 </div>
                               </td>
                               <td>
-                                 {invoice.billingMonth}/{invoice.billingYear}
+                                 <div className="date-info">
+                                    <div className="month-year">
+                                       Tháng {invoice.billingMonth}/{invoice.billingYear}
+                                    </div>
+                                 </div>
                               </td>
-                              <td>{invoice.totalAmount.toLocaleString('vi-VN')} ₫</td>
                               <td>
-                                 <span className={invoice.isPaid ? "badge bg-success" : "badge bg-danger"}>
+                                 <div className="amount">
+                                    {invoice.totalAmount.toLocaleString('vi-VN')} ₫
+                                 </div>
+                              </td>
+                              <td>
+                                 <div className={`status-badge ${invoice.isPaid ? 'paid' : 'unpaid'}`}>
+                                    <span className="status-dot"></span>
                                     {invoice.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                                 </span>
+                                 </div>
                               </td>
                               <td>
-                                 <div className="d-flex justify-content-end btns-group">
-                                    <ButtonToolbar onClick={() => handleViewClick(invoice.id)}>
-                                       <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                    </ButtonToolbar>
-                                    <ButtonToolbar className="ms-5" data-bs-toggle="tooltip" title="Delete">
-                                       <i className="fa-regular fa-trash"></i>
-                                    </ButtonToolbar>
+                                 <div className="action-buttons">
+                                    <button
+                                       className="btn btn-icon btn-light"
+                                       onClick={() => handleViewClick(invoice.id)}
+                                       title="Xem chi tiết"
+                                    >
+                                       <FaEye className="text-primary" />
+                                    </button>
+                                    <button
+                                       className="btn btn-icon btn-light ms-2"
+                                       title="Xóa hóa đơn"
+                                    >
+                                       <FaTrashAlt className="text-danger" />
+                                    </button>
                                  </div>
                               </td>
                            </tr>
@@ -288,202 +317,281 @@ const InvoiceBody = () => {
                </div>
             </div>
 
-            {/* Modal Thanh toán */}
-            <Modal show={showCollectMoneyModal} onHide={() => setShowCollectMoneyModal(false)} size="lg">
-               <Modal.Header closeButton>
-                  <Modal.Title style={{ color: 'black' }}>Chi tiết hóa đơn</Modal.Title>
+            <Modal
+               show={showCollectMoneyModal}
+               onHide={() => setShowCollectMoneyModal(false)}
+               size="xl"
+               centered
+               className="custom-invoice-modal"
+            >
+               <Modal.Header closeButton className="bg-light">
+                  <Modal.Title className="w-100 text-center fw-bold text-primary">
+                     Chi Tiết Hóa Đơn Và Thanh Toán
+                  </Modal.Title>
                </Modal.Header>
                <Modal.Body>
-                  <div className="modal-content-row">
-                     {/* Phần chi tiết hóa đơn */}
-                     <div className="invoice-details">
-                        {invoiceDetails ? (
-                           <div>
-                              <h5>Thông tin hóa đơn</h5>
-                              {/* <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p> */}
-                              <p><strong>Tháng/Năm:</strong> {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}</p>
-                              <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ</p>
-                              <p><strong>Trạng thái:</strong>
-                                 <span className={`badge ${invoiceDetails.isPaid ? "bg-success" : "bg-danger"}`}>
-                                    {invoiceDetails.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                                 </span>
-                              </p>
+                  <div className="row g-4">
+                     {/* Phần Thông Tin Hóa Đơn */}
+                     <div className="col-md-7">
+                        <div className="card shadow-sm mb-4">
+                           <div className="card-header bg-soft-primary">
+                              <h5 className="card-title mb-0">Thông Tin Hóa Đơn</h5>
+                           </div>
+                           <div className="card-body">
+                              {invoiceDetails ? (
+                                 <>
+                                    <div className="row mb-3">
+                                       <div className="col-6">
+                                          <p className="mb-2">
+                                             <strong>Tháng/Năm:</strong>
+                                             {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}
+                                          </p>
+                                          <p>
+                                             <strong>Tổng Tiền:</strong>{' '}
+                                             <span className="text-primary fw-bold">
+                                                {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ
+                                             </span>
+                                          </p>
+                                       </div>
+                                       <div className="col-6 text-end">
+                                          <span className={`badge fs-6 ${invoiceDetails.isPaid ? "bg-success" : "bg-danger"}`}>
+                                             {invoiceDetails.isPaid ? "Đã Thanh Toán" : "Chưa Thanh Toán"}
+                                          </span>
+                                       </div>
+                                    </div>
+
+                                    <Button
+                                       onClick={handleSendEmail}
+                                       disabled={sendingEmail}
+                                       variant="outline-primary"
+                                       className="d-flex align-items-center"
+                                    >
+                                       {sendingEmail ? (
+                                          <>
+                                             <Spinner animation="border" size="sm" className="me-2" />
+                                             Đang Gửi Email...
+                                          </>
+                                       ) : (
+                                          <>
+                                             <MdEmail className="me-2" />
+                                             Gửi Email Thông Báo
+                                          </>
+                                       )}
+                                    </Button>
+
+                                    <div className="table-responsive mt-3">
+                                       <Table striped hover className="text-nowrap">
+                                          <thead className="table-light">
+                                             <tr>
+                                                <th>Dịch Vụ</th>
+                                                <th className="text-end">Đơn Giá</th>
+                                                <th className="text-end">Chi Phí Thực Tế</th>
+                                                <th className="text-center">SL Khách</th>
+                                                <th className="text-center">Chỉ Số Trước</th>
+                                                <th className="text-center">Chỉ Số Hiện Tại</th>
+                                                <th className="text-center">Ngày Lập</th>
+                                             </tr>
+                                          </thead>
+                                          <tbody>
+                                             {invoiceDetails.invoiceDetails.map((detail: any, index: number) => (
+                                                <tr key={index}>
+                                                   <td>{detail.serviceName}</td>
+                                                   <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                                   <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                                   <td className="text-center">{detail.numberOfCustomer}</td>
+                                                   <td className="text-center">{detail.previousReading || 'N/A'}</td>
+                                                   <td className="text-center">{detail.currentReading || 'N/A'}</td>
+                                                   <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                                </tr>
+                                             ))}
+                                          </tbody>
+                                       </Table>
+                                    </div>
+                                 </>
+                              ) : (
+                                 <Loading />
+                              )}
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Phần Thanh Toán */}
+                     <div className="col-md-5">
+                        <div className="card shadow-sm">
+                           <div className="card-header bg-soft-primary">
+                              <h5 className="card-title mb-0">Thanh Toán Hóa Đơn</h5>
+                           </div>
+                           <div className="card-body">
+                              <Form>
+                                 <Form.Group className="mb-3" controlId="amountPaid">
+                                    <Form.Label>Số Tiền Thanh Toán</Form.Label>
+                                    <Form.Control
+                                       type="text"
+                                       value={amountPaid.toLocaleString('vi-VN')}
+                                       onChange={(e) => {
+                                          const value = e.target.value.replace(/[^\d]/g, '');
+                                          setAmountPaid(value ? Number(value) : 0);
+                                       }}
+                                       placeholder="Nhập số tiền"
+                                    />
+                                 </Form.Group>
+
+                                 <Form.Group className="mb-3" controlId="formOfTransfer">
+                                    <Form.Label>Hình Thức Thanh Toán</Form.Label>
+                                    <Form.Select
+                                       value={formOfTransfer}
+                                       onChange={(e) => setFormOfTransfer(e.target.value)}
+                                    >
+                                       <option value="">Chọn hình thức</option>
+                                       <option value="Tiền mặt">Tiền mặt</option>
+                                       <option value="Chuyển khoản ngân hàng">Chuyển khoản ngân hàng</option>
+                                       <option value="Thanh toán online">Thanh toán online</option>
+                                    </Form.Select>
+                                 </Form.Group>
+
+                                 <Form.Group controlId="dateOfSubmit">
+                                    <Form.Label>Ngày Thanh Toán</Form.Label>
+                                    <Form.Control
+                                       type="date"
+                                       value={dateOfSubmit}
+                                       onChange={(e) => setDateOfSubmit(e.target.value)}
+                                    />
+                                 </Form.Group>
+                              </Form>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </Modal.Body>
+               <Modal.Footer className="bg-light">
+                  <Button
+                     variant="primary"
+                     onClick={handlePaymentSubmit}
+                     disabled={loading}
+                     className="w-100"
+                  >
+                     {loading ? "Đang Thanh Toán..." : "Xác Nhận Thanh Toán"}
+                  </Button>
+               </Modal.Footer>
+            </Modal>
+
+            {/* Hóa đơn thành công */}
+            <Modal
+               show={showModal}
+               onHide={() => setShowModal(false)}
+               size="lg"
+               centered
+               className="invoice-details-modal"
+               dialogClassName="modal-90w"
+               fullscreen="lg-down"
+            >
+               <Modal.Header closeButton className="bg-primary text-white">
+                  <Modal.Title className="w-100 text-center">Chi Tiết Hóa Đơn</Modal.Title>
+               </Modal.Header>
+               <Modal.Body>
+                  {invoiceDetails ? (
+                     <div className="invoice-details-container">
+                        {/* Thông Tin Hóa Đơn */}
+                        <section className="invoice-info mb-4">
+                           <h5 className="mb-3 text-primary">Thông Tin Hóa Đơn</h5>
+                           <div className="row">
+                              <div className="col-md-6 mb-2">
+                                 <p>
+                                    <strong>Tháng/Năm:</strong> {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}
+                                 </p>
+                                 <p>
+                                    <strong>Tổng Tiền:</strong>{' '}
+                                    <span className="text-success fw-bold">
+                                       {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ
+                                    </span>
+                                 </p>
+                              </div>
+                              <div className="col-md-6 mb-2 text-md-end">
+                                 <strong>Trạng Thái:</strong>{' '}
+                                 <Badge bg={invoiceDetails.isPaid ? 'success' : 'danger'}>
+                                    {invoiceDetails.isPaid ? 'Đã Thanh Toán' : 'Chưa Thanh Toán'}
+                                 </Badge>
+                              </div>
+                           </div>
+                           <div className="row mt-3">
+                              <div className="col-md-6 mb-2">
+                                 <p>
+                                    <strong>Hình Thức Chuyển Khoản:</strong> {invoiceDetails.formOfTransfer || 'N/A'}
+                                 </p>
+                                 <p>
+                                    <strong>Số Tiền Đã Thu:</strong>{' '}
+                                    {new Intl.NumberFormat('vi-VN').format(invoiceDetails.amountPaid)} đ
+                                 </p>
+                              </div>
+                           </div>
+                           <div className="d-flex justify-content-end mt-3">
                               <Button
                                  onClick={handleSendEmail}
                                  disabled={sendingEmail}
-                                 className="d-flex align-items-center custom-button"
+                                 variant="outline-light"
+                                 className="d-flex align-items-center"
                               >
                                  {sendingEmail ? (
                                     <>
                                        <Spinner animation="border" size="sm" className="me-2" />
-                                       Đang gửi email...
+                                       Đang Gửi Email...
                                     </>
                                  ) : (
                                     <>
                                        <MdEmail className="me-2" />
-                                       Gửi email thông báo hóa đơn
+                                       Gửi Email Thông Báo
                                     </>
                                  )}
                               </Button>
+                           </div>
+                        </section>
 
-                              {/* Chi tiết dịch vụ hóa đơn */}
-                              <Table striped bordered hover>
-                                 <thead>
+                        {/* Chi Tiết Dịch Vụ Hóa Đơn */}
+                        <section className="invoice-services">
+                           <h5 className="mb-3 text-primary">Chi Tiết Dịch Vụ</h5>
+                           <div className="table-responsive">
+                              <Table striped bordered hover className="text-nowrap">
+                                 <thead className="table-secondary">
                                     <tr>
-                                       <th>Dịch vụ</th>
-                                       <th>Đơn giá</th>
-                                       <th>Chi phí thực tế</th>
-                                       <th>Số lượng khách</th>
-                                       <th>Chỉ số trước</th>
-                                       <th>Chỉ số hiện tại</th>
-                                       <th>Ngày lập</th>
+                                       <th>Dịch Vụ</th>
+                                       <th className="text-end">Đơn Giá</th>
+                                       <th className="text-end">Chi Phí Thực Tế</th>
+                                       <th className="text-center">Số Lượng Khách</th>
+                                       <th className="text-center">Chỉ Số Trước</th>
+                                       <th className="text-center">Chỉ Số Sau</th>
+                                       <th className="text-center">Ngày Lập</th>
                                     </tr>
                                  </thead>
                                  <tbody>
                                     {invoiceDetails.invoiceDetails.map((detail: any, index: number) => (
                                        <tr key={index}>
                                           <td>{detail.serviceName}</td>
-                                          <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
-                                          <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
+                                          <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
+                                          <td className="text-end">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
                                           <td className="text-center">{detail.numberOfCustomer}</td>
-                                          <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
-                                          <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
-                                          <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
+                                          <td className="text-center">{detail.previousReading !== null ? detail.previousReading : 'N/A'}</td>
+                                          <td className="text-center">{detail.currentReading !== null ? detail.currentReading : 'N/A'}</td>
+                                          <td className="text-center">
+                                             {new Date(detail.billingDate).toLocaleDateString('vi-VN')}
+                                          </td>
                                        </tr>
                                     ))}
                                  </tbody>
                               </Table>
                            </div>
-                        ) : (
-                           <p>Đang tải thông tin chi tiết...</p>
-                        )}
-                     </div>
-
-                     {/* Phần Thanh toán */}
-                     <div className="payment-form">
-                        <h5>Thanh toán hóa đơn</h5>
-                        <Form>
-                           <Form.Group controlId="amountPaid">
-                              <Form.Label>Số tiền thanh toán</Form.Label>
-                              <Form.Control
-                                 type="text"
-                                 value={amountPaid.toLocaleString('vi-VN')}
-                                 onChange={(e) => {
-                                    const value = e.target.value.replace(/[^\d]/g, '');
-                                    setAmountPaid(value ? Number(value) : 0);
-                                 }}
-                                 placeholder="Nhập số tiền"
-                              />
-                           </Form.Group>
-
-
-                           <Form.Group controlId="formOfTransfer">
-                              <Form.Label>Hình thức thanh toán</Form.Label>
-                              <Form.Control
-                                 as="select"
-                                 value={formOfTransfer}
-                                 onChange={(e) => setFormOfTransfer(e.target.value)}
-                              >
-                                 <option value="">Chọn hình thức</option>
-                                 <option value="Tiền mặt">Tiền mặt</option>
-                                 <option value="Chuyển khoản ngân hàng">Chuyển khoản ngân hàng</option>
-                                 <option value="Thanh toán online">Thanh toán online</option>
-                              </Form.Control>
-                           </Form.Group>
-
-                           <Form.Group controlId="dateOfSubmit">
-                              <Form.Label>Ngày thanh toán</Form.Label>
-                              <Form.Control
-                                 type="date"
-                                 value={dateOfSubmit}
-                                 onChange={(e) => setDateOfSubmit(e.target.value)}
-                              />
-                           </Form.Group>
-                        </Form>
-                     </div>
-                  </div>
-               </Modal.Body>
-               <Modal.Footer>
-                  <Button
-                     variant="primary"
-                     onClick={handlePaymentSubmit}
-                     disabled={loading}
-                  >
-                     {loading ? "Đang thanh toán..." : "Thanh toán"}
-                  </Button>
-
-               </Modal.Footer>
-            </Modal>
-
-
-            {/* Modal to show invoice details */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
-               <Modal.Header closeButton>
-                  <Modal.Title>Chi tiết hóa đơn</Modal.Title>
-               </Modal.Header>
-               <Modal.Body>
-                  {invoiceDetails ? (
-                     <div>
-                        <h5>Thông tin hóa đơn</h5>
-                        {/* <p><strong>Mã hóa đơn:</strong> {invoiceDetails.id}</p> */}
-                        <p><strong>Tháng/Năm:</strong> {invoiceDetails.billingMonth}/{invoiceDetails.billingYear}</p>
-                        <p><strong>Tổng tiền:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.totalAmount)} đ</p>
-                        <p><strong>Trạng thái:</strong>
-                           <span className={`badge ${invoiceDetails.isPaid ? "bg-success" : "bg-danger"}`}>
-                              {invoiceDetails.isPaid ? "Đã thanh toán" : "Chưa thanh toán"}
-                           </span>
-                        </p>
-                        <p><strong>Hình thức chuyển khoản:</strong> {invoiceDetails.formOfTransfer}</p>
-                        <p><strong>Số tiền đã thu:</strong> {new Intl.NumberFormat('vi-VN').format(invoiceDetails.amountPaid)} đ</p>
-                        <Button
-                           onClick={handleSendEmail}
-                           disabled={sendingEmail}
-                           className="d-flex align-items-center custom-button"
-                        >
-                           {sendingEmail ? (
-                              <>
-                                 <Spinner animation="border" size="sm" className="me-2" />
-                                 Đang gửi email...
-                              </>
-                           ) : (
-                              <>
-                                 <MdEmail className="me-2" />
-                                 Gửi email thông báo hóa đơn
-                              </>
-                           )}
-                        </Button>
-                        {/* Chi tiết dịch vụ hóa đơn */}
-                        <Table striped bordered hover>
-                           <thead>
-                              <tr>
-                                 <th>Dịch vụ</th>
-                                 <th>Đơn giá</th>
-                                 <th>Chi phí thực tế</th>
-                                 <th>Số lượng khách</th>
-                                 <th>Chỉ số trước</th>
-                                 <th>Chỉ số hiện tại</th>
-                                 <th>Ngày lập</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              {invoiceDetails.invoiceDetails.map((detail: any, index: number) => (
-                                 <tr key={index}>
-                                    <td>{detail.serviceName}</td>
-                                    <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.unitCost)} đ</td>
-                                    <td className="text-center">{new Intl.NumberFormat('vi-VN').format(detail.actualCost)} đ</td>
-                                    <td className="text-center">{detail.numberOfCustomer}</td>
-                                    <td className="text-center">{detail.previousReading === 0 ? 'N/A' : detail.previousReading}</td>
-                                    <td className="text-center">{detail.currentReading === 0 ? 'N/A' : detail.currentReading}</td>
-                                    <td className="text-center">{new Date(detail.billingDate).toLocaleDateString()}</td>
-                                 </tr>
-                              ))}
-                           </tbody>
-                        </Table>
+                        </section>
                      </div>
                   ) : (
-                     <p>Đang tải thông tin chi tiết...</p>
+                     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                        <Loading />
+                     </div>
                   )}
                </Modal.Body>
+               <Modal.Footer className="bg-light">
+                  <Button variant="secondary" onClick={() => setShowModal(false)}>
+                     Đóng
+                  </Button>
+               </Modal.Footer>
             </Modal>
 
             {/* Phân trang với thiết kế mới */}
