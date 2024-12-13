@@ -5,6 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import { toast } from "react-toastify";
 import Loading from "@/components/Loading";
 import "./css/RoomDetailsModal.css"
+import UpdateTenantModal from "./UpdateTenantModal";
 // import DatePicker from "react-datepicker";
 interface RoomDetailsModalProps {
     isOpen: boolean;
@@ -24,6 +25,7 @@ interface RoomInfoDetail {
 }
 
 interface Tenant {
+    tenantId: string;
     fullName: string;
     avatarUrl: string;
     email: string;
@@ -87,6 +89,8 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [contractIdToTerminate, setContractIdToTerminate] = useState<string | null>(null);
     const [showExtendModal, setShowExtendModal] = useState(false);
     const [newEndDate, setNewEndDate] = useState<Date | null>(null);
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedTenantId, setSelectedTenantId] = useState<string>('');
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();
@@ -210,9 +214,15 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
 
 
 
-    function onUpdateTenant(id: string): void {
-        throw new Error("Function not implemented.");
-    }
+    const handleUpdateTenant = (tenantId: string) => {
+        console.log('Opening modal for tenant:', tenantId);
+        setSelectedTenantId(tenantId);
+        setShowUpdateModal(true);
+    };
+
+    const handleUpdateSuccess = () => {
+        // Refresh data or update UI
+    };
 
     return (
         <Modal show={isOpen} onHide={onClose} size="xl" dialogClassName="modal-150w" contentClassName="modal-custom" centered>
@@ -465,7 +475,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                                 <div className="action-buttons mt-3 pt-3 border-top">
                                                                     <button
                                                                         className="btn btn-outline-primary btn-sm me-2"
-                                                                    // onClick={() => onUpdateTenant(tenant.id)}
+                                                                        onClick={() => handleUpdateTenant(tenant.tenantId)}
                                                                     >
                                                                         <FaEdit className="me-1" />
                                                                         Cập nhật
@@ -896,6 +906,12 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                     <p>Không có dữ liệu để hiển thị.</p>
                 )}
             </Modal.Body>
+            <UpdateTenantModal
+                show={showUpdateModal}
+                tenantId={selectedTenantId}
+                onHide={() => setShowUpdateModal(false)}
+                onSuccess={handleUpdateSuccess}
+            />
         </Modal>
     );
 };
