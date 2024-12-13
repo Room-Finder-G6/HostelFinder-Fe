@@ -54,7 +54,7 @@ const ListingFourArea = () => {
     const membershipColors: Record<string, string> = {
         Đồng: "gray",
         Bạc: "#4DC1B5",
-        Vàng: "#e1c009",
+        Vàng: "#ecc705",
     };
 
     const formatDate = (dateString: any) => {
