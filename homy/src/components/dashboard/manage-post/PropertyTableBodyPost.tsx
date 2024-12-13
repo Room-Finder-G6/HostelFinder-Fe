@@ -4,6 +4,9 @@ import Link from 'next/link';
 import {getUserIdFromToken} from "@/utils/tokenUtils";
 import {toast} from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
+import icon_3 from "@/assets/images/dashboard/icon/icon_20.svg";
+import icon_4 from "@/assets/images/dashboard/icon/icon_21.svg";
+import icon_5 from "@/assets/images/icon/icon_75.svg";
 
 interface UserPostsBodyProps {
     posts: {
@@ -130,15 +133,16 @@ const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteCl
                             <ul className="dropdown-menu dropdown-menu-end">
                                 <li>
                                     <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
-                                        Xem và sửa
+                                        <Image src={icon_3} alt="" className="lazy-img"/> Xem và sửa
                                     </Link>
                                 </li>
                                 <li>
                                     <button
                                         className="dropdown-item"
+                                        style={{marginLeft: '-5px'}}
                                         onClick={() => handlePushPost(post.id)}
                                     >
-                                        Đẩy bài
+                                        <Image src={icon_5} alt="" className="lazy-img"/>Đẩy bài
                                     </button>
                                 </li>
                                 <li>
@@ -146,7 +150,7 @@ const UserPostsBody: React.FC<UserPostsBodyProps> = ({posts, loading, onDeleteCl
                                         className="dropdown-item"
                                         onClick={() => onDeleteClick(post.id)}
                                     >
-                                        Xóa
+                                        <Image src={icon_4} alt="" className="lazy-img"/> Xóa
                                     </button>
                                 </li>
                             </ul>

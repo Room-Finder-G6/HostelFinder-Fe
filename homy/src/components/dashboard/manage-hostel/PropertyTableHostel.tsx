@@ -237,7 +237,7 @@ const PropertyTableHostel = ({
                       className="dropdown-item"
                       href={`/dashboard/edit-hostel/${item.id}`}
                     >
-                      <Image src={icon_3} alt="" className="lazy-img" /> Edit
+                      <Image src={icon_3} alt="" className="lazy-img" /> Xem và sửa
                     </Link>
                   </li>
                   <li>
@@ -246,7 +246,7 @@ const PropertyTableHostel = ({
                       href="#"
                       onClick={() => openDeleteModal(item.id)}
                     >
-                      <Image src={icon_4} alt="" className="lazy-img" /> Delete
+                      <Image src={icon_4} alt="" className="lazy-img" /> Xóa
                     </Link>
                   </li>
                 </ul>
