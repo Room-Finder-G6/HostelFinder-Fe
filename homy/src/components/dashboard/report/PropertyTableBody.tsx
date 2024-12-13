@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from "react";
-import { Container, Row, Col, Card, Table, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Table, Form, Button, Navbar, Nav } from "react-bootstrap";
 import "./report.css";
 import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import Loading from '@/components/Loading';
+import { FaArrowDown, FaBuilding, FaCalendar, FaChartBar, FaChartLine, FaCoins, FaMoneyBillWave } from "react-icons/fa";
 
 // Kiểu dữ liệu của chi tiết doanh thu phòng
 interface RoomRevenue {
@@ -94,13 +95,13 @@ const PropertyTableBody = () => {
          let url = '';
          const params: RevenueParams = { hostelId: selectedHostel, year: selectedYear, month: selectedMonth };
 
+         let response;
          if (viewMode === "year") {
-            url = `/reports/yearly-revenue`;
+            response = await apiInstance.post<ApiResponse>(`/reports/yearly-revenue`, params);
          } else {
-            url = `/reports/monthly-revenue`;
+            response = await apiInstance.post<ApiResponse>(`/reports/monthly-revenue`, params);
          }
 
-         const response = await apiInstance.get<ApiResponse>(url, { params });
 
          if (response.data.succeeded && response.data.data) {
             if (viewMode === "year") {
@@ -148,146 +149,22 @@ const PropertyTableBody = () => {
    if (!isClient) return null;
 
    return (
-      <Container className="mt-5">
+      <Container fluid>
          <Row>
-            <Col>
-               <h1>Báo Cáo Doanh Thu Phòng Trọ</h1>
-            </Col>
-         </Row>
-
-         {viewMode === "year" ? (
-            yearlyRevenue ? (
-               <>
-                  <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
-                     <div className="item receipt d-flex align-items-center">
-                        <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
-                        <div className="value text-success d-flex align-items-center">
-                           <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trending-up mr-2"
-                           >
-                              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                              <polyline points="17 6 23 6 23 12"></polyline>
-                           </svg>
-                           <span className="total">{formatCurrency(yearlyRevenue.totalRoomRevenue)}</span>
-                        </div>
-                     </div>
-
-                     <div className="item expense d-flex align-items-center">
-                        <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
-                        <div className="value text-danger d-flex align-items-center">
-                           <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="feather feather-trending-down mr-2"
-                           >
-                              <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                              <polyline points="17 18 23 18 23 12"></polyline>
-                           </svg>
-                           <span className="total">{formatCurrency(yearlyRevenue.totalCostOfMaintenance)}</span>
-                        </div>
-                     </div>
-
-                     <div className="item profit d-flex align-items-center">
-                        <div className="text-end mr-3 ">Lợi nhuận</div>
-                        <div className="value text-success d-flex align-items-center">
-                           <span className="total">{formatCurrency(yearlyRevenue.totalAllRevenue)}</span>
-                        </div>
-                     </div>
-                  </div>
-
-               </>
-            ) : (
-               // <Loading />
-               <></>
-            )
-         ) : monthlyRevenue ? (
-            <>
-               <div className="revenue-summary d-flex justify-content-between align-items-center bg-light p-3">
-                  <div className="item receipt d-flex align-items-center">
-                     <div className="text-end mr-3">Tổng khoản thu (tiền vào)</div>
-                     <div className="value text-success d-flex align-items-center">
-                        <svg
-                           xmlns="http://www.w3.org/2000/svg"
-                           width="24"
-                           height="24"
-                           viewBox="0 0 24 24"
-                           fill="none"
-                           stroke="currentColor"
-                           strokeWidth="2"
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           className="feather feather-trending-up mr-2"
-                        >
-                           <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                           <polyline points="17 6 23 6 23 12"></polyline>
-                        </svg>
-                        <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
-                     </div>
-                  </div>
-
-                  <div className="item expense d-flex align-items-center">
-                     <div className="text-end mr-3">Tổng khoản chi (tiền ra)</div>
-                     <div className="value text-danger d-flex align-items-center">
-                        <svg
-                           xmlns="http://www.w3.org/2000/svg"
-                           width="24"
-                           height="24"
-                           viewBox="0 0 24 24"
-                           fill="none"
-                           stroke="currentColor"
-                           strokeWidth="2"
-                           strokeLinecap="round"
-                           strokeLinejoin="round"
-                           className="feather feather-trending-down mr-2"
-                        >
-                           <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                           <polyline points="17 18 23 18 23 12"></polyline>
-                        </svg>
-                        <span className="total">{formatCurrency(0)}</span>
-                     </div>
-                  </div>
-
-                  <div className="item profit d-flex align-items-center">
-                     <div className="text-end mr-3">Lợi nhuận</div>
-                     <div className="value text-success d-flex align-items-center">
-                        <span className="total">{formatCurrency(monthlyRevenue.totalAllRevenue)}</span>
-                     </div>
-                  </div>
-               </div>
-
-            </>
-         ) : (
-            // <Loading />
-            <></>
-         )}
-
-
-         {/* Dropdown chọn hostel */}
-         <Row className="mt-4">
-            <Col>
-               <Card>
-                  <Card.Body>
-                     <Row>
-                        <Col>
+            <Col md={3} lg={2} className="sidebar bg-light">
+               <Navbar bg="light" expand="md" className="flex-md-column">
+                  <Navbar.Brand className="text-primary font-weight-bold">
+                     <FaChartBar className="mr-2" />
+                     Báo Cáo Doanh Thu
+                  </Navbar.Brand>
+                  <Navbar.Toggle aria-controls="sidebar-nav" />
+                  <Navbar.Collapse id="sidebar-nav">
+                     <Nav className="flex-column">
+                        <Nav.Item>
                            <Form.Select
                               value={selectedHostel}
                               onChange={(e) => setSelectedHostel(e.target.value)}
+                              className="my-2"
                            >
                               <option value="">Chọn nhà trọ</option>
                               {hostels.map((hostel) => (
@@ -296,13 +173,12 @@ const PropertyTableBody = () => {
                                  </option>
                               ))}
                            </Form.Select>
-                        </Col>
-
-                        {/* Chọn Tháng và Năm */}
-                        <Col>
+                        </Nav.Item>
+                        <Nav.Item>
                            <Form.Select
                               value={selectedMonth}
                               onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                              className="my-2"
                            >
                               {[...Array(12)].map((_, index) => (
                                  <option key={index} value={index + 1}>
@@ -310,11 +186,12 @@ const PropertyTableBody = () => {
                                  </option>
                               ))}
                            </Form.Select>
-                        </Col>
-                        <Col>
+                        </Nav.Item>
+                        <Nav.Item>
                            <Form.Select
                               value={selectedYear}
                               onChange={(e) => setSelectedYear(Number(e.target.value))}
+                              className="my-2"
                            >
                               {years.length > 0 ? (
                                  years.map((year) => (
@@ -323,99 +200,125 @@ const PropertyTableBody = () => {
                                     </option>
                                  ))
                               ) : (
-                                 <option value={2024}>2024</option> // Mặc định năm 2024 nếu không có năm từ response
+                                 <option value={2024}>2024</option>
                               )}
                            </Form.Select>
-                        </Col>
-                        <Col>
+                        </Nav.Item>
+                        <Nav.Item>
                            <Button
                               onClick={() => setViewMode("month")}
-                              variant={viewMode === "month" ? "primary" : "secondary"}
-                              className="w-100"
+                              variant={viewMode === "month" ? "primary" : "outline-primary"}
+                              className="my-2 w-100"
                            >
+                              <FaCalendar className="mr-2" />
                               Xem Tháng
                            </Button>
-                        </Col>
-                        <Col>
+                        </Nav.Item>
+                        <Nav.Item>
                            <Button
                               onClick={() => setViewMode("year")}
-                              variant={viewMode === "year" ? "primary" : "secondary"}
-                              className="w-100"
+                              variant={viewMode === "year" ? "primary" : "outline-primary"}
+                              className="my-2 w-100"
                            >
+                              <FaChartLine className="mr-2" />
                               Xem Năm
                            </Button>
-                        </Col>
-                     </Row>
-                  </Card.Body>
-               </Card>
+                        </Nav.Item>
+                     </Nav>
+                  </Navbar.Collapse>
+               </Navbar>
             </Col>
-         </Row>
-
-         {/* Báo cáo doanh thu */}
-         <Row className="mt-4">
-            <Col>
+            <Col md={9} lg={10} className="main-content py-4">
                <Card>
-                  <Card.Header>
-                     <h5>
+                  <Card.Header className="bg-custom-primary text-white">
+                     <h4 className="mb-0">
+                        <FaChartBar className="mr-2" />
                         {viewMode === "year"
                            ? `Doanh Thu Năm ${selectedYear}`
                            : `Doanh Thu Tháng ${selectedMonth}/${selectedYear}`}
-                     </h5>
+                     </h4>
                   </Card.Header>
                   <Card.Body>
-                     {/* Render doanh thu theo tháng hoặc năm */}
-                     {viewMode === "year" ? (
-                        yearlyRevenue ? (
-                           <>
-                              <Table striped bordered hover className="table-center">
-                                 <thead>
-                                    <tr>
-                                       <th className="text-center">Phòng</th>
-                                       <th className="text-center">Doanh Thu</th>
-                                    </tr>
-                                 </thead>
-                                 <tbody>
-                                    {yearlyRevenue.roomRevenueDetail.map((room, index) => (
-                                       <tr key={index}>
-                                          <td className="text-center">{room.roomName}</td>
-                                          <td className="text-center">{formatCurrency(room.totalRevenue)}</td>
-                                       </tr>
-                                    ))}
-                                 </tbody>
-                              </Table>
-                           </>
-                        ) : (
-                           // <Loading />
-                           <></>
-                        )
-                     ) : monthlyRevenue ? (
-                        <>
-                           <Table striped bordered hover>
-                              <thead>
-                                 <tr>
-                                    <th>Phòng</th>
-                                    <th>Doanh Thu</th>
-                                 </tr>
-                              </thead>
-                              <tbody>
-                                 {monthlyRevenue.roomRevenueDetail.map((room, index) => (
-                                    <tr key={index}>
-                                       <td>{room.roomName}</td>
-                                       <td>{formatCurrency(room.totalRevenue)}</td>
-                                    </tr>
-                                 ))}
-                              </tbody>
-                           </Table>
-                        </>
-                     ) : (
-                        // <Loading />
-                        <></>
-                     )}
+                     <Row className="mb-4">
+                        <Col sm={4}>
+                           <Card bg="custom-success" text="white" className="mb-2 shadow">
+                              <Card.Body>
+                                 <Card.Title className="d-flex align-items-center">
+                                    <FaMoneyBillWave className="mr-2" />
+                                    Tổng Thu
+                                 </Card.Title>
+                                 <Card.Text className="h4 font-weight-bold mb-0">
+                                    {formatCurrency(viewMode === "year" ? yearlyRevenue?.totalRoomRevenue || 0 : monthlyRevenue?.totalAllRevenue || 0)}
+                                 </Card.Text>
+                              </Card.Body>
+                           </Card>
+                        </Col>
+                        <Col sm={4}>
+                           <Card bg="custom-danger" text="white" className="mb-2 shadow">
+                              <Card.Body>
+                                 <Card.Title className="d-flex align-items-center">
+                                    <FaArrowDown className="mr-2" />
+                                    Tổng Chi
+                                 </Card.Title>
+                                 <Card.Text className="h4 font-weight-bold mb-0">
+                                    {formatCurrency(viewMode === "year" ? yearlyRevenue?.totalCostOfMaintenance || 0 : 0)}
+                                 </Card.Text>
+                              </Card.Body>
+                           </Card>
+                        </Col>
+                        <Col sm={4}>
+                           <Card bg="custom-info" text="white" className="mb-2 shadow">
+                              <Card.Body>
+                                 <Card.Title className="d-flex align-items-center">
+                                    <FaCoins className="mr-2" />
+                                    Lợi Nhuận
+                                 </Card.Title>
+                                 <Card.Text className="h4 font-weight-bold mb-0">
+                                    {formatCurrency(viewMode === "year" ? yearlyRevenue?.totalAllRevenue || 0 : monthlyRevenue?.totalAllRevenue || 0)}
+                                 </Card.Text>
+                              </Card.Body>
+                           </Card>
+                        </Col>
+                     </Row>
+                     <Table responsive className="revenue-table">
+                        <thead>
+                           <tr>
+                              <th>
+                                 <div className="d-flex align-items-center justify-content-center">
+                                    <FaBuilding className="mr-2" />
+                                    Phòng
+                                 </div>
+                              </th>
+                              <th>
+                                 <div className="d-flex align-items-center justify-content-center">
+                                    <FaMoneyBillWave className="mr-2" />
+                                    Doanh Thu
+                                 </div>
+                              </th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           {(viewMode === "year" ? yearlyRevenue?.roomRevenueDetail : monthlyRevenue?.roomRevenueDetail)?.map((room, index) => (
+                              <tr key={index}>
+                                 <td>
+                                    <div className="room-name">{room.roomName}</div>
+                                 </td>
+                                 <td>
+                                    <div className="revenue-amount">{formatCurrency(room.totalRevenue)}</div>
+                                 </td>
+                              </tr>
+                           ))}
+                        </tbody>
+                     </Table>
                   </Card.Body>
                </Card>
             </Col>
          </Row>
+         <style jsx>{`
+      
+      `}</style>
       </Container>
+
    );
 };
 

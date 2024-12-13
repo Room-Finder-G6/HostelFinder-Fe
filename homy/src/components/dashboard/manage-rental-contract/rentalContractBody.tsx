@@ -9,7 +9,8 @@ import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import HostelSelector from "../manage-room/HostelSelector";
 import { toast } from "react-toastify";
-import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Card, Form, InputGroup, Modal, Table } from "react-bootstrap";
+import { FaSearch } from "react-icons/fa";
 
 interface RentalContract {
    id: string;
@@ -135,17 +136,17 @@ const InvoiceBody = () => {
 
 
       // Nếu hợp đồng đã kết thúc
-      if (status == "Hợp đồng đã kết thúc") {
+      if (status == "Đã kết thúc") {
          return "bg-danger text-white";  // Màu đỏ cho "Kết thúc hợp đồng"
       }
 
       // Nếu hợp đồng sắp hết hạn trong vòng 1 tuần
-      if (status == "Hợp đồng sắp kết thúc") {
+      if (status == "Sắp kết thúc") {
          return "bg-warning text-dark";  // Màu vàng cho "Sắp hết hạn"
       }
 
       // Nếu hợp đồng còn thời hạn
-      if (status == "Hợp đồng đang trong thời hạn") {
+      if (status == "Trong thời hạn") {
          return "bg-success text-white";  // Màu xanh lá cho "Đang trong thời hạn"
       }
 
@@ -171,38 +172,34 @@ const InvoiceBody = () => {
 
             {/* Form tìm kiếm */}
             {selectedHostel && (
-               <div className="search-form ms-auto d-flex align-items-center justify-content-between mb-3">
-                  <form onSubmit={handleSearchSubmit} className="d-flex align-items-center">
-                     <input
-                        type="text"
-                        className="form-control search-input me-2"
-                        placeholder="Tìm kiếm"
-                        value={searchPhrase}
-                        onChange={handleSearchChange}
-                     />
-                     <button type="submit" className="btn btn-primary">
-                        <Image src={dashboardIcon_1} alt="search-icon" className="lazy-img" />
-                     </button>
-                  </form>
+               <Card className="mb-4">
+                  <Card.Body>
+                     <InputGroup className="mb-3">
+                        <Form.Control
+                           type="text"
+                           placeholder="Tìm kiếm"
+                           value={searchPhrase}
+                           onChange={(e) => setSearchPhrase(e.target.value)}
+                        />
+                        <Button variant="primary">
+                           <FaSearch />
+                        </Button>
+                     </InputGroup>
 
-                  {/* Lọc theo trạng thái */}
-                  <Form.Select
-                     aria-label="Lọc theo trạng thái hợp đồng"
-                     className="status-select"
-                     value={statusFilter}
-                     onChange={handleStatusChange}
-                     size="sm" // Giảm kích thước của dropdown
-                     style={{ width: "200px" }} // Thiết lập chiều rộng phù hợp
-                  >
-                     <option value="">Tất cả trạng thái</option>
-                     <option value="Hợp đồng đang trong thời hạn">Hợp đồng đang trong thời hạn</option>
-                     <option value="Hợp đồng sắp kết thúc">Hợp đồng sắp kết thúc</option>
-                     <option value="Hợp đồng đã kết thúc">Hợp đồng đã kết thúc</option>
-                     <option value="Hợp đồng chưa bắt đầu">Hợp đồng chưa bắt đầu</option>
-                  </Form.Select>
-               </div>
+                     <Form.Select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="mb-3"
+                     >
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Trong thời hạn">Trong thời hạn</option>
+                        <option value="Sắp kết thúc">Sắp kết thúc</option>
+                        <option value="Đã kết thúc">Đã kết thúc</option>
+                        <option value="Chưa bắt đầu">Chưa bắt đầu</option>
+                     </Form.Select>
+                  </Card.Body>
+               </Card>
             )}
-
             <div className="bg-white card-box p0 border-20">
                <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                   <table className="table saved-search-table">
