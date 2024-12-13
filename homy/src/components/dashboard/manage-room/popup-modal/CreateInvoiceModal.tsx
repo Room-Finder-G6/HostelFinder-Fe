@@ -3,6 +3,7 @@ import { Modal, Button, Form, Table, Spinner, Alert } from 'react-bootstrap';
 import apiInstance from '@/utils/apiInstance';
 import { toast } from 'react-toastify';
 import { Room } from '../Room';
+import { FaCalendarAlt, FaFileInvoiceDollar, FaList, FaMoneyBillWave } from 'react-icons/fa';
 
 interface CreateInvoiceModalProps {
     isOpen: boolean;
@@ -164,111 +165,348 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
     }, [meterReadings]);
 
     return (
-        <Modal show={isOpen} onHide={onClose} centered size="lg">
+        <Modal
+            show={isOpen}
+            onHide={onClose}
+            dialogClassName="modal-90w"
+            contentClassName="invoice-modal"
+            centered
+        >
             <Form onSubmit={handleSubmit}>
-                <Modal.Header closeButton>
-                    <Modal.Title className="text-dark fw-bold">
-                        Tạo hóa đơn cho {rooms ? rooms.roomName : 'N/A'} của {rooms ? rooms.hostelName : 'N/A'}
+                <Modal.Header closeButton className="invoice-modal-header">
+                    <Modal.Title>
+                        <div className="d-flex align-items-center">
+                            <FaFileInvoiceDollar className="text-primary me-2 fs-3" />
+                            <div>
+                                <div className="modal-title-text">Tạo hóa đơn</div>
+                                <div className="modal-subtitle">
+                                    {rooms ? (
+                                        <>
+                                            <span className="fw-bold">{rooms.roomName}</span> -
+                                            <span className="text-muted ms-1">{rooms.hostelName}</span>
+                                        </>
+                                    ) : 'N/A'}
+                                </div>
+                            </div>
+                        </div>
                     </Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    {/* Show warning if invoice exists for the selected month */}
-                    <div>
+
+                <Modal.Body className="invoice-modal-body">
+                    {/* Status Alerts */}
+                    <div className="alert-section">
                         {invoiceExists ? (
-                            <Alert variant="warning">
-                                <strong>Chú ý!</strong> Bạn đã lập hóa đơn cho tháng {billingMonth}. Nếu muốn bạn thay đổi hãy thay đổi ở ghi dịch vụ phòng.
+                            <Alert variant="warning" className="invoice-alert">
+                                <div className="d-flex">
+                                    <i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                                    <div>
+                                        <div className="fw-bold">Đã tồn tại hóa đơn!</div>
+                                        <div>Bạn đã lập hóa đơn cho tháng {billingMonth}. Thay đổi có thể được thực hiện ở phần ghi dịch vụ phòng.</div>
+                                    </div>
+                                </div>
                             </Alert>
                         ) : (
-                            <Alert variant="success">
-                                <strong>Chú ý!</strong> Bạn đang lập hóa đơn cho tháng {billingMonth}
+                            <Alert variant="info" className="invoice-alert">
+                                <div className="d-flex">
+                                    <i className="bi bi-info-circle-fill fs-4 me-2"></i>
+                                    <div>
+                                        <div className="fw-bold">Thông tin hóa đơn</div>
+                                        <div>Bạn đang lập hóa đơn cho tháng {billingMonth}</div>
+                                    </div>
+                                </div>
+                            </Alert>
+                        )}
+
+                        {!dataAvailable && (
+                            <Alert variant="danger" className="invoice-alert">
+                                <div className="d-flex">
+                                    <i className="bi bi-x-circle-fill fs-4 me-2"></i>
+                                    <div>
+                                        <div className="fw-bold">Thiếu dữ liệu!</div>
+                                        <div>Vui lòng nhập số liệu dịch vụ trước khi tạo hóa đơn.</div>
+                                    </div>
+                                </div>
                             </Alert>
                         )}
                     </div>
 
-                    {/* Show message if service data is missing */}
-                    {!dataAvailable && (
-                        <Alert variant="danger">
-                            Vui lòng nhập số liệu dịch vụ trước khi tạo hóa đơn.
-                        </Alert>
-                    )}
+                    {/* Billing Period Selection */}
+                    <div className="billing-period-section">
+                        <div className="section-header">
+                            <FaCalendarAlt className="text-primary me-2" />
+                            <h6 className="mb-0">Kỳ thanh toán</h6>
+                        </div>
 
-                    <Form.Group controlId="billingMonth">
-                        <Form.Label>Tháng</Form.Label>
-                        <Form.Control
-                            as="select"
-                            value={billingMonth}
-                            onChange={(e) => setBillingMonth(parseInt(e.target.value))}
-                            required
-                        >
-                            {[...Array(12)].map((_, index) => (
-                                <option key={index + 1} value={index + 1}>
-                                    {index + 1}
-                                </option>
-                            ))}
-                        </Form.Control>
-                    </Form.Group>
-                    <Form.Group controlId="billingYear">
-                        <Form.Label>Năm</Form.Label>
-                        <Form.Control
-                            type="number"
-                            value={billingYear}
-                            onChange={(e) => setBillingYear(parseInt(e.target.value))}
-                            required
-                            min="2000"
-                            max="2100"
-                        />
-                    </Form.Group>
+                        <div className="row g-3">
+                            <div className="col-md-6">
+                                <div className="form-floating">
+                                    <Form.Select
+                                        id="billingMonth"
+                                        value={billingMonth}
+                                        onChange={(e) => setBillingMonth(parseInt(e.target.value))}
+                                        required
+                                        className="form-select"
+                                    >
+                                        {[...Array(12)].map((_, index) => (
+                                            <option key={index + 1} value={index + 1}>
+                                                Tháng {index + 1}
+                                            </option>
+                                        ))}
+                                    </Form.Select>
+                                    <label htmlFor="billingMonth">Tháng</label>
+                                </div>
+                            </div>
 
-                    <h5 className="mt-4">Danh sách dịch vụ</h5>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Tên dịch vụ</th>
-                                <th>Loại phí</th>
-                                <th>Đơn giá (VND)</th>
-                                <th>Đơn vị</th>
-                                <th>Số cũ</th>
-                                <th>Số mới</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {services.map((service) => (
-                                <tr key={service.serviceId}>
-                                    <td>{service.serviceName}</td>
-                                    <td>{service.chargingMethod === 0 ? 'Tính theo đơn vị' :
-                                        service.chargingMethod === 1 ? 'Theo người' :
-                                            service.chargingMethod === 2 ? 'Miễn phí' :
-                                                service.chargingMethod === 3 ? 'Chi phí cố định' :
-                                                    'N/A'}</td>
-                                    <td>{service.unitCost.toLocaleString('vi-VN')}</td>
-                                    <td>{service.unit === 0 ? 'Miễn phí' :
-                                        service.unit === 1 ? 'kWh' :
-                                            service.unit === 2 ? 'Khối' :
-                                                service.unit === 3 ? 'Người' :
-                                                    service.unit === 4 ? 'Tháng' :
-                                                        "N/A"}</td>
-                                    <td>{service.previousReading}</td>
-                                    <td>{service.currentReading}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                    <h5 className="mt-3">Tổng tiền: {totalAmount < 0 ? 'N/A' : totalAmount.toLocaleString()} VND</h5>
+                            <div className="col-md-6">
+                                <div className="form-floating">
+                                    <Form.Control
+                                        type="number"
+                                        id="billingYear"
+                                        value={billingYear}
+                                        onChange={(e) => setBillingYear(parseInt(e.target.value))}
+                                        required
+                                        min="2000"
+                                        max="2100"
+                                        className="form-control"
+                                    />
+                                    <label htmlFor="billingYear">Năm</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Services List */}
+                    <div className="services-section">
+                        <div className="section-header">
+                            <FaList className="text-primary me-2" />
+                            <h6 className="mb-0">Danh sách dịch vụ</h6>
+                        </div>
+
+                        <div className="table-responsive">
+                            <table className="table invoice-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên dịch vụ</th>
+                                        <th>Loại phí</th>
+                                        <th className="text-end">Đơn giá (VND)</th>
+                                        <th>Đơn vị</th>
+                                        <th className="text-end">Số cũ</th>
+                                        <th className="text-end">Số mới</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {services.map((service) => (
+                                        <tr key={service.serviceId}>
+                                            <td>
+                                                <div className="service-name">
+                                                    <i className="bi bi-gear-fill text-primary me-2"></i>
+                                                    {service.serviceName}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className="badge bg-light text-dark">
+                                                    {service.chargingMethod === 0 ? 'Tính theo đơn vị' :
+                                                        service.chargingMethod === 1 ? 'Theo người' :
+                                                            service.chargingMethod === 2 ? 'Miễn phí' :
+                                                                service.chargingMethod === 3 ? 'Chi phí cố định' : 'N/A'}
+                                                </span>
+                                            </td>
+                                            <td className="text-end fw-medium">
+                                                {service.unitCost.toLocaleString('vi-VN')}
+                                            </td>
+                                            <td>
+                                                <span className="badge bg-secondary">
+                                                    {service.unit === 0 ? 'Miễn phí' :
+                                                        service.unit === 1 ? 'kWh' :
+                                                            service.unit === 2 ? 'Khối' :
+                                                                service.unit === 3 ? 'Người' :
+                                                                    service.unit === 4 ? 'Tháng' : 'N/A'}
+                                                </span>
+                                            </td>
+                                            <td className="text-end">{service.previousReading}</td>
+                                            <td className="text-end">{service.currentReading}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Total Amount */}
+                        <div className="total-section">
+                            <div className="d-flex align-items-center">
+                                <FaMoneyBillWave className="text-success me-2 fs-4" />
+                                <div>
+                                    <small className="text-muted">Tổng tiền</small>
+                                    <div className="total-amount">
+                                        {totalAmount < 0 ? 'N/A' : `${totalAmount.toLocaleString()} VND`}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={onClose}>
+
+                <Modal.Footer className="invoice-modal-footer">
+                    <Button
+                        variant="light"
+                        onClick={onClose}
+                        className="btn-cancel"
+                    >
+                        <i className="bi bi-x-lg me-2"></i>
                         Hủy
                     </Button>
-                    <Button variant="primary" type="submit" disabled={loading || !dataAvailable || totalAmount < 0}>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={loading || !dataAvailable || totalAmount < 0}
+                        className="btn-submit"
+                    >
                         {loading ? (
-                            <><Spinner animation="border" size="sm" /> Đang tạo...</>
+                            <>
+                                <Spinner animation="border" size="sm" />
+                                <span className="ms-2">Đang tạo...</span>
+                            </>
                         ) : (
-                            'Tạo hóa đơn'
+                            <>
+                                <i className="bi bi-check-lg me-2"></i>
+                                Tạo hóa đơn
+                            </>
                         )}
                     </Button>
                 </Modal.Footer>
             </Form>
+
+            <style jsx>{`
+          .modal-90w {
+            width: 90%;
+            max-width: 1000px;
+          }
+  
+          .invoice-modal {
+            border-radius: 16px;
+            border: none;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          }
+  
+          .invoice-modal-header {
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem;
+          }
+  
+          .modal-title-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+          }
+  
+          .modal-subtitle {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+          }
+  
+          .invoice-modal-body {
+            padding: 1.5rem;
+          }
+  
+          .alert-section {
+            margin-bottom: 2rem;
+          }
+  
+          .invoice-alert {
+            margin-bottom: 1rem;
+            border: none;
+            border-radius: 12px;
+          }
+  
+          .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e2e8f0;
+          }
+  
+          .billing-period-section,
+          .services-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          }
+  
+          .form-floating > label {
+            color: #64748b;
+          }
+  
+          .invoice-table {
+            margin: 0;
+          }
+  
+          .invoice-table th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+            padding: 1rem;
+          }
+  
+          .invoice-table td {
+            padding: 1rem;
+            vertical-align: middle;
+          }
+  
+          .service-name {
+            display: flex;
+            align-items: center;
+          }
+  
+          .total-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+          }
+  
+          .total-amount {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #10b981;
+          }
+  
+          .invoice-modal-footer {
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+            padding: 1rem 1.5rem;
+          }
+  
+          .btn-cancel,
+          .btn-submit {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+          }
+  
+          @media (max-width: 768px) {
+            .modal-90w {
+              width: 95%;
+            }
+  
+            .invoice-modal-header,
+            .invoice-modal-body,
+            .invoice-modal-footer {
+              padding: 1rem;
+            }
+  
+            .billing-period-section,
+            .services-section {
+              padding: 1rem;
+            }
+          }
+        `}</style>
         </Modal>
     );
 };

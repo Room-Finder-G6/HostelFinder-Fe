@@ -1,0 +1,129 @@
+.modal-90w {
+  width: 120%;
+  max-width: 1000px;
+}
+
+.invoice-modal {
+  border-radius: 16px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-modal-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 1.5rem;
+}
+
+.modal-title-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.modal-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.invoice-modal-body {
+  padding: 1.5rem;
+}
+
+.alert-section {
+  margin-bottom: 2rem;
+}
+
+.invoice-alert {
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 12px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.billing-period-section,
+.services-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-floating > label {
+  color: #64748b;
+}
+
+.invoice-table {
+  margin: 0;
+}
+
+.invoice-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #64748b;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+  padding: 1rem;
+}
+
+.invoice-table td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+.service-name {
+  display: flex;
+  align-items: center;
+}
+
+.total-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.total-amount {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.invoice-modal-footer {
+  background: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.5rem;
+}
+
+.btn-cancel,
+.btn-submit {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .modal-90w {
+    width: 95%;
+  }
+
+  .invoice-modal-header,
+  .invoice-modal-body,
+  .invoice-modal-footer {
+    padding: 1rem;
+  }
+
+  .billing-period-section,
+  .services-section {
+    padding: 1rem;
+  }
+}

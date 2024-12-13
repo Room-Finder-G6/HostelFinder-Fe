@@ -1,5 +1,3 @@
-// components/CreateContractModal.tsx
-
 import React, { useState, useEffect } from "react";
 import apiInstance from "@/utils/apiInstance";
 import { useForm } from "react-hook-form";
@@ -8,6 +6,7 @@ import { toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
 import "./../rentralContract.css";
 import { useRouter } from "next/navigation";
+import { FaCogs, FaFileContract, FaUserAlt } from "react-icons/fa";
 interface CreateContractModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -177,272 +176,345 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
     };
 
     return (
-        <Modal show={isOpen} onHide={handleClose} size="lg" centered>
-            <Modal.Header closeButton>
-                <Modal.Title className="text-dark fw-bold">Tạo Hợp Đồng</Modal.Title>
+        <Modal
+            show={isOpen}
+            onHide={handleClose}
+            dialogClassName="modal-90w"
+            contentClassName="modal-custom"
+            centered
+        >
+            <Modal.Header closeButton className="modal-header-custom">
+                <Modal.Title>
+                    <div className="d-flex align-items-center">
+                        <FaFileContract className="text-primary me-2 fs-4" />
+                        <span className="modal-title-text" style={{color:'black'}}>Tạo Hợp Đồng</span>
+                    </div>
+                </Modal.Title>
             </Modal.Header>
+
             <form onSubmit={handleSubmit(onSubmit)}>
-                <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                <Modal.Body className="modal-body-custom">
+                    {/* Loading Overlay */}
                     {isLoading && (
                         <div className="loading-overlay">
-                            <div className="spinner-border text-primary" role="status">
-                                <span className="visually-hidden">Loading...</span>
+                            <div className="spinner-wrapper">
+                                <div className="spinner-border text-primary" role="status">
+                                    <span className="visually-hidden">Loading...</span>
+                                </div>
                             </div>
                         </div>
                     )}
-                    {/* Thông tin hợp đồng */}
-                    <section className="mb-4">
-                        <h5>Thông tin hợp đồng</h5>
-                        <div className="mb-3">
-                            <label className="form-label">Ngày bắt đầu <span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="date"
-                                {...register("startDate")}
-                                className="form-control"
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Ngày kết thúc</label>
-                            <input
-                                type="date"
-                                {...register("endDate")}
-                                className="form-control"
-                            />
-                        </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Tiền thuê *</label>
-                            <CurrencyInput
-                                className="form-control"
-                                id="monthlyRent"
-                                name="monthlyRent"
-                                placeholder="Nhập tiền thuê"
-                                defaultValue={roomData?.monthlyRentCost}
-                                decimalsLimit={0}
-                                groupSeparator="."
-                                decimalSeparator=","
-                                onValueChange={(value: string | undefined) => {
-                                    const numericValue = value ? parseInt(value.replace(/\./g, '').replace(/,/g, '')) : 0;
-                                    setValue('monthlyRent', numericValue);
-                                }}
-                                onKeyDown={(e) => {
-                                    // Ngăn không cho nhập dấu "-"
-                                    if (e.key === '-') {
-                                        e.preventDefault(); // Ngăn chặn hành động nhập
-                                    }
-                                }}
-                                required
-                            />
-                            {errors.monthlyRent && (
-                                <span className="text-danger">Vui lòng nhập tiền thuê</span>
-                            )}
-                            <small>
-                                Giá thuê phòng hiện tại: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(watch('monthlyRentNow') || 0)}
-                            </small>
-                        </div>
+                    <div className="form-sections">
+                        {/* Contract Information Section */}
+                        <div className="form-section">
+                            <div className="section-header">
+                                <FaFileContract className="section-icon" />
+                                <h5 className="section-title">Thông tin hợp đồng</h5>
+                            </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Tiền đặt cọc <span style={{ color: 'red' }}>*</span></label>
-                            <CurrencyInput
-                                className="form-control"
-                                id="depositAmount"
-                                name="depositAmount"
-                                placeholder="Nhập tiền đặt cọc"
-                                defaultValue={roomData?.monthlyRentCost}
-                                decimalsLimit={0}
-                                groupSeparator="."
-                                decimalSeparator=","
-                                onValueChange={(value: string | undefined) => {
-                                    const numericValue = value ? parseInt(value.replace(/\./g, '').replace(/,/g, '')) : 0;
-                                    setValue('depositAmount', numericValue);
-                                }}
-                                onKeyDown={(e) => {
-                                    // Ngăn không cho nhập dấu "-"
-                                    if (e.key === '-') {
-                                        e.preventDefault(); // Ngăn chặn hành động nhập
-                                    }
-                                }}
-                                required
-                            />
-                            <div className="alert alert-warning mt-2" role="alert">
-                                Chú ý: Đây là số tiền cọc ở phòng trọ và sẽ không được tính vào hóa đơn.
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="date"
+                                            {...register("startDate")}
+                                            className="form-control"
+                                            id="startDate"
+                                            required
+                                        />
+                                        <label htmlFor="startDate">Ngày bắt đầu <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="date"
+                                            {...register("endDate")}
+                                            className="form-control"
+                                            id="endDate"
+                                        />
+                                        <label htmlFor="endDate">Ngày kết thúc</label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <CurrencyInput
+                                            className="form-control"
+                                            id="monthlyRent"
+                                            placeholder=" "
+                                            defaultValue={roomData?.monthlyRentCost}
+                                            decimalsLimit={0}
+                                            groupSeparator="."
+                                            decimalSeparator=","
+                                            onValueChange={(value) => {
+                                                const numericValue = value ? parseInt(value.replace(/\./g, '')) : 0;
+                                                setValue('monthlyRent', numericValue);
+                                            }}
+                                        />
+                                        <label htmlFor="monthlyRent">Tiền thuê <span className="text-danger">*</span></label>
+                                    </div>
+                                    <small className="text-muted mt-1 d-block">
+                                        Giá thuê hiện tại: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(watch('monthlyRentNow') || 0)}
+                                    </small>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <CurrencyInput
+                                            className="form-control"
+                                            id="depositAmount"
+                                            placeholder=" "
+                                            defaultValue={roomData?.monthlyRentCost}
+                                            decimalsLimit={0}
+                                            groupSeparator="."
+                                            decimalSeparator=","
+                                            onValueChange={(value) => {
+                                                const numericValue = value ? parseInt(value.replace(/\./g, '')) : 0;
+                                                setValue('depositAmount', numericValue);
+                                            }}
+                                        />
+                                        <label htmlFor="depositAmount">Tiền đặt cọc <span className="text-danger">*</span></label>
+                                    </div>
+                                    <div className="alert alert-warning mt-2 py-2 px-3 small">
+                                        <i className="bi bi-exclamation-triangle me-2"></i>
+                                        Số tiền cọc không được tính vào hóa đơn
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="number"
+                                            {...register("paymentCycleDays")}
+                                            className="form-control"
+                                            id="paymentCycle"
+                                            min="1"
+                                            required
+                                        />
+                                        <label htmlFor="paymentCycle">Kỳ thanh toán (tháng) <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                <div className="col-12">
+                                    <div className="form-floating">
+                                        <textarea
+                                            {...register("contractTerms")}
+                                            className="form-control"
+                                            id="terms"
+                                            style={{ height: "100px" }}
+                                        ></textarea>
+                                        <label htmlFor="terms">Điều khoản hợp đồng</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Kỳ thanh toán (tháng)<span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="number"
-                                {...register("paymentCycleDays")}
-                                className="form-control"
-                                required
-                                min="1"
-                                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                                    // Ngăn không cho nhập dấu "-"
-                                    if (e.key === '-') {
-                                        e.preventDefault(); // Ngăn chặn hành động nhập
-                                    }
-                                }}
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Điều khoản hợp đồng</label>
-                            <textarea
-                                {...register("contractTerms")}
-                                className="form-control"
-                            ></textarea>
-                        </div>
-                    </section>
-                    {/* Thông tin người thuê */}
-                    <section className="mb-4">
-                        <h5>Thông tin người thuê</h5>
-                        <div className="mb-3">
-                            <label className="form-label">Họ tên <span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="text"
-                                {...register("tenant.fullName")}
-                                className="form-control"
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Email <span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="email"
-                                {...register("tenant.email")}
-                                className="form-control"
-                                required
-                            />
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">Số điện thoại <span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="text"
-                                {...register("tenant.phone")}
-                                className="form-control"
-                                required
-                            />
+                        {/* Tenant Information Section */}
+                        <div className="form-section">
+                            <div className="section-header">
+                                <FaUserAlt className="section-icon" />
+                                <h5 className="section-title">Thông tin người thuê</h5>
+                            </div>
+
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="text"
+                                            {...register("tenant.fullName")}
+                                            className="form-control"
+                                            id="fullName"
+                                            required
+                                        />
+                                        <label htmlFor="fullName">Họ tên <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="email"
+                                            {...register("tenant.email")}
+                                            className="form-control"
+                                            id="email"
+                                            required
+                                        />
+                                        <label htmlFor="email">Email <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="text"
+                                            {...register("tenant.phone")}
+                                            className="form-control"
+                                            id="phone"
+                                            required
+                                        />
+                                        <label htmlFor="phone">Số điện thoại <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <div className="form-floating">
+                                        <input
+                                            type="text"
+                                            {...register("tenant.identityCard")}
+                                            className="form-control"
+                                            id="identityCard"
+                                            required
+                                        />
+                                        <label htmlFor="identityCard">CCCD <span className="text-danger">*</span></label>
+                                    </div>
+                                </div>
+
+                                {/* Image Upload Section */}
+                                <div className="col-12">
+                                    <div className="upload-section">
+                                        <div className="row g-3">
+                                            <div className="col-md-4">
+                                                <div className="upload-card">
+                                                    <div className="upload-header">
+                                                        <i className="bi bi-person-circle"></i>
+                                                        <span>Ảnh đại diện</span>
+                                                    </div>
+                                                    <div className="upload-content">
+                                                        <input
+                                                            type="file"
+                                                            {...register("tenant.avatarImage")}
+                                                            className="form-control"
+                                                            onChange={(e) => onFileChange(e, "avatar")}
+                                                        />
+                                                        {previewImages.avatar && (
+                                                            <div className="image-preview">
+                                                                <img src={previewImages.avatar} alt="Avatar" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-md-4">
+                                                <div className="upload-card">
+                                                    <div className="upload-header">
+                                                        <i className="bi bi-credit-card-front"></i>
+                                                        <span>Mặt trước CCCD</span>
+                                                    </div>
+                                                    <div className="upload-content">
+                                                        <input
+                                                            type="file"
+                                                            {...register("tenant.frontImageImage")}
+                                                            className="form-control"
+                                                            onChange={(e) => onFileChange(e, "frontImage")}
+                                                        />
+                                                        {previewImages.frontImage && (
+                                                            <div className="image-preview">
+                                                                <img src={previewImages.frontImage} alt="Front ID" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-md-4">
+                                                <div className="upload-card">
+                                                    <div className="upload-header">
+                                                        <i className="bi bi-credit-card-back"></i>
+                                                        <span>Mặt sau CCCD</span>
+                                                    </div>
+                                                    <div className="upload-content">
+                                                        <input
+                                                            type="file"
+                                                            {...register("tenant.backImageImage")}
+                                                            className="form-control"
+                                                            onChange={(e) => onFileChange(e, "backImage")}
+                                                        />
+                                                        {previewImages.backImage && (
+                                                            <div className="image-preview">
+                                                                <img src={previewImages.backImage} alt="Back ID" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Ảnh đại diện</label>
-                            <input
-                                type="file"
-                                {...register("tenant.avatarImage")}
-                                className="form-control"
-                                onChange={(e) => onFileChange(e, "avatar")}
-                            />
-                            {previewImages.avatar && (
-                                <img
-                                    src={previewImages.avatar}
-                                    alt="Avatar preview"
-                                    className="img-thumbnail mt-2"
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
-                            )}
-                        </div>
-                        <div className="mb-3">
-                            <label className="form-label">CCCD <span style={{ color: 'red' }}>*</span></label>
-                            <input
-                                type="text"
-                                {...register("tenant.identityCard", {
-                                    required: true,
-                                    pattern: {
-                                        value: /^[0-9]{12}$/, // Biểu thức chính quy để kiểm tra 12 chữ số
-                                        message: "Số CCCD phải gồm 12 chữ số"
-                                    }
-                                })}
-                                className="form-control"
-                                required
-                            />
-                        </div>
+                        {/* Services Section */}
+                        <div className="form-section">
+                            <div className="section-header">
+                                <FaCogs className="section-icon" />
+                                <h5 className="section-title">Số Liệu Dịch Vụ</h5>
+                            </div>
 
-                        <div className="mb-3">
-                            <label className="form-label">Mặt trước CCCD</label>
-                            <input
-                                type="file"
-                                {...register("tenant.frontImageImage")}
-                                className="form-control"
-                                onChange={(e) => onFileChange(e, "frontImage")}
-                            />
-                            {previewImages.frontImage && (
-                                <img
-                                    src={previewImages.frontImage}
-                                    alt="Front image preview"
-                                    className="img-thumbnail mt-2"
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
-                            )}
+                            <div className="table-responsive">
+                                <table className="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Tên Dịch Vụ</th>
+                                            <th>Giá Đơn Vị</th>
+                                            <th>Đơn Vị</th>
+                                            <th>Chỉ Số Cũ</th>
+                                            <th>Nhập Số Liệu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {services.map((service) => (
+                                            <tr key={service.serviceId}>
+                                                <td>{service.serviceName}</td>
+                                                <td>
+                                                    {service.unitCost
+                                                        ? `${service.unitCost.toLocaleString('vi-VN')} đ`
+                                                        : <span className="badge bg-success">Miễn phí</span>
+                                                    }
+                                                </td>
+                                                <td>{service.unit || "N/A"}</td>
+                                                <td>{service.previousReading}</td>
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        {...register(`reading_${service.serviceId}`)}
+                                                        className="form-control form-control-sm"
+                                                        defaultValue={service.previousReading}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-
-                        <div className="mb-3">
-                            <label className="form-label">Mặt sau CCCD</label>
-                            <input
-                                type="file"
-                                {...register("tenant.backImageImage")}
-                                className="form-control"
-                                onChange={(e) => onFileChange(e, "backImage")}
-                            />
-                            {previewImages.backImage && (
-                                <img
-                                    src={previewImages.backImage}
-                                    alt="Back image preview"
-                                    className="img-thumbnail mt-2"
-                                    style={{ width: '100px', height: '100px', objectFit: 'cover' }}
-                                />
-                            )}
-                        </div>
-                    </section>
-
-
-                    {/* Dịch vụ */}
-                    <section className="mb-4">
-                        <h5>Số Liệu Dịch Vụ</h5>
-                        <Table bordered hover responsive>
-                            <thead>
-                                <tr>
-                                    <th>Tên Dịch Vụ</th>
-                                    <th>Giá Đơn Vị</th>
-                                    <th>Đơn Vị</th>
-                                    <th>Chỉ Số Cũ</th>
-                                    <th>Nhập Số Liệu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {services.map((service: any) => (
-                                    <tr key={service.serviceId}>
-                                        <td>{service.serviceName}</td>
-                                        <td>{service.unitCost ? `${service.unitCost.toLocaleString('vi-VN')} đ` : "Miễn phí"}</td>
-                                        <td>{service.unit || "N/A"}</td>
-                                        <td>{service.previousReading}</td>
-                                        <td>
-                                            <input
-                                                type="number"
-                                                {...register(`reading_${service.serviceId}`)} // Register dynamic field
-                                                className="form-control"
-                                                defaultValue={service.previousReading}
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
-                    </section>
+                    </div>
                 </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" type="submit" disabled={isLoading}>
+
+                <Modal.Footer className="modal-footer-custom">
+                    <Button variant="light" onClick={handleClose} disabled={isLoading}>
+                        Hủy bỏ
+                    </Button>
+                    <Button
+                        variant="primary"
+                        type="submit"
+                        disabled={isLoading}
+                        className="btn-with-icon"
+                    >
                         {isLoading ? (
                             <>
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                {' '}Đang lưu...
+                                <span>Đang lưu...</span>
                             </>
                         ) : (
-                            'Lưu'
+                            <>
+                                <i className="bi bi-check-lg"></i>
+                                <span>Lưu hợp đồng</span>
+                            </>
                         )}
-                    </Button>
-                    <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
-                        Thoát
                     </Button>
                 </Modal.Footer>
             </form>
