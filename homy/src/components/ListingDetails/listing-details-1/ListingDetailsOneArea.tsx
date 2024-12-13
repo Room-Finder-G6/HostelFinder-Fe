@@ -129,7 +129,7 @@ const ListingDetailsOneArea = () => {
                         </div>
 
                         <div className="property-location mb-50">
-                            <h4 className="mb-20">Xem trên bản đồ</h4>
+                            <h4 className="mb-20">Xem vị trí của nhà trọ</h4>
                             <GoongMap selectedLocation={coordinateHostel}
                                       onCoordinatesChange={handleCoordinatesChange}
                                       showSearch={false}
