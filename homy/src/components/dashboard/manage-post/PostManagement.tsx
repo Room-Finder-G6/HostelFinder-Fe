@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import {useState, useEffect, useCallback, useRef} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Link from "next/link";
 import Image from "next/image";
@@ -7,11 +7,12 @@ import usePostsByUser from "./usePost";
 import UserPostsBody from "./PropertyTableBodyPost";
 import DeleteModal from "@/modals/DeleteModal";
 import apiInstance from "@/utils/apiInstance";
-import { toast } from "react-toastify";
-import { useRouter } from 'next/navigation';
+import {toast} from "react-toastify";
+import {useRouter} from 'next/navigation';
+import {getUserIdFromToken} from "@/utils/tokenUtils";
 
 const UserPostManagement = () => {
-    const { posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser } = usePostsByUser();
+    const {posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser} = usePostsByUser();
     const [sortOption, setSortOption] = useState<string>("1");
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
@@ -23,7 +24,6 @@ const UserPostManagement = () => {
         const selectedValue = e.target.value;
         setSortOption(selectedValue);
     };
-
 
 
     const handleDeletePost = async () => {
@@ -58,7 +58,7 @@ const UserPostManagement = () => {
     useEffect(() => {
 
         if (pageIndex !== prevPageIndexRef.current || sortOption !== prevSortOptionRef.current) {
-            console.log("Fetching posts with", { pageIndex, sortOption });
+            console.log("Fetching posts with", {pageIndex, sortOption});
             fetchPostsByUser(pageIndex, sortOption);
 
             prevPageIndexRef.current = pageIndex;
@@ -78,11 +78,24 @@ const UserPostManagement = () => {
     }, [posts, sortOption]);
     const sortedPosts = sortPosts();
 
+    const userId = getUserIdFromToken();
+
+    const checkUserHostelExist = async () => {
+        try {
+            const response = await apiInstance.post(`/posts/check-user-hostel/${userId}`);
+            if (!response.data.succeeded) {
+                toast.error(response.data.message);
+            } else
+                router.push('/dashboard/create-post');
+        } catch (error) {
+            console.error('Error checking user hostel:', error);
+        }
+    }
 
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Bài đăng của tôi" />
+                <DashboardHeaderTwo title="Bài đăng của tôi"/>
                 <div className="d-flex align-items-center justify-content-between mb-25">
                     <div className="d-flex align-items-center ms-auto">
                         <div className="short-filter d-flex align-items-center me-3">
@@ -98,9 +111,9 @@ const UserPostManagement = () => {
 
                         </div>
 
-                        <Link href="/dashboard/create-post" className="btn-two">
+                        <button type='button' onClick={checkUserHostelExist} className="btn-two">
                             <span>Tạo bài đăng</span>
-                        </Link>
+                        </button>
                     </div>
                 </div>
 
@@ -108,14 +121,14 @@ const UserPostManagement = () => {
                     <div className="table-responsive">
                         <table className="table property-list-table">
                             <thead>
-                                <tr>
-                                    <th scope="col">Tiêu đề</th>
-                                    <th scope="col">Ngày Tạo</th>
-                                    <th scope="col">Trạng thái</th>
-                                    <th scope="col"></th>
-                                </tr>
+                            <tr>
+                                <th scope="col">Tiêu đề</th>
+                                <th scope="col">Ngày Tạo</th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col"></th>
+                            </tr>
                             </thead>
-                            <UserPostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick} />
+                            <UserPostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick}/>
                         </table>
                     </div>
                 </div>
@@ -131,7 +144,7 @@ const UserPostManagement = () => {
                     {totalPages > 1 && (
                         <li className="ms-2">
                             <Link href="#" onClick={() => setPageIndex(totalPages)}>
-                                Last <Image src={icon_1} alt="" className="ms-2" />
+                                Last <Image src={icon_1} alt="" className="ms-2"/>
                             </Link>
                         </li>
                     )}
