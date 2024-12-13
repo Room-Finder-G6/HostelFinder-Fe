@@ -40,6 +40,12 @@ const Property = () => {
         return <Loading/>
     }
 
+    const membershipColors: Record<string, string> = {
+        Đồng: "gray",
+        Bạc: "#4DC1B5",
+        Vàng: "#ecc705",
+    };
+
     return (
         <div
             className="property-listing-one bg-pink-two mt-150 xl-mt-120 pt-140 xl-pt-120 lg-pt-80 pb-180 xl-pb-120 lg-pb-100">
@@ -69,8 +75,14 @@ const Property = () => {
                                              style={{aspectRatio: '18 / 12'}}>
                                             <div id={`carousel${post.id}`} className="carousel slide">
                                                 <div className="carousel-inner">
-                                                    <div className="carousel-item active" data-bs-interval="1000000">
+                                                    <div className="carousel-item active img-gallery position-relative z-1 border-20 overflow-hidden" data-bs-interval="1000000">
                                                         <Link href={`/post-details/${post.id}`} className="d-block">
+                                                            { post.membershipTag && <div
+                                                                className={`tag border-20 `}
+                                                                style={{backgroundColor: `${membershipColors[post.membershipTag]}`}}
+                                                            >
+                                                                Vip&nbsp;{post.membershipTag}
+                                                            </div>}
                                                             <Image
                                                                 src={post.firstImage}
                                                                 className="w-100"
@@ -86,7 +98,7 @@ const Property = () => {
                                     </div>
 
                                     <div className="property-info p-25">
-                                        <Link href={`/post-details/${post.id}`}
+                                    <Link href={`/post-details/${post.id}`}
                                               className="title tran3s"> {truncateString(post.title, 60)}</Link>
                                         <div
                                             className="address"> {`${post.address.commune}, ${post.address.district}`},<br/> {`${post.address.province}`}
