@@ -254,13 +254,6 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                             </>
                         )}
 
-
-                        {/* <li className="plr">
-                            <Link href="/dashboard/account-settings" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/account-settings' ? 'active' : ''}`}>
-                                <Image src={pathname === '/dashboard/account-settings' ? dashboardIconActive_4 : dashboardIcon_4} alt="Account Settings" />
-                                <span>Account Settings</span>
-                            </Link>
-                        </li> */}
                         <li className="plr">
                             <Link href="/dashboard/membership"
                                   className={`d-flex w-100 align-items-center ${pathname === '/dashboard/membership' ? 'active' : ''}`}>

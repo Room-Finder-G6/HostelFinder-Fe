@@ -42,7 +42,7 @@ const NavMenu = () => {
         <div className="logo">
           <Link href="/" className="d-block d-flex align-items-center">
             <Image src={logo} alt=""/>
-            <span className="logo-text " style={{
+            <span className="logo-text" style={{
               fontSize: '25px',
               color: 'black',
               marginRight: '10px'
