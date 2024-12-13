@@ -57,12 +57,6 @@ const CommonBanner = ({title, monthlyRentCost, style_3, address}: any) => {
                                 </div>
                             )}
                         </li>
-                        <li>
-                            <Link href="#"
-                                  className={`d-flex align-items-center justify-content-center tran3s ${style_3 ? "" : "rounded-circle"}`}>
-                                <i className="fa-light fa-heart"></i>
-                            </Link>
-                        </li>
                     </ul>
                 </div>
             </div>

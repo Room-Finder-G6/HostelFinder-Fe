@@ -120,12 +120,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                     inactiveIcon: dashboardIcon_3,
                     label: "Quản Lý Người Dùng"
                 },
-                {
-                    href: "/dashboard/review",
-                    activeIcon: dashboardIconActive_10,
-                    inactiveIcon: dashboardIcon_10,
-                    label: "Reviews"
-                }
+             
             ]
         }
     ];
