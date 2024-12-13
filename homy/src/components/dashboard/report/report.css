@@ -1,49 +1,172 @@
+:root {
+    --primary-color: #8ab4e0;
+    --secondary-color: #a5c6e8;
+    --success-color: #7cd1a9;
+    --warning-color: #ffd17a;
+    --danger-color: #ff8888;
+    --info-color: #7acbe5;
+    --light-color: #f8f8f8;
+    --dark-color: #555555;
+}
+
 .revenue-summary {
-    background-color: #e0f7fa; /* Nền xanh nhạt */
-    border-radius: 8px; /* Bo góc cho phần tử */
-    padding: 16px;
-    margin-top: 20px;
+    background-color: var(--light-color);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .item {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #ffffff;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.item:hover {
+    background-color: var(--light-color);
+    transform: translateY(-1px);
 }
 
 .text-end {
-    font-weight: bold;
-    flex: 1;
+    font-weight: 600;
+    color: var(--dark-color);
 }
 
 .value {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
 }
 
 .value .total {
-    font-size: 1.5rem;
-    margin-left: 8px;
+    font-size: 1.75rem;
+    margin-left: 12px;
+    font-weight: bold;
 }
 
 .feather {
     color: currentColor;
+    width: 24px;
+    height: 24px;
+    stroke-width: 1.5;
+    margin-right: 8px;
 }
 
 .receipt .value {
-    color: #4caf50; /* Màu xanh cho doanh thu */
+    color: var(--success-color);
 }
 
 .expense .value {
-    color: #f44336; /* Màu đỏ cho chi phí */
+    color: var(--danger-color);
 }
 
 .profit .value {
-    color: #4caf50; /* Màu xanh cho lợi nhuận */
+    color: var(--primary-color);
 }
 
 .item + .item {
-    margin-left: 20px; /* Khoảng cách giữa các item */
+    margin-left: 30px;
 }
 
+.dashboard-body {
+    background-color: #fafafa;
+}
 
+.main-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.5rem;
+    color: var(--dark-color);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--light-color);
+}
+
+.badge-success {
+    background-color: var(--success-color) !important;
+}
+
+.badge-warning {
+    background-color: var(--warning-color) !important;
+}
+
+.badge-danger {
+    background-color: var(--danger-color) !important;
+}
+
+.badge-info {
+    background-color: var(--info-color) !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.pagination .page-link {
+    color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .value {
+        font-size: 1.25rem;
+    }
+    
+    .value .total {
+        font-size: 1.5rem;
+    }
+}
+
+.card.bg-custom-info {
+    background-color: #5bd8eb;
+ }
+ .card.bg-custom-danger {
+    background-color: #be3131;
+ }
+ .card.bg-custom-success {
+    background-color: #26ad21;
+ }
+
+ .revenue-table {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+ }
+
+ .revenue-table thead {
+    background-color: #f8f9fa;
+ }
+
+ .revenue-table th {
+    font-weight: 600;
+    padding: 12px;
+    text-align: center;
+ }
+
+ .revenue-table td {
+    padding: 12px;
+    text-align: center;
+ }
+
+ .revenue-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+ }
+
+ .room-name {
+    font-weight: 500;
+ }
+
+ .revenue-amount {
+    font-weight: 600;
+    color: #4e73df;
+ }

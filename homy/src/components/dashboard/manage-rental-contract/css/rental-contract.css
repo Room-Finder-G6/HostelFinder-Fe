@@ -53,3 +53,63 @@
     }
  }
  
+
+ .rental-contract-table-wrapper {
+   background-color: white;
+   border-radius: 0.75rem;
+   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+   overflow: hidden;
+ }
+ 
+ .rental-contract-table {
+   margin-bottom: 0;
+ }
+ 
+ .rental-contract-table thead {
+   background-color: #f8f9fa;
+ }
+ 
+ .rental-contract-table thead th {
+   font-weight: 600;
+   color: #6c757d;
+   text-transform: uppercase;
+   font-size: 0.75rem;
+   border-bottom: 2px solid #dee2e6;
+ }
+ 
+ .contract-tenant-name {
+   color: #2563eb;
+   text-decoration: none;
+   font-weight: 500;
+   transition: color 0.2s ease;
+ }
+ 
+ .contract-tenant-name:hover {
+   color: #1d4ed8;
+   text-decoration: underline;
+ }
+ 
+ .contract-status-badge {
+   text-transform: uppercase;
+   font-size: 0.675rem;
+   padding: 0.25rem 0.5rem;
+ }
+ 
+ .contract-actions {
+   display: flex;
+   justify-content: flex-end;
+   align-items: center;
+ }
+ 
+ .contract-actions .btn {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   padding: 0.25rem 0.5rem;
+   margin-left: 0.25rem;
+ }
+ 
+ /* Hover effects */
+ .rental-contract-table tbody tr:hover {
+   background-color: rgba(0, 123, 255, 0.05);
+ }
