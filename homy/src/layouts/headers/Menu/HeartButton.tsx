@@ -14,7 +14,6 @@ const HeartButton: React.FC<HeartButtonProps> = ({ wishlistCount }) => {
       {wishlistCount > 0 && (
         <span className="wishlist-badge" >
           {wishlistCount}
-          
         </span>
         
       )}

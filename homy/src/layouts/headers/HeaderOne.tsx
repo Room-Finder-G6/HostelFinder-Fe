@@ -19,22 +19,18 @@ const HeaderOne = ({ style }: any) => {
     return (
         <>
             <header className={`theme-main-menu menu-overlay menu-style-one sticky-menu ${sticky ? "fixed" : ""}`}>
-                {/*{!style && <div className="alert-wrapper text-center">
-                    <p className="fs-16 m0 text-white">The <Link href="/listing_01" className="fw-500">flash
-                        sale</Link> go on. The offer will end in — <span>This Sunday</span></p>
-                </div>}*/}
                 <div className="inner-content gap-one">
                     <div className="top-header position-relative">
                         <div className="d-flex align-items-center justify-content-between">
                             <div className="logo order-lg-0">
                                 <Link href="/" className="d-flex align-items-center">
-                                    <Image src="/assets/images/logo/logo_06.svg" alt=" PhongTro24/7" width={50}
+                                    <Image src="/assets/images/logo/logo_06.svg" alt="PhongTro24/7" width={50}
                                         height={50} />
-                                    <span className="logo-text" style={{
+                                    <span className="logo-text d-none d-lg-block" style={{
                                         fontSize: '25px',
                                         color: 'black',
                                         marginRight: '10px'
-                                    }}><strong>&nbsp;PhongTro24/7</strong></span>
+                                    }}><strong>&nbsp;PhongTro247</strong></span>
                                 </Link>
                             </div>
                             {isLoggedIn ? (
@@ -50,7 +46,7 @@ const HeaderOne = ({ style }: any) => {
                                     aria-label="Toggle navigation">
                                     <span></span>
                                 </button>
-                                <div id="navbarNav">
+                                <div className="collapse navbar-collapse" id="navbarNav">
                                     <NavMenu />
                                 </div>
                             </nav>

@@ -208,7 +208,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                             height={50}
                             priority={true}
                         />
-                        <span className="logo-text" style={{fontSize: "25px", color: "black", marginRight: "10px"}}>
+                        <span className="logo-text d-none d-lg-block" style={{fontSize: "25px", color: "black", marginRight: "10px"}}>
                             <strong>&nbsp;PhongTro24/7</strong>
                         </span>
                     </Link>
