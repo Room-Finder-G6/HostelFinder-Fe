@@ -223,7 +223,6 @@ const ListingFourArea = () => {
     const handleNextPage = async () => {
         // Check if we are at the last page
         if (pageIndex * pageSize >= totalPosts) return; // Disable next button if no posts on next page
-
         // Fetch the next page of posts
         setPageIndex((prev) => prev + 1);
     };

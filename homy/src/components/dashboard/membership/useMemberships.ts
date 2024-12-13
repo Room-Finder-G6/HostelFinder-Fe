@@ -105,7 +105,7 @@ const useMemberships = () => {
                 setTimeout(() => {
                     localStorage.removeItem("token"); // Xóa token
                     window.location.href = "/"; // Chuyển hướng về trang đăng nhập
-                }, 2000); // Thời gian chờ 3 giây để hiển thị thông báo
+                }, 3000); // Thời gian chờ 3 giây để hiển thị thông báo
             } else {
                 const errorMessage = response.data.message;
                 console.log("Backend error message:", errorMessage);

@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import Notification from "./Notification";
+import Notification from "../dashboard/Notification";
 import React, { useState } from "react";
 import AdminHeader from "./AdminHeader";
 import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_43.svg";

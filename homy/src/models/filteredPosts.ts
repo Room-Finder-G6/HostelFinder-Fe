@@ -12,4 +12,4 @@ export interface FilteredPosts {
     membershipTag?: string;
     createdOn: string;
     wishlistPostId: string;
-}
+} 
