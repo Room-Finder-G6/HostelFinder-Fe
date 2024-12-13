@@ -2,7 +2,7 @@ import HomeOne from "@/components/homes/home-one";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
-    title: "Cho thuê nhà trọ, tìm nhà trọ giá rẻ",
+    title: "Cho thuê nhà trọ và tìm nhà trọ giá rẻ",
 };
 const index = () => {
     return (
