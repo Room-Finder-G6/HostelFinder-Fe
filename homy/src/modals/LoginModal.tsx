@@ -73,7 +73,6 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
    }, [session, status, router]);
 
    return (
-      <>
          <div className="modal fade" id="loginModal" tabIndex={-1} aria-hidden="true">
             <div className="modal-dialog modal-fullscreen modal-dialog-centered">
                <div className="container">
@@ -148,7 +147,6 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                </div>
             </div>
          </div>
-      </>
    );
 };
 
