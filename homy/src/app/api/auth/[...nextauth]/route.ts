@@ -7,10 +7,10 @@ const authOptions: AuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_ID!,
       clientSecret: process.env.GOOGLE_SECRET!,
-      authorization :{
-        params : {
-          prompt: "consent",
-          access_type: "offline",
+      authorization: {
+        params: {
+          prompt: "select_account", // Thay đổi từ "consent" sang "select_account"
+          access_type: "online",    // Thay đổi từ "offline" sang "online"
           response_type: "code"
         }
       }
