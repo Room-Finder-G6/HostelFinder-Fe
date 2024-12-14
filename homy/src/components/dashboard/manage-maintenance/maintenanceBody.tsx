@@ -15,6 +15,7 @@ import { jwtDecode } from "jwt-decode";
 import MaintenanceModal from "./Add/MaintenanceModal";
 import { FaEye, FaPlus, FaTrash } from "react-icons/fa";
 import Loading from "@/components/Loading";
+import EditMaintenanceModal from "@/components/dashboard/manage-maintenance/Edit/EditMaintenanceModal";
 
 interface JwtPayload {
     UserId: string;
@@ -32,6 +33,9 @@ const MainTenanceBody = () => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editRecord, setEditRecord] = useState<MaintenanceRecord | null>(null);
+    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
 
     // Lấy UserId từ token JWT
     const getUserIdFromToken = useCallback((): string | null => {
@@ -168,6 +172,16 @@ const MainTenanceBody = () => {
         return option ? option.label : 'Không xác định';
     };
 
+    const handleEditClick = (recordId: string) => {
+        setSelectedRecordId(recordId);
+        setShowEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setSelectedRecordId(null);
+        setShowEditModal(false);
+    };
+
 
     return (
         <div className="dashboard-body">
@@ -215,9 +229,7 @@ const MainTenanceBody = () => {
                 <div className="bg-white card-box p-0 border-20">
                     <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                         {loading ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                                <Spinner animation="border" variant="primary" />
-                            </div>
+                            <Loading/>
                         ) : (
                             <Table className="saved-search-table" hover={false}>
                                 <thead>
@@ -243,29 +255,22 @@ const MainTenanceBody = () => {
                                                 <td>{record.title}</td>
                                                 <td>{record.description || "N/A"}</td>
                                                 <td>{new Date(record.maintenanceDate).toLocaleDateString()}</td>
-                                                <td className="cost-cell">
-                                                    {record.cost.toLocaleString('vi-VN')} ₫
-                                                </td>
-                                                <td className="type-cell">{getMaintenanceTypeLabel(record.maintenanceType)}</td>
-                                                <td className="action-column">
-                                                    <div className="btns-group">
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 me-3"
-                                                        // onClick={() => onViewDetails(record)}
-                                                        >
-                                                            <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                                        </Button>
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 btn-delete"
-                                                        // onClick={() => onDeleteRecord(record)}
-                                                        >
-                                                            <i className="fa-regular fa-trash" data-bs-toggle="tooltip" title="Xóa"></i>
-                                                        </Button>
+                                                <td>{record.cost.toLocaleString('vi-VN')} ₫</td>
+                                                <td>{getMaintenanceTypeLabel(record.maintenanceType)}</td>
+
+                                                <td>
+                                                    <div className="d-flex justify-content-end btns-group">
+                                                        <ButtonToolbar className="ms-3" onClick={() => handleEditClick(record.id)} data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                                            <i className="fa-regular fa-pen-to-square"></i>
+                                                        </ButtonToolbar>
+
+                                                        <ButtonToolbar className="ms-3" data-bs-toggle="tooltip" title="Xóa">
+                                                            <i className="fa-regular fa-trash"></i>
+                                                        </ButtonToolbar>
                                                     </div>
                                                 </td>
                                             </tr>
+
                                         ))
                                     ) : (
                                         <tr>
@@ -287,6 +292,18 @@ const MainTenanceBody = () => {
                     onSuccess={handleSuccess}
                     selectedHostel={selectedHostel}
                     reloadTable={reloadTable}
+                />
+
+                <EditMaintenanceModal
+                    show={showEditModal}
+                    onClose={handleCloseEditModal}
+                    onSuccess={() => {
+                        handleCloseEditModal();
+                        reloadTable();
+                    }}
+                    selectedHostel={selectedHostel}
+                    reloadTable={reloadTable}
+                    recordId={selectedRecordId}
                 />
 
                 {/* Phân trang với thiết kế mới */}
