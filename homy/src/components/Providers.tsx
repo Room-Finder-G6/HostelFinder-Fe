@@ -11,11 +11,11 @@ interface ProvidersProps {
 
 const Providers = ({ children }: ProvidersProps) => {
   return (
-    // <SessionProvider>
+    <SessionProvider>
       <Provider store={store}>
         {children}
       </Provider>
-    // </SessionProvider>
+    </SessionProvider>
   );
 };
 

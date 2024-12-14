@@ -17,15 +17,23 @@ const Profile: React.FC = () => {
             setIsLoggedIn(true);
         }
     }, []);
-
     const handleLogout = async () => {
-        localStorage.removeItem("userName");
-        localStorage.removeItem("token");
-        // Lấy callbackUrl từ biến môi trường
-        const callbackUrl = process.env.NEXTAUTH_URL || "http://46.250.224.140:4000/";
-
-        // Thực hiện đăng xuất với callbackUrl đúng
-        window.location.href = "/";
+        try {
+            // Xóa localStorage nếu cần
+            localStorage.removeItem("userName");
+            localStorage.removeItem("token");
+    
+            // Sử dụng signOut của NextAuth
+            await signOut({
+                callbackUrl: process.env.NEXTAUTH_URL || "https://phongtro247.net",
+                redirect: true
+            });
+            
+        } catch (error) {
+            console.error("Logout error:", error);
+            // Fallback nếu có lỗi
+            window.location.href = "/";
+        }
     };
 
     return (

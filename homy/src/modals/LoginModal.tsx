@@ -27,7 +27,7 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
 
    const handleGoogleSign = () => {
       signIn("google", {
-         callbackUrl: process.env.NEXTAUTH_URL
+         callbackUrl: "https://phongtro247.net"
       });
    }
    useEffect(() => {
