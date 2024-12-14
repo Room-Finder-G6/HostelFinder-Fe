@@ -9,14 +9,12 @@ const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_SECRET!,
       authorization: {
         params: {
-          prompt: "select_account", // Thay đổi từ "consent" sang "select_account"
-          access_type: "online",    // Thay đổi từ "offline" sang "online"
-          response_type: "code"
+          redirect_uri: process.env.NEXTAUTH_URL ? `${process.env.NEXTAUTH_URL}/api/auth/callback/google` : 'https://phongtro247.net/api/auth/callback/google'
         }
       }
     }),
-    
   ],
+  secret : process.env.NEXTAUTH_SECRET,
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
@@ -37,6 +35,21 @@ const authOptions: AuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
+const handler = NextAuth({
+  ...authOptions,
+  debug: true,
+  logger: {
+    error: (code, ...message) => {
+      console.error(code, message)
+    },
+    warn: (code, ...message) => {
+      console.warn(code, message)
+    },
+    debug: (code, ...message) => {
+      console.debug(code, message)
+    },
+  },
+})
+
 
 export { handler as GET, handler as POST };
