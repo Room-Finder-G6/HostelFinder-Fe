@@ -33,7 +33,8 @@ const useMemberships = () => {
         setLoading(true);
         try {
             const response = await apiInstance.get("/Membership/GetListMembership");
-            if (response.data && response.data.succeeded) {
+
+            if (response.status === 200 && response.data.succeeded) {
                 const transformedData = response.data.data.map((item: any) => ({
                     id: item.id,
                     name: item.name,
@@ -41,14 +42,13 @@ const useMemberships = () => {
                     price: item.price,
                     discount: item.discount || 0,
                     duration: item.duration,
-                    membershipServices: item.membershipServices.map((service: any) => ({
-                        serviceName: service.serviceName,
-                        maxPostsAllowed: service.maxPostsAllowed || 0,
-                        maxPushTopAllowed: service.maxPushTopAllowed || 0,
-                    })),
+                    // Chuyển từ đối tượng thành mảng để nhất quán với kiểu dữ liệu ban đầu
+                    membershipServices: item.membershipServices
+                        ? [item.membershipServices]
+                        : [],
                 }));
+
                 setMemberships(transformedData);
-                console.log("asas")
             } else {
                 setError("Không thể lấy dữ liệu membership.");
                 toast.error("Không thể lấy dữ liệu membership.");
@@ -56,11 +56,11 @@ const useMemberships = () => {
         } catch (err: any) {
             const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định.";
             toast.error(`Đã xảy ra lỗi khi kết nối với server: ${errorMessage}`);
-            console.error("Chi tiết lỗi:", err);
         } finally {
             setLoading(false);
         }
     };
+
 
     const buyMembership = async (membershipId: string) => {
         const userId = getUserIdFromToken();
