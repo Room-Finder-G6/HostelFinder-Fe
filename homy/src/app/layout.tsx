@@ -8,7 +8,7 @@ interface RootLayoutProps {
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
-  const isDev = process.env.NODE_ENV === 'development';
+  const isDev = process.env.NODE_ENV === 'production';
 
   return (
     <html lang="en" suppressHydrationWarning={isDev}>

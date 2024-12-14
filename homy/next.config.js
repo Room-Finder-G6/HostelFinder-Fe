@@ -3,6 +3,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     // Other Next.js configurations...
+    async rewrites() {
+        return [
+          {
+            source: '/api/auth/:path*',
+            destination: '/api/auth/:path*',
+          },
+        ]
+      },
     images: {
         remotePatterns: [
             {
