@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styles from "./EditMembershipForm.module.scss";
+import { toast } from "react-toastify"; // Import toast notifications
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 interface Membership {
     id: string;
     name: string;
     description: string;
     price: number;
-    duration: number;  // Duration should be a number
+    duration: number;
     membershipServices: {
-        id: string;
         serviceName: string;
         maxPushTopAllowed: number;
         maxPostsAllowed: number;
-    }[];
+    };
 }
 
 interface EditMembershipFormProps {
@@ -27,8 +28,12 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
         name: "",
         description: "",
         price: 0,
-        duration: 0,  // Initialize as number
-        membershipServices: [],
+        duration: 0,
+        membershipServices: {
+            serviceName: "",
+            maxPushTopAllowed: 0,
+            maxPostsAllowed: 0,
+        },
     });
 
     // Set initial form data when membership data is passed in
@@ -36,7 +41,11 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
         if (membership) {
             setFormData({
                 ...membership,
-                membershipServices: membership.membershipServices || [], // Handle services properly
+                membershipServices: membership.membershipServices || {
+                    serviceName: "",
+                    maxPushTopAllowed: 0,
+                    maxPostsAllowed: 0,
+                },
             });
         }
     }, [membership]);
@@ -44,180 +53,132 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
     // Handle input change for simple fields (name, description, price, duration)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+
         setFormData((prev) => ({
             ...prev,
             [name]: value,
         }));
     };
 
-    // Handle changes in service fields
-    const handleServiceChange = (index: number, field: string, value: string | number) => {
-        const updatedServices = [...formData.membershipServices];
-        updatedServices[index] = { ...updatedServices[index], [field]: value };
-        setFormData((prev) => ({
-            ...prev,
-            membershipServices: updatedServices,
-        }));
-    };
+    // Handle input change for membership service fields
+    const handleServiceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
 
-    // Add a new service entry
-    const handleAddService = () => {
         setFormData((prev) => ({
             ...prev,
-            membershipServices: [
+            membershipServices: {
                 ...prev.membershipServices,
-                {
-                    id: "", // Default empty id or generate new UUID
-                    serviceName: "",
-                    maxPushTopAllowed: 0,
-                    maxPostsAllowed: 0,
-                },
-            ],
-        }));
-    };
-
-    // Remove a service entry
-    const handleRemoveService = (index: number) => {
-        const updatedServices = formData.membershipServices.filter((_, i) => i !== index);
-        setFormData((prev) => ({
-            ...prev,
-            membershipServices: updatedServices,
+                [name]: name === "maxPushTopAllowed" || name === "maxPostsAllowed" ? Number(value) : value,
+            },
         }));
     };
 
     // Handle form submission
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData.id, formData); // Pass the updated form data to onSubmit
+
+        const updatedMembership = {
+            ...formData,
+            membershipServices: {
+                ...formData.membershipServices,
+                maxPushTopAllowed: Number(formData.membershipServices.maxPushTopAllowed),
+                maxPostsAllowed: Number(formData.membershipServices.maxPostsAllowed),
+            },
+        };
+
+        onSubmit(formData.id, updatedMembership);
+        toast.success("Cập nhật thành công!");
     };
 
     return (
-        <form onSubmit={handleSubmit} className="edit-membership-form">
-            <div style={{ marginBottom: "15px" }}>
-                <label htmlFor="name" style={{ display: "block", fontWeight: "bold" }}>
-                    Tên Gói Thành Viên:
-                </label>
+        
+        <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles["form-group"]}>
+                <label htmlFor="name" className={styles["form-label"]}>Name</label>
                 <input
-                    id="name"
                     type="text"
+                    id="name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        fontSize: "1rem",
-                        border: "1px solid #ccc",
-                        borderRadius: "4px",
-                    }}
+                    className={styles["form-control"]}
                 />
             </div>
 
-            <div className="form-group">
-                <label htmlFor="description">Miêu tả:</label>
+            <div className={styles["form-group"]}>
+                <label htmlFor="description" className={styles["form-label"]}>Description</label>
                 <textarea
                     id="description"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    className="form-control"
+                    className={styles["form-control"]}
                 />
             </div>
 
-            <div className="form-group">
-                <label htmlFor="price">Giá:</label>
+            <div className={styles["form-group"]}>
+                <label htmlFor="price" className={styles["form-label"]}>Price</label>
                 <input
-                    id="price"
                     type="number"
+                    id="price"
                     name="price"
                     value={formData.price}
                     onChange={handleChange}
-                    className="form-control"
+                    className={styles["form-control"]}
                 />
             </div>
 
-            <div className="form-group">
-                <label htmlFor="duration">Khoảng Thời Gian:</label>
+            <div className={styles["form-group"]}>
+                <label htmlFor="duration" className={styles["form-label"]}>Duration</label>
                 <input
+                    type="number"
                     id="duration"
-                    type="number"  // Changed to number type
                     name="duration"
                     value={formData.duration}
                     onChange={handleChange}
-                    className="form-control"
+                    className={styles["form-control"]}
                 />
             </div>
 
-            <div className="form-group">
-                <label>Dịch Vụ:</label>
-                {formData.membershipServices && formData.membershipServices.length > 0 ? (
-                    formData.membershipServices.map((service, index) => (
-                        <div key={index} className="service-group">
-                            <div style={{ marginBottom: "10px" }}>
-                                <input
-                                    type="text"
-                                    value={service.serviceName}
-                                    onChange={(e) =>
-                                        handleServiceChange(index, "serviceName", e.target.value)
-                                    }
-                                    className="form-control service-input"
-                                    placeholder="Tên dịch vụ"
-                                />
-                            </div>
-                            <div style={{ marginBottom: "10px" }}>
-                                <input
-                                    type="number"
-                                    value={service.maxPushTopAllowed}
-                                    onChange={(e) =>
-                                        handleServiceChange(index, "maxPushTopAllowed", Number(e.target.value))
-                                    }
-                                    className="form-control service-input"
-                                    placeholder="Số lần đẩy top"
-                                />
-                            </div>
-                            <div style={{ marginBottom: "10px" }}>
-                                <input
-                                    type="number"
-                                    value={service.maxPostsAllowed}
-                                    onChange={(e) =>
-                                        handleServiceChange(index, "maxPostsAllowed", Number(e.target.value))
-                                    }
-                                    className="form-control service-input"
-                                    placeholder="Số bài viết tối đa"
-                                />
-                            </div>
-                            <button
-                                type="button"
-                                className="btn btn-danger"
-                                onClick={() => handleRemoveService(index)}
-                                style={{ marginBottom: "10px" }}
-                            >
-                                Xóa Dịch Vụ
-                            </button>
-                        </div>
-                    ))
-                ) : (
-                    <p className="no-services">Không có dịch vụ</p>
-                )}
-
-                <button
-                    type="button"
-                    className="btn btn-success"
-                    onClick={handleAddService}
-                    style={{ marginBottom: "25px" }}
-                >
-                    Thêm Dịch Vụ
-                </button>
+            <div className={styles["form-group"]}>
+                <label htmlFor="serviceName" className={styles["form-label"]}>Service Name</label>
+                <input
+                    type="text"
+                    id="serviceName"
+                    name="serviceName"
+                    value={formData.membershipServices.serviceName}
+                    onChange={handleServiceChange}
+                    className={styles["form-control"]}
+                />
             </div>
 
-            <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onCancel}>
-                    Hủy
-                </button>
-                <button type="submit" className="btn btn-primary">
-                    Lưu
-                </button>
-             
+            <div className={styles["form-group"]}>
+                <label htmlFor="maxPushTopAllowed" className={styles["form-label"]}>Max Push Top Allowed</label>
+                <input
+                    type="number"
+                    id="maxPushTopAllowed"
+                    name="maxPushTopAllowed"
+                    value={formData.membershipServices.maxPushTopAllowed}
+                    onChange={handleServiceChange}
+                    className={styles["form-control"]}
+                />
+            </div>
+
+            <div className={styles["form-group"]}>
+                <label htmlFor="maxPostsAllowed" className={styles["form-label"]}>Max Posts Allowed</label>
+                <input
+                    type="number"
+                    id="maxPostsAllowed"
+                    name="maxPostsAllowed"
+                    value={formData.membershipServices.maxPostsAllowed}
+                    onChange={handleServiceChange}
+                    className={styles["form-control"]}
+                />
+            </div>
+
+            <div className={styles["form-actions"]}>
+                <button type="submit" className={`${styles.btn} ${styles["btn-primary"]}`}>Save</button>
+                <button type="button" onClick={onCancel} className={`${styles.btn} ${styles["btn-secondary"]}`}>Cancel</button>
             </div>
         </form>
     );
