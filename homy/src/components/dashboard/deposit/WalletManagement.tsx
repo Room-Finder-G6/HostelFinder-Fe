@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import { toast } from "react-toastify";
+import {useState, useEffect, useCallback} from "react";
+import {toast} from "react-toastify";
 import apiInstance from "@/utils/apiInstance";
-import { jwtDecode } from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 import Loading from "@/components/Loading";
 import './WalletManagement.css';
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
@@ -44,7 +44,7 @@ const WalletManagement = () => {
         try {
             const response = await apiInstance.get(`/users/${userId}`);
             if (response.data && response.data.data) {
-                const { fullName, walletBalance } = response.data.data;
+                const {fullName, walletBalance} = response.data.data;
                 setBalance(walletBalance);
                 setFullName(fullName);
             } else {
@@ -93,7 +93,9 @@ const WalletManagement = () => {
             });
 
             if (response.data.succeeded) {
-                toast.success("Nạp tiền yêu cầu thành công! Vui lòng hoàn tất thanh toán.");
+                setTimeout(() => {
+                    toast.success("Yêu cầu nạp tiền thành công! Vui lòng hoàn tất thanh toán.");
+                }, 2000);
 
                 // Lưu payment URL
                 const paymentUrl = response.data.data.paymentUrl;
@@ -121,12 +123,12 @@ const WalletManagement = () => {
     };
 
     if (isLoading) {
-        return <Loading />;
+        return <Loading/>;
     }
 
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="Quản lý ví" />
+            <DashboardHeaderTwo title="Quản lý ví"/>
             <div className="dashboard-container">
                 {fullName && (
                     <div className="user-name">
@@ -147,10 +149,14 @@ const WalletManagement = () => {
                     <div className="amount-selection">
                         <button className="amount-button" onClick={() => handleSelectAmount(10000)}>10,000 VND</button>
                         <button className="amount-button" onClick={() => handleSelectAmount(50000)}>50,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(100000)}>100,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(200000)}>200,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(500000)}>500,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(1000000)}>1,000,000 VND</button>
+                        <button className="amount-button" onClick={() => handleSelectAmount(100000)}>100,000 VND
+                        </button>
+                        <button className="amount-button" onClick={() => handleSelectAmount(200000)}>200,000 VND
+                        </button>
+                        <button className="amount-button" onClick={() => handleSelectAmount(500000)}>500,000 VND
+                        </button>
+                        <button className="amount-button" onClick={() => handleSelectAmount(1000000)}>1,000,000 VND
+                        </button>
                     </div>
 
                     <input
