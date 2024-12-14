@@ -53,7 +53,7 @@ const Property = () => {
                 <div className="position-relative">
                     <div className="title-one text-center text-lg-start mb-30 xl-mb-25 lg-mb-20 wow fadeInUp">
                         <h3 style={{fontFamily: 'Arial, sans-serif'}}>
-                            <span>Các bài đăng mới<Image src={titleShape} alt="" className="lazy-img"/></span>
+                            <span>Các bài đăng mới nhất<Image src={titleShape} alt="" className="lazy-img"/></span>
                         </h3>
                         <p className="fs-22 mt-xs" style={{fontFamily: 'Arial, sans-serif'}}>
                             Khám phá những nhà trọ mới nhất và nổi bật.
