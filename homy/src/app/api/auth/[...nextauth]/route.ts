@@ -25,12 +25,12 @@ const authOptions: AuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.idToken = token.id as string; 
-      }
-      return session;
-    },
+    // async session({ session, token }) {
+    //   if (session.user) {
+    //     session.user.idToken = token.id as string; 
+    //   }
+    //   return session;
+    // },
   },
 };
 
