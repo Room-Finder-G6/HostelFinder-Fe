@@ -1,33 +1,33 @@
 "use client"; // Dòng này cần có cho Next.js
 
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import apiInstance from "@/utils/apiInstance";
-import { getUserIdFromToken } from "@/utils/tokenUtils";
-import { toast } from "react-toastify";
-import { useRouter } from 'next/navigation';
+import {getUserIdFromToken} from "@/utils/tokenUtils";
+import {toast} from "react-toastify";
+import {useRouter} from 'next/navigation';
 
 interface MembershipService {
-  serviceName: string;
-  maxPostsAllowed: number;
-  maxPushTopAllowed: number;
+    serviceName: string;
+    maxPostsAllowed: number;
+    maxPushTopAllowed: number;
 }
 
 interface MembershipData {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  discount: number;
-  duration: number;
-  membershipServices: MembershipService[];
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    discount: number;
+    duration: number;
+    membershipServices: MembershipService[];
 }
 
 const useMemberships = () => {
-  const [memberships, setMemberships] = useState<MembershipData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]);
-  const router = useRouter();
+    const [memberships, setMemberships] = useState<MembershipData[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [ownedMemberships, setOwnedMemberships] = useState<string[]>([]);
+    const router = useRouter();
 
     const fetchMemberships = async () => {
         setLoading(true);
@@ -48,12 +48,15 @@ const useMemberships = () => {
                     })),
                 }));
                 setMemberships(transformedData);
+                console.log("asas")
             } else {
                 setError("Không thể lấy dữ liệu membership.");
                 toast.error("Không thể lấy dữ liệu membership.");
             }
         } catch (err: any) {
-            toast.error("Đã xảy ra lỗi khi kết nối với server.");
+            const errorMessage = err.response?.data?.message || err.message || "Lỗi không xác định.";
+            toast.error(`Đã xảy ra lỗi khi kết nối với server: ${errorMessage}`);
+            console.error("Chi tiết lỗi:", err);
         } finally {
             setLoading(false);
         }
@@ -62,27 +65,26 @@ const useMemberships = () => {
     const buyMembership = async (membershipId: string) => {
         const userId = getUserIdFromToken();
 
-    if (!userId) {
-      toast.error("Vui lòng đăng nhập trước khi mua gói thành viên.");
+        if (!userId) {
+            toast.error("Vui lòng đăng nhập trước khi mua gói thành viên.");
 
-      setTimeout(() => {
-        router.push('/');
-      }, 2000);
+            setTimeout(() => {
+                router.push('/');
+            }, 2000);
 
-      return;
-    }
+            return;
+        }
 
-    if (!membershipId) {
-        toast.error("Không có thông tin gói thành viên.");
-        return;
-    }
+        if (!membershipId) {
+            toast.error("Không có thông tin gói thành viên.");
+            return;
+        }
 
         try {
             console.log("User ID:", userId);
             console.log("Membership ID:", membershipId);
 
             const apiUrl = `/users/BuyMembership?userId=${userId}&membershipId=${membershipId}`;
-            console.log("API URL:", apiUrl);
 
             const response = await apiInstance.post(
                 apiUrl,
@@ -93,9 +95,6 @@ const useMemberships = () => {
                     },
                 }
             );
-
-            // Log phản hồi từ backend
-            console.log("API Response:", response.data);
 
             if (response.status === 200) {
                 setTimeout(() => {
