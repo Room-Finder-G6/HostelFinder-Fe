@@ -15,6 +15,7 @@ import { jwtDecode } from "jwt-decode";
 import MaintenanceModal from "./Add/MaintenanceModal";
 import { FaPlus } from "react-icons/fa";
 import Loading from "@/components/Loading";
+import EditMaintenanceModal from "@/components/dashboard/manage-maintenance/Edit/EditMaintenanceModal";
 
 interface JwtPayload {
     UserId: string;
@@ -32,6 +33,9 @@ const MainTenanceBody = () => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editRecord, setEditRecord] = useState<MaintenanceRecord | null>(null);
+    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
 
     // Lấy UserId từ token JWT
     const getUserIdFromToken = useCallback((): string | null => {
@@ -106,7 +110,6 @@ const MainTenanceBody = () => {
             }
         } catch (err) {
             console.error("Error fetching maintenance records:", err);
-            setError("Lỗi khi lấy danh sách maintenance records.");
         } finally {
             setLoading(false);
         }
@@ -168,6 +171,17 @@ const MainTenanceBody = () => {
         return option ? option.label : 'Không xác định';
     };
 
+    const handleEditClick = (recordId: string) => {
+        setSelectedRecordId(recordId);
+        setShowEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setSelectedRecordId(null);
+        setShowEditModal(false);
+    };
+
+
     return (
         <div className="dashboard-body">
             <div className="position-relative">
@@ -214,11 +228,7 @@ const MainTenanceBody = () => {
                 <div className="bg-white card-box p0 border-20">
                     <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                         {loading ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                                <Spinner animation="border" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </Spinner>
-                            </div>
+                            <Loading/>
                         ) : (
                             <Table className="saved-search-table" striped bordered hover>
                                 <thead>
@@ -235,7 +245,7 @@ const MainTenanceBody = () => {
                                 <tbody className="border-0">
                                     {maintenanceRecords.length > 0 ? (
                                         maintenanceRecords.map((record) => (
-                                            <tr key={record.hostelId + record.maintenanceDate}>
+                                            <tr key={record.id + 1}>
                                                 <td>
                                                     <Link href="#" className="property-name tran3s color-dark fw-500">
                                                         {record.roomName || "N/A"}
@@ -249,15 +259,17 @@ const MainTenanceBody = () => {
 
                                                 <td>
                                                     <div className="d-flex justify-content-end btns-group">
-                                                        {/* <ButtonToolbar onClick={() => handleViewClick(record.hostelId)}>
-                                                            <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                                        </ButtonToolbar> */}
-                                                        <ButtonToolbar className="ms-3" data-bs-toggle="tooltip" title="Delete">
+                                                        <ButtonToolbar className="ms-3" onClick={() => handleEditClick(record.id)} data-bs-toggle="tooltip" title="Chỉnh sửa">
+                                                            <i className="fa-regular fa-pen-to-square"></i>
+                                                        </ButtonToolbar>
+
+                                                        <ButtonToolbar className="ms-3" data-bs-toggle="tooltip" title="Xóa">
                                                             <i className="fa-regular fa-trash"></i>
                                                         </ButtonToolbar>
                                                     </div>
                                                 </td>
                                             </tr>
+
                                         ))
                                     ) : (
                                         <tr>
@@ -272,8 +284,6 @@ const MainTenanceBody = () => {
                     </div>
                 </div>
 
-
-
                 {/* MaintenanceModal component */}
                 <MaintenanceModal
                     show={showModal}
@@ -281,6 +291,18 @@ const MainTenanceBody = () => {
                     onSuccess={handleSuccess}
                     selectedHostel={selectedHostel}
                     reloadTable={reloadTable}
+                />
+
+                <EditMaintenanceModal
+                    show={showEditModal}
+                    onClose={handleCloseEditModal}
+                    onSuccess={() => {
+                        handleCloseEditModal();
+                        reloadTable();
+                    }}
+                    selectedHostel={selectedHostel}
+                    reloadTable={reloadTable}
+                    recordId={selectedRecordId}
                 />
 
                 {/* Phân trang với thiết kế mới */}
