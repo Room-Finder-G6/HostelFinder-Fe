@@ -12,11 +12,8 @@ const Profile: React.FC = () => {
    const handleLogout = async () => {
       localStorage.removeItem("userName");
       localStorage.removeItem("token");
-      await signOut({
-         redirect: false,
-      });
-      const callbackUrl = process.env.NEXTAUTH_URL || "/";
-      window.location.href = callbackUrl;
+
+      window.location.href = "/";
    };
 
    return (

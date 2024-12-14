@@ -8,12 +8,12 @@ import icon_1 from "@/assets/images/icon/icon_46.svg";
 import apiInstance from "@/utils/apiInstance";
 import HostelSelector from "../manage-room/HostelSelector";
 import { toast } from "react-toastify";
-import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner } from "react-bootstrap";
+import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { MdEmail } from 'react-icons/md';
 import { MaintenanceRecord, PagedResponse, SortDirection } from "@/models/maintenanceRecord";
 import { jwtDecode } from "jwt-decode";
 import MaintenanceModal from "./Add/MaintenanceModal";
-import { FaPlus } from "react-icons/fa";
+import { FaEye, FaPlus, FaTrash } from "react-icons/fa";
 import Loading from "@/components/Loading";
 
 interface JwtPayload {
@@ -168,6 +168,7 @@ const MainTenanceBody = () => {
         return option ? option.label : 'Không xác định';
     };
 
+
     return (
         <div className="dashboard-body">
             <div className="position-relative">
@@ -211,16 +212,14 @@ const MainTenanceBody = () => {
                     Thêm mới
                 </Button>
                 {/* Bảng hiển thị Maintenance Records */}
-                <div className="bg-white card-box p0 border-20">
+                <div className="bg-white card-box p-0 border-20">
                     <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                         {loading ? (
                             <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                                <Spinner animation="border" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </Spinner>
+                                <Spinner animation="border" variant="primary" />
                             </div>
                         ) : (
-                            <Table className="saved-search-table" striped bordered hover>
+                            <Table className="saved-search-table" hover={false}>
                                 <thead>
                                     <tr>
                                         <th scope="col">Tên phòng</th>
@@ -229,41 +228,50 @@ const MainTenanceBody = () => {
                                         <th scope="col">Ngày bảo trì</th>
                                         <th scope="col">Số tiền</th>
                                         <th scope="col">Loại</th>
-                                        <th scope="col">Hành động</th>
+                                        <th scope="col" className="text-end">Hành động</th>
                                     </tr>
                                 </thead>
-                                <tbody className="border-0">
+                                <tbody>
                                     {maintenanceRecords.length > 0 ? (
                                         maintenanceRecords.map((record) => (
                                             <tr key={record.hostelId + record.maintenanceDate}>
                                                 <td>
-                                                    <Link href="#" className="property-name tran3s color-dark fw-500">
+                                                    <span className="color-dark fw-500">
                                                         {record.roomName || "N/A"}
-                                                    </Link>
+                                                    </span>
                                                 </td>
                                                 <td>{record.title}</td>
                                                 <td>{record.description || "N/A"}</td>
                                                 <td>{new Date(record.maintenanceDate).toLocaleDateString()}</td>
-                                                <td>{record.cost.toLocaleString('vi-VN')} ₫</td>
-                                                <td>{getMaintenanceTypeLabel(record.maintenanceType)}</td>
-
-                                                <td>
-                                                    <div className="d-flex justify-content-end btns-group">
-                                                        {/* <ButtonToolbar onClick={() => handleViewClick(record.hostelId)}>
+                                                <td className="cost-cell">
+                                                    {record.cost.toLocaleString('vi-VN')} ₫
+                                                </td>
+                                                <td className="type-cell">{getMaintenanceTypeLabel(record.maintenanceType)}</td>
+                                                <td className="action-column">
+                                                    <div className="btns-group">
+                                                        <Button
+                                                            variant="link"
+                                                            className="p-0 me-3"
+                                                        // onClick={() => onViewDetails(record)}
+                                                        >
                                                             <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                                        </ButtonToolbar> */}
-                                                        <ButtonToolbar className="ms-3" data-bs-toggle="tooltip" title="Delete">
-                                                            <i className="fa-regular fa-trash"></i>
-                                                        </ButtonToolbar>
+                                                        </Button>
+                                                        <Button
+                                                            variant="link"
+                                                            className="p-0 btn-delete"
+                                                        // onClick={() => onDeleteRecord(record)}
+                                                        >
+                                                            <i className="fa-regular fa-trash" data-bs-toggle="tooltip" title="Xóa"></i>
+                                                        </Button>
                                                     </div>
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            {/* <td colSpan={7} className="text-center">
-                                                <Loading />
-                                            </td> */}
+                                            <td colSpan={7} className="table-empty-state">
+                                                Không có bản ghi bảo trì
+                                            </td>
                                         </tr>
                                     )}
                                 </tbody>
@@ -271,8 +279,6 @@ const MainTenanceBody = () => {
                         )}
                     </div>
                 </div>
-
-
 
                 {/* MaintenanceModal component */}
                 <MaintenanceModal
