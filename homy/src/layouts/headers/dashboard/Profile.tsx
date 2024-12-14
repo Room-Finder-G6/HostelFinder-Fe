@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import {useRouter} from "next/navigation"; // Sử dụng useRouter trong Next.js 14
+import { useRouter } from "next/navigation"; // Sử dụng useRouter trong Next.js 14
 import profileIcon_1 from "@/assets/images/dashboard/icon/icon_23.svg";
 import profileIcon_2 from "@/assets/images/dashboard/icon/icon_24.svg";
 import profileIcon_3 from "@/assets/images/dashboard/icon/icon_25.svg";
-import {signOut} from "next-auth/react";
-import {useEffect, useState} from "react";
+import { signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 const Profile: React.FC = () => {
     const router = useRouter();
@@ -22,13 +22,9 @@ const Profile: React.FC = () => {
             // Xóa localStorage nếu cần
             localStorage.removeItem("userName");
             localStorage.removeItem("token");
-    
-            // Sử dụng signOut của NextAuth
-            await signOut({
-                callbackUrl: process.env.NEXTAUTH_URL || "https://phongtro247.net",
-                redirect: true
-            });
-            
+
+            window.location.href = "/";
+
         } catch (error) {
             console.error("Logout error:", error);
             // Fallback nếu có lỗi
@@ -43,7 +39,7 @@ const Profile: React.FC = () => {
                     <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
                         <li>
                             <Link className="dropdown-item d-flex align-items-center" href="/dashboard/profile">
-                                <Image src={profileIcon_1} alt="Profile Icon" className="lazy-img"/>
+                                <Image src={profileIcon_1} alt="Profile Icon" className="lazy-img" />
                                 <span className="ms-2 ps-1">Hồ sơ</span>
                             </Link>
                         </li>
@@ -53,7 +49,7 @@ const Profile: React.FC = () => {
                                 className="dropdown-item d-flex align-items-center"
                                 onClick={handleLogout}
                             >
-                                <Image src={profileIcon_3} alt="Logout Icon" className="lazy-img"/>
+                                <Image src={profileIcon_3} alt="Logout Icon" className="lazy-img" />
                                 <span className="ms-2 ps-1">Đăng xuất</span>
                             </button>
                         </li>
@@ -62,8 +58,8 @@ const Profile: React.FC = () => {
             ) : (
                 <li>
                     <Link href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                          className="btn-one"><i className="fa-regular fa-lock"></i> <span
-                        style={{fontFamily: "'Fira Code', sans-serif"}}>Đăng nhập</span></Link>
+                        className="btn-one"><i className="fa-regular fa-lock"></i> <span
+                            style={{ fontFamily: "'Fira Code', sans-serif" }}>Đăng nhập</span></Link>
                 </li>
             )}
         </>

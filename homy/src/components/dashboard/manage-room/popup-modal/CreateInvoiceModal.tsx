@@ -358,7 +358,7 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
                     <Button
                         variant="primary"
                         type="submit"
-                        disabled={loading || !dataAvailable || totalAmount < 0}
+                        disabled={loading || !dataAvailable || totalAmount < 0 || invoiceExists}
                         className="btn-submit"
                     >
                         {loading ? (

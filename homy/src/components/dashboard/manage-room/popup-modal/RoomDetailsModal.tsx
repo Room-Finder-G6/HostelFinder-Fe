@@ -14,6 +14,7 @@ interface RoomDetailsModalProps {
 }
 
 interface RoomInfoDetail {
+    roomId: string;
     roomName: string;
     floor: number;
     maxRenters: number;
@@ -220,8 +221,17 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
         setShowUpdateModal(true);
     };
 
+    const onLeaveTenant = (tenantId: string, roomId: string) => {
+        console.log('Opening modal for tenant:', tenantId);
+        console.log("RoomId : ", roomId);
+        setSelectedTenantId(tenantId);
+    };
+
     const handleUpdateSuccess = () => {
-        // Refresh data or update UI
+        setShowUpdateModal(false);
+    };
+    const handleCloseUpdateSuccess = () => {
+        onClose();
     };
 
     return (
@@ -482,7 +492,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                                                     </button>
                                                                     <button
                                                                         className="btn btn-outline-danger btn-sm"
-                                                                    // onClick={() => onLeaveTenant(tenant.id)}
+                                                                        onClick={() => onLeaveTenant(tenant.tenantId, roomDetails.roomInfoDetail.roomId)}
                                                                     >
                                                                         <FaSignOutAlt className="me-1" />
                                                                         Rời phòng
@@ -909,7 +919,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
             <UpdateTenantModal
                 show={showUpdateModal}
                 tenantId={selectedTenantId}
-                onHide={() => setShowUpdateModal(false)}
+                onHide={handleCloseUpdateSuccess}
                 onSuccess={handleUpdateSuccess}
             />
         </Modal>

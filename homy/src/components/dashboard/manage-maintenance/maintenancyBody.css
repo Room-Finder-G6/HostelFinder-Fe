@@ -1,0 +1,101 @@
+.saved-search-table {
+    --bs-table-bg: white;
+    --bs-table-color: #333;
+    --bs-table-hover-bg: rgba(0, 123, 255, 0.05);
+    --bs-table-striped-bg: rgba(0, 0, 0, 0.04);
+    --bs-table-border-color: #e5e5e5;
+  }
+  
+  .saved-search-table thead {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .saved-search-table thead th {
+    color: #6c757d;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 15px;
+    vertical-align: middle;
+  }
+  
+  .saved-search-table tbody tr {
+    transition: background-color 0.2s ease;
+  }
+  
+  .saved-search-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+  
+  .saved-search-table tbody td {
+    padding: 12px 15px;
+    vertical-align: middle;
+    color: #212529;
+  }
+  
+  .saved-search-table .btns-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .saved-search-table .btns-group .btn-link {
+    color: #6c757d;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+  
+  .saved-search-table .btns-group .btn-link:hover {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .saved-search-table .btns-group .btn-link i {
+    font-size: 18px;
+  }
+  
+  .saved-search-table .btns-group .btn-link.btn-delete:hover {
+    color: #dc3545;
+  }
+  
+  /* Empty state styling */
+  .saved-search-table .table-empty-state {
+    text-align: center;
+    padding: 50px;
+    color: #6c757d;
+    font-size: 16px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .saved-search-table thead th {
+      font-size: 14px;
+      padding: 10px;
+    }
+    
+    .saved-search-table tbody td {
+      font-size: 14px;
+      padding: 10px;
+    }
+  }
+  
+  /* Action column specific styling */
+  .saved-search-table .action-column {
+    width: 120px;
+    text-align: right;
+  }
+  
+  /* Cost and type styling */
+  .saved-search-table .cost-cell {
+    font-weight: 600;
+    color: #28a745;
+  }
+  
+  .saved-search-table .type-cell {
+    font-weight: 500;
+    color: #007bff;
+  }
