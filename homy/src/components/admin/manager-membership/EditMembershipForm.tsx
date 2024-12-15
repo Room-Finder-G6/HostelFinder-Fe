@@ -41,14 +41,12 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
         if (membership) {
             setFormData({
                 ...membership,
-                membershipServices: membership.membershipServices || {
-                    serviceName: "",
-                    maxPushTopAllowed: 0,
-                    maxPostsAllowed: 0,
-                },
+                membershipServices: membership.membershipServices 
+             
             });
         }
     }, [membership]);
+    console.log("Received Membership Data:", membership);
 
     // Handle input change for simple fields (name, description, price, duration)
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -102,6 +100,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.name}
                     onChange={handleChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -113,6 +112,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.description}
                     onChange={handleChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -125,6 +125,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.price}
                     onChange={handleChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -137,6 +138,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.duration}
                     onChange={handleChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -149,6 +151,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.membershipServices.serviceName}
                     onChange={handleServiceChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -161,6 +164,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.membershipServices.maxPushTopAllowed}
                     onChange={handleServiceChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 
@@ -173,6 +177,7 @@ const EditMembershipForm: React.FC<EditMembershipFormProps> = ({ membership, onS
                     value={formData.membershipServices.maxPostsAllowed}
                     onChange={handleServiceChange}
                     className={styles["form-control"]}
+                    required
                 />
             </div>
 

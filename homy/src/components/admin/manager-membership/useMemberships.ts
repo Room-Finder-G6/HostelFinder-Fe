@@ -8,6 +8,11 @@ interface Membership {
     description: string;
     price: number;
     duration: string;
+    membershipServices: {
+        serviceName: string;
+        maxPushTopAllowed: number;
+        maxPostsAllowed: number;
+    };
 }
 
 const useMemberships = () => {
@@ -32,6 +37,7 @@ const useMemberships = () => {
                 description: membership.description,
                 price: membership.price,
                 duration: membership.duration,
+                membershipServices: membership.membershipServices,
             }));
 
             setMemberships(data || []);
@@ -102,7 +108,6 @@ const useMemberships = () => {
                 console.log('Update response:', response.data.Message); // Log thông điệp từ BE
                 toast.success(response.data.Message); // Hiển thị thông điệp từ BE
             } else {
-                toast.error('Error updating membership');
                 console.log('Update error response:', response.data.Message); // Log thông điệp lỗi từ BE
                 toast.error(response.data.Message); // Hiển thị thông điệp lỗi từ BE
             }
