@@ -67,7 +67,7 @@ const TenantManagement = () => {
     });
 
     // Hàm fetch danh sách tenants theo hostelId
-    const fetchTenants = async (hostelId: string, page: number, searchQuery: string,status: string) => {
+    const fetchTenants = async (hostelId: string, page: number, searchQuery: string, status: string) => {
         setLoading(true);
         try {
             const response = await apiInstance.get(
@@ -96,7 +96,7 @@ const TenantManagement = () => {
                 setFilteredTenants([]);
             }
             const totalRecords = response.data.totalRecords;
-                setTotalPages(Math.ceil(totalRecords / 10));
+            setTotalPages(Math.ceil(totalRecords / 10));
         } catch (error) {
             toast.error("Lỗi khi tải danh sách tenants.");
             setTenants([]); // Fallback to an empty array
@@ -104,9 +104,9 @@ const TenantManagement = () => {
         }
         setLoading(false);
     };
-   
-    
-    
+
+
+
     const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newStatus = e.target.value;
         setSelectedStatus(newStatus); // Cập nhật trạng thái đã chọn
@@ -139,7 +139,7 @@ const TenantManagement = () => {
         setPage(newPage); // Cập nhật số trang
         fetchTenants(selectedHostelId, newPage, searchQuery, selectedStatus); // Fetch dữ liệu với trạng thái và từ khóa
     };
-    
+
     // Hàm tìm kiếm phòng trọ theo tên
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const query = e.target.value;
@@ -147,7 +147,7 @@ const TenantManagement = () => {
         setPage(1); // Reset về trang đầu tiên
         fetchTenants(selectedHostelId, 1, query, selectedStatus); // Fetch dữ liệu với từ khóa mới
     };
-    
+
     // Hàm xử lý thay đổi nhà trọ
     const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const hostelId = e.target.value;
@@ -172,7 +172,6 @@ const TenantManagement = () => {
             if (response.data.succeeded) {
                 // Sau khi move out thành công, làm mới dữ liệu về phòng
                 toast.success("Thành viên đã chuyển ra khỏi phòng thành công.");
-
                 // Gọi lại API để lấy thông tin phòng cập nhật
                 const updatedRoom = await apiInstance.get(`/Rooms/${roomId}`);
                 console.log(updatedRoom.data);  // Kiểm tra dữ liệu trả về
@@ -181,7 +180,6 @@ const TenantManagement = () => {
                 const errorMessage = response.data.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
                 toast.error(errorMessage);
             }
-            window.location.reload();
         } catch (error: any) {
             console.error("Move out error:", error);
             const errorMessage = error.response?.data?.message || "Lỗi khi chuyển thành viên ra khỏi phòng.";
@@ -268,7 +266,7 @@ const TenantManagement = () => {
             if (response.status === 200) {
                 toast.success("Thêm thành viên thành công!");
                 toggleModal();
-                fetchTenants(selectedHostelId, page, searchQuery,selectedStatus); // Lấy lại danh sách tenants
+                fetchTenants(selectedHostelId, page, searchQuery, selectedStatus); // Lấy lại danh sách tenants
             } else {
                 toast.error(`Có lỗi khi thêm thành viên: ${response.data.message || 'Không xác định'}`);
             }
@@ -284,7 +282,7 @@ const TenantManagement = () => {
             fetchRooms(selectedHostelId);
         }
     }, [selectedHostelId, page, searchQuery, selectedStatus]); // Chạy lại khi một trong các tham số thay đổi
-    
+
 
     useEffect(() => {
         let updatedTenants = [...tenants]; // Sao chép mảng ban đầu
@@ -500,17 +498,17 @@ const TenantManagement = () => {
                                             <td style={{ color: tenant.status === 'Đã rời phòng' ? 'red' : 'black' }}>
                                                 {tenant.status}
                                             </td>
-
                                             <td>
-
-                                                <button
-                                                    className="btn btn-danger"
-                                                    onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
-                                                >
-                                                    Chuyển ra
-                                                </button>
-
+                                                {tenant.status !== 'Đã rời phòng' && (
+                                                    <button
+                                                        className="btn btn-danger"
+                                                        onClick={() => handleMoveOut(tenant.tenancyId, tenant.roomId)}
+                                                    >
+                                                        Chuyển ra
+                                                    </button>
+                                                )}
                                             </td>
+
                                         </tr>
                                     ))}
                                 </tbody>

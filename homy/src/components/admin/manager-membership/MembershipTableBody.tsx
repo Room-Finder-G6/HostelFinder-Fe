@@ -6,6 +6,11 @@ interface Membership {
     description: string;
     price: number;
     duration: string;
+    membershipServices: {
+        serviceName: string;
+        maxPushTopAllowed: number;
+        maxPostsAllowed: number;
+    };
 }
 
 interface MembershipTableBodyProps {
