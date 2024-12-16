@@ -3,12 +3,13 @@ import DashboardDeposit from '@/components/dashboard/deposit';
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
+    title: "Nạp tiền"
 };
 
 const index = () => {
     return (
         <Wrapper>
-            <DashboardDeposit/>
+            <DashboardDeposit />
         </Wrapper>
     );
 };

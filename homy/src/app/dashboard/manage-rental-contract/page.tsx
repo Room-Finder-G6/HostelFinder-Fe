@@ -2,7 +2,7 @@ import DashboardRentalContract from "@/components/dashboard/manage-rental-contra
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
-   title: "Quản lí hợp đồng"
+   title: "Quản lý hợp đồng"
 };
 const index = () => {
    return (
