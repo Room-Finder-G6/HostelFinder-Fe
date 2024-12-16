@@ -1,110 +1,200 @@
 "use client"
-import Image, { StaticImageData } from "next/image"
-import NiceSelect from "@/ui/NiceSelect"
-import RecentMessage from "./RecentMessage"
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo"
-import icon_1 from "@/assets/images/dashboard/icon/icon_12.svg"
-import icon_2 from "@/assets/images/dashboard/icon/icon_13.svg"
-import icon_3 from "@/assets/images/dashboard/icon/icon_14.svg"
-import icon_4 from "@/assets/images/dashboard/icon/icon_15.svg"
-import DashboardChart from "./DashboardChart"
 
-interface DataType {
-   id: number;
-   icon: StaticImageData;
-   title: string;
-   value: string;
-   class_name?: string;
+import { FC, useCallback, useEffect, useState } from 'react'
+import {
+   Building,
+   People,
+   DoorClosed,
+   FileText,
+   FileEarmarkText,
+   Newspaper,
+   IconProps
+} from 'react-bootstrap-icons'
+import apiInstance from '@/utils/apiInstance'
+import DashboardHeaderTwo from '@/layouts/headers/dashboard/DashboardHeaderTwo'
+import { jwtDecode } from 'jwt-decode'
+
+interface DashboardData {
+   hostelCount: number
+   tenantCount: number
+   roomCount: number
+   occupiedRoomCount: number
+   availableRoomCount: number
+   allInvoicesCount: number
+   unpaidInvoicesCount: number
+   expiringContractsCount: number
+   postCount: number
 }
 
-const dashboard_card_data: DataType[] = [
-   {
-      id: 1,
-      icon: icon_1,
-      title: "All Properties",
-      value: "1.7k+",
-      class_name: "skew-none",
-   },
-   {
-      id: 2,
-      icon: icon_2,
-      title: "Total Pending",
-      value: "03",
-   },
-   {
-      id: 3,
-      icon: icon_3,
-      title: "Total Views",
-      value: "4.8k",
-   },
-   {
-      id: 4,
-      icon: icon_4,
-      title: "Total Favourites",
-      value: "07",
-   },
-]
+interface DashboardCardProps {
+   icon: FC<IconProps>
+   title: string
+   value: string | number
+   subValue?: string
+   className?: string
+   iconColor?: string
+}
+interface JwtPayload {
+   UserId: string;
+}
+
+const DashboardCard: FC<DashboardCardProps> = ({
+   icon: Icon,
+   title,
+   value,
+   subValue,
+   className,
+   iconColor = "#0d6efd"
+}) => (
+   <div className={`card h-100 ${className ?? ''}`}>
+      <div className="card-body">
+         <div className="d-flex justify-content-between align-items-center">
+            <div>
+               <h6 className="card-subtitle mb-2 text-muted">{title}</h6>
+               <h2 className="card-title mb-0">{value}</h2>
+               {subValue && <small className="text-muted">{subValue}</small>}
+            </div>
+            <div className="p-3 bg-light rounded">
+               <Icon size={24} color={iconColor} />
+            </div>
+         </div>
+      </div>
+   </div>
+)
 
 const DashboardBody = () => {
+   const [data, setData] = useState<DashboardData | null>(null)
+   const [loading, setLoading] = useState(true)
+   const [error, setError] = useState<string | null>(null);
+   const [landlordId, setLandlordId] = useState<string | null>(null);
 
-   const selectHandler = (e: any) => { };
+   const getUserIdFromToken = useCallback(() => {
+      const token = window.localStorage.getItem("token")
+      if (!token) {
+         setError("Vui lòng đăng nhập để xem thông tin")
+         setLoading(false)
+         return null
+      }
+
+      try {
+         const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token)
+         if (!decodedToken.UserId) {
+            setError("Token không hợp lệ")
+            setLoading(false)
+            return null
+         }
+         return decodedToken.UserId
+      } catch (error) {
+         console.error("Error decoding token:", error)
+         setError("Lỗi xác thực người dùng")
+         setLoading(false)
+         return null
+      }
+   }, [])
+
+   useEffect(() => {
+      const userId = getUserIdFromToken()
+      if (userId) {
+         setLandlordId(userId)
+      }
+   }, [getUserIdFromToken])
+
+   useEffect(() => {
+      const fetchDashboardData = async () => {
+         // Chỉ gọi API khi có landlordId
+         if (!landlordId) return
+
+         try {
+            setLoading(true)
+            const response = await apiInstance.get<DashboardData>(
+               `/hostels/GetDashboardForLandlord?landlordId=${landlordId}`
+            )
+            setData(response.data)
+         } catch (err) {
+            if (err instanceof Error) {
+               setError(`Không thể tải dữ liệu dashboard: ${err.message}`)
+            } else {
+               setError('Không thể tải dữ liệu dashboard. Vui lòng thử lại sau.')
+            }
+         } finally {
+            setLoading(false)
+         }
+      }
+
+      fetchDashboardData()
+   }, [landlordId])
+   if (loading) {
+      return (
+         <div className="d-flex justify-content-center align-items-center p-5">
+            <div className="spinner-border text-primary" role="status">
+               <span className="visually-hidden">Đang tải...</span>
+            </div>
+         </div>
+      )
+   }
+
+   if (error) {
+      return (
+         <div className="alert alert-danger" role="alert">
+            {error}
+         </div>
+      )
+   }
+
+   if (!data) return null
+
+   const dashboardCards = [
+      {
+         icon: Building,
+         title: 'Tổng số nhà trọ',
+         value: data.hostelCount,
+         iconColor: '#0d6efd' // primary
+      },
+      {
+         icon: People,
+         title: 'Tổng số người thuê',
+         value: data.tenantCount,
+         iconColor: '#198754' // success
+      },
+      {
+         icon: DoorClosed,
+         title: 'Tổng số phòng',
+         value: data.roomCount,
+         subValue: `${data.occupiedRoomCount} đã thuê - ${data.availableRoomCount} trống`,
+         iconColor: '#6c757d' // secondary
+      },
+      {
+         icon: FileText,
+         title: 'Hóa đơn chưa thanh toán',
+         value: data.unpaidInvoicesCount,
+         subValue: `${data.allInvoicesCount} tổng hóa đơn`,
+         iconColor: '#dc3545' // danger
+      },
+      {
+         icon: FileEarmarkText,
+         title: 'Hợp đồng sắp hết hạn',
+         value: data.expiringContractsCount,
+         iconColor: '#ffc107' // warning
+      },
+      {
+         icon: Newspaper,
+         title: 'Tổng số bài đăng',
+         value: data.postCount,
+         iconColor: '#0dcaf0' // info
+      }
+   ]
 
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Dashboard" />
-
-            <h2 className="main-title d-block d-lg-none">Dashboard</h2>
-            <div className="bg-white border-20">
-               <div className="row">
-                  {dashboard_card_data.map((item) => (
-                     <div key={item.id} className="col-lg-3 col-6">
-                        <div className={`dash-card-one bg-white border-30 position-relative mb-15 ${item.class_name}`}>
-                           <div className="d-sm-flex align-items-center justify-content-between">
-                              <div className="icon rounded-circle d-flex align-items-center justify-content-center order-sm-1"><Image src={item.icon} alt="" className="lazy-img" /></div>
-                              <div className="order-sm-0">
-                                 <span>{item.title}</span>
-                                 <div className="value fw-500">{item.value}</div>
-                              </div>
-                           </div>
-                        </div>
+            <DashboardHeaderTwo title="Trang chủ" />
+            <div className="container-fluid py-4">
+               <div className="row g-4">
+                  {dashboardCards.map((card, index) => (
+                     <div key={index} className="col-lg-4 col-md-6">
+                        <DashboardCard {...card} />
                      </div>
                   ))}
-               </div>
-            </div>
-
-            <div className="row gx-xxl-5 d-flex pt-15 lg-pt-10">
-               <div className="col-xl-7 col-lg-6 d-flex flex-column">
-                  <div className="user-activity-chart bg-white border-20 mt-30 h-100">
-                     <div className="d-flex align-items-center justify-content-between plr">
-                        <h5 className="dash-title-two">Property View</h5>
-                        <div className="short-filter d-flex align-items-center">
-                           <div className="fs-16 me-2">Short by:</div>
-                           <NiceSelect className="nice-select fw-normal"
-                              options={[
-                                 { value: "1", text: "Weekly" },
-                                 { value: "2", text: "Daily" },
-                                 { value: "3", text: "Monthly" },
-                              ]}
-                              defaultCurrent={0}
-                              onChange={selectHandler}
-                              name=""
-                              placeholder="" />
-                        </div>
-                     </div>
-                     <div className="plr mt-50">
-                        <div className="chart-wrapper">
-                           <DashboardChart />
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="col-xl-5 col-lg-6 d-flex">
-                  <div className="recent-job-tab bg-white border-20 mt-30 plr w-100">
-                     <h5 className="dash-title-two">Recent Message</h5>
-                     <RecentMessage />
-                  </div>
                </div>
             </div>
          </div>
