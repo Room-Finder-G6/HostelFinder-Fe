@@ -7,7 +7,7 @@ import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_43.svg";
 import dashboardIcon_2 from "@/assets/images/dashboard/icon/icon_11.svg";
 import Authored from "@/layouts/headers/right-header/Authored";
 
-const AdminHeaderTwo = ({title}:any) => {
+const AdminHeaderTwo = ({ title }: any) => {
 
    const [isActive, setIsActive] = useState<boolean>(false);
 
@@ -30,7 +30,7 @@ const AdminHeaderTwo = ({title}:any) => {
                   </button>
                   <Notification />
                </div>
-             <Authored />
+               <Authored />
             </div>
          </header>
          <AdminHeader isActive={isActive} setIsActive={setIsActive} />

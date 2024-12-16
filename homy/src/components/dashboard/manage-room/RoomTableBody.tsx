@@ -174,6 +174,10 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         setSelectedRoomId('');
     };
 
+    const handleSuccessInformationRoom = () => {
+        setRefreshRooms(prev => prev + 1);
+    };
+
     // Render loading, error, or rooms
     if (loading) {
         return (
@@ -301,6 +305,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 isOpen={isRoomDetailsModalOpen}
                 onClose={handleCloseRoomDetailsModal}
                 roomId={roomDetailsId}
+                onSuccess={handleSuccessInformationRoom}
             />
             <CreateInvoiceModal
                 isOpen={isInvoiceModalOpen}

@@ -337,7 +337,7 @@ const RoomManagement = () => {
                      </div>
                      Bảng giá dịch vụ
                   </button>
-                  <button
+                  {/* <button
                      className="btn btn-success btn-sm d-flex align-items-center"
                      onClick={toggleUpdateModal}
                   >
@@ -348,7 +348,7 @@ const RoomManagement = () => {
                         <RxUpdate size={14} />
                      </div>
                      Cập nhật thông tin
-                  </button>
+                  </button> */}
                </div>
             </div>
 
@@ -388,7 +388,7 @@ const RoomManagement = () => {
                            <th scope="col"></th>
                         </tr>
                      </thead>
-                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} refresh={refreshRooms} setRefreshRooms={setRefreshRooms}  />
+                     <RoomTableBody selectedHostel={selectedHostel} selectedFloor={selectedFloor} refresh={refreshRooms} setRefreshRooms={setRefreshRooms} />
                   </table>
                </div>
             </div>
