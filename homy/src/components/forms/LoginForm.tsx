@@ -59,7 +59,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         if (responseData.role === "User") {
           window.location.href = '/';
         } else if (responseData.role === "Landlord") {
-          router.push("/dashboard/manage-hostels");
+          router.push("/dashboard/reports");
         }
         else if (responseData.role === "Admin") {
           router.push("/admin/admin-index");

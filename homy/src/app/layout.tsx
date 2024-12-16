@@ -18,7 +18,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <meta property="og:site_name" content="Homy" />
         <meta property="og:url" content="https://creativegigstf.com" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Homy - Real Estate React Next js Template" />
+        <meta property="og:title" content="Hostel Finder" />
         <meta name='og:image' content='images/assets/ogg.png' />
         {/* Các thẻ meta khác */}
         <link rel="icon" href="/favicon.png" sizes="any" />
