@@ -14,7 +14,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" suppressHydrationWarning={isDev}>
       <head>
         <meta name="keywords" content="Real estate, Property sale, Property buy" />
-        <meta name="description" content="Homy is a beautiful website template designed for Real Estate Agency." />
+        <meta name="description" content="Hostel Finder là nền tảng tìm trọ và quản lý trọ trực tuyến." />
         <meta property="og:site_name" content="Homy" />
         <meta property="og:url" content="https://creativegigstf.com" />
         <meta property="og:type" content="website" />
