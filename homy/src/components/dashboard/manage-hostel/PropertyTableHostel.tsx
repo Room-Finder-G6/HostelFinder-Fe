@@ -181,8 +181,8 @@ const PropertyTableHostel = ({
     <>
       <DeleteModal
         show={showModal}
-        title="Confirm Deletion"
-        message="Are you sure you want to delete this hostel? All data will be lost."
+        title="Xác nhận xóa"
+        message="Bạn có chắc chắn muốn xóa nhà trọ này không"
         onConfirm={() => {
           if (deleteId) handleDelete(deleteId);
           closeDeleteModal();
