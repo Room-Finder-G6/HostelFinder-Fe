@@ -331,7 +331,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                 </li>
                                 <li className="plr bottom-line">
                                     <Link href="/dashboard/manage-tenant"
-                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center mb-5 ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3}
                                             alt="Reviews"/>
@@ -339,7 +339,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                     </Link>
                                 </li>
 
-                                <li className="pt-20">
+                                {/*<li className="pt-20">
                                     <div className="nav-title">Tìm người ở ghép</div>
                                 </li>
                                 <li className="plr">
@@ -348,7 +348,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({isActive, setIsA
                                         <i className="bi bi-card-text"></i>
                                         <span>Đăng bài ở ghép</span>
                                     </Link>
-                                </li>
+                                </li>*/}
                             </>
                         )}
                     </ul>
