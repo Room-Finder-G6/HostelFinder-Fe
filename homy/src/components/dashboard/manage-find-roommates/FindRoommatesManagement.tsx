@@ -8,6 +8,8 @@ import useStorieByUser from "./useStorie";
 import StoriePostsBody from "./StorieTableBodyPost";
 import DeleteModal from "@/modals/DeleteModal";
 import apiInstance from "@/utils/apiInstance";
+import { Alert, Button, Card, Col, Container, Row } from "react-bootstrap";
+import { FaRocket, FaTools } from "react-icons/fa";
 
 const FindRoommatesManagement = () => {
     const { posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser } = useStorieByUser();
@@ -37,7 +39,7 @@ const FindRoommatesManagement = () => {
                 },
             });
 
-           
+
             alert("Xóa bài viết thành công!");
             await fetchPostsByUser(pageIndex, sortOption);
 
@@ -82,68 +84,62 @@ const FindRoommatesManagement = () => {
         <div className="dashboard-body">
             <div className="position-relative">
                 <DashboardHeaderTwo title="Bài đăng tìm ở ghép của tôi" />
-                <div className="d-sm-flex align-items-center justify-content-between mb-25">
-                    <div className="short-filter d-flex align-items-center me-3">
-                        <div className="fs-16 me-2">Sắp xếp theo:</div>
-                        <select
-                            className="nice-select"
-                            value={sortOption}
-                            onChange={selectHandler}
-                        >
-                            <option value="1">Mới nhất</option>
-                            <option value="2">Cũ nhất</option>
-                        </select>
-
-                    </div>
-
-                    <div className="d-none d-md-inline-block ms-auto">
-                        <Link href="/dashboard/create-post-roommates" className="btn-two">
-                            <span>Thêm bài đăng</span>
-                        </Link>
-                    </div>
-                </div>
-
-                <div className="bg-white card-box p-4 border-20">
-                    <div className="table-responsive">
-                        <table className="table property-list-table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Tiêu đề</th>
-                                    <th scope="col">Ngày Tạo</th>
-                                    <th scope="col">Trạng thái</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <StoriePostsBody posts={sortedPosts} loading={loading} onDeleteClick={handleDeleteClick} />
-                        </table>
-                    </div>
+                <div className="feature-coming-soon">
+                    <Container className="d-flex align-items-center justify-content-center min-vh-100">
+                        <Row>
+                            <Col>
+                                <Card className="text-center bg-transparent border-0">
+                                    <Card.Body>
+                                        <FaRocket size={70} className="mb-4 text-white" />
+                                        <Card.Title className="text-white">Tính Năng Sắp Ra Mắt</Card.Title>
+                                        <Card.Text className="text-white-75 mb-4">
+                                            Chúng tôi đang hoàn thiện tính năng này để mang đến trải nghiệm tốt nhất cho bạn. Hãy chờ đợi phiên bản tiếp theo!
+                                        </Card.Text>
+                                        <Button variant="primary" className="btn-gradient">
+                                            Đăng Ký Nhận Thông Báo
+                                        </Button>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        </Row>
+                    </Container>
                 </div>
             </div>
-
-            <ul className="pagination-one d-flex align-items-center justify-content-center style-none pt-40">
-                {[...Array(totalPages)].map((_, index) => (
-                    <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
-                        <Link href="#" onClick={() => setPageIndex(index + 1)}>
-                            {index + 1}
-                        </Link>
-                    </li>
-                ))}
-                {totalPages > 1 && (
-                    <li className="ms-2">
-                        <Link href="#" onClick={() => setPageIndex(totalPages)}>
-                            Last <Image src={icon_1} alt="" className="ms-2" />
-                        </Link>
-                    </li>
-                )}
-            </ul>
-
-            <DeleteModal
-                show={showDeleteModal}
-                title="Xác nhận xóa"
-                message="Bạn có chắc chắn muốn xóa bài viết này không?"
-                onConfirm={handleDeletePost}
-                onCancel={() => setShowDeleteModal(false)}
-            />
+            <style jsx>{`
+            .feature-coming-soon {
+                background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');
+                background-size: cover;
+                background-position: center;
+                padding: 100px 0;
+                position: relative;
+                color: white;
+              }
+              
+              .feature-coming-soon::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+              }
+              
+              .feature-coming-soon .container {
+                position: relative;
+                z-index: 1;
+              }
+              
+              .btn-gradient {
+                background: linear-gradient(45deg, #6a11cb, #2575fc);
+                border: none;
+                transition: background 0.3s ease;
+              }
+              
+              .btn-gradient:hover {
+                background: linear-gradient(45deg, #2575fc, #6a11cb);
+              }
+             `}</style>
         </div>
     );
 };
