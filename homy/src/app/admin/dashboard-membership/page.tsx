@@ -2,7 +2,7 @@ import DashboardMembership from "@/components/admin/dashboard-membership";
 import Wrapper from "@/layouts/Wrapper";
 
 export const metadata = {
-   title: "Quản lí phòng trọ",
+   title: "Quản lý phòng trọ",
 };
 const index = () => {
    return (

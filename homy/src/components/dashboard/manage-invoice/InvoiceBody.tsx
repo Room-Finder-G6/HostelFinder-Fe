@@ -13,6 +13,8 @@ import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner, Badge 
 import { MdEmail } from 'react-icons/md';
 import Loading from "@/components/Loading";
 import { FaEye, FaFileInvoiceDollar, FaTrashAlt } from "react-icons/fa";
+import DeleteModal from "@/modals/DeleteModal";
+import { useRouter } from "next/navigation";
 
 interface Invoice {
    id: string;
@@ -56,11 +58,15 @@ const InvoiceBody = () => {
    const [formOfTransfer, setFormOfTransfer] = useState<string>("");
    const [dateOfSubmit, setDateOfSubmit] = useState<string>("");
    const [loading, setLoading] = useState<boolean>(false);
+   const [showDeleteModal, setShowDeleteModal] = useState(false);
+   const [invoiceToDelete, setInvoiceToDelete] = useState<string>("");
+   const router = useRouter();
 
    // State mới cho việc gửi email
    const [sendingEmail, setSendingEmail] = useState(false);
    const [emailMessage, setEmailMessage] = useState(null);
    const [emailError, setEmailError] = useState(null);
+
 
    const getUserIdFromToken = useCallback((): string | null => {
       const token = window.localStorage.getItem("token");
@@ -159,6 +165,31 @@ const InvoiceBody = () => {
       fetchInvoiceDetails(invoiceId);
    };
 
+   const handleOpenDeleteModal = (invoiceId: string) => {
+      setInvoiceToDelete(invoiceId);
+      setShowDeleteModal(true);
+   };
+
+   const handleDelete = async () => {
+      try {
+         const response = await apiInstance.delete(`/invoices/${invoiceToDelete}`);
+         toast.success(response.data.message);
+         console.log('Invoice deleted:', response.data);
+         setTimeout(() => {
+            window.location.reload();
+         }, 2000);
+
+      } catch (error) {
+         console.error('Error deleting invoice:', error);
+      } finally {
+         setShowDeleteModal(false);
+      }
+   };
+   const handleCancelDelete = () => {
+      setShowDeleteModal(false);
+   };
+
+
    const handlePaymentSubmit = async () => {
       if (amountPaid <= 0 || !formOfTransfer || !dateOfSubmit) {
          toast.warning("Vui lòng nhập đủ thông tin thanh toán");
@@ -215,7 +246,7 @@ const InvoiceBody = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Quản lí hóa đơn" />
+            <DashboardHeaderTwo title="Quản lý hóa đơn" />
             <h2 className="main-title d-block d-lg-none">Quản lí hóa đơn</h2>
 
             {/* Chọn nhà trọ */}
@@ -305,6 +336,8 @@ const InvoiceBody = () => {
                                     <button
                                        className="btn btn-icon btn-light ms-2"
                                        title="Xóa hóa đơn"
+                                       disabled={invoice.isPaid}
+                                       onClick={() => handleOpenDeleteModal(invoice.id)}
                                     >
                                        <FaTrashAlt className="text-danger" />
                                     </button>
@@ -593,6 +626,13 @@ const InvoiceBody = () => {
                   </Button>
                </Modal.Footer>
             </Modal>
+            <DeleteModal
+               show={showDeleteModal}
+               title="Xóa hóa đơn"
+               message="Bạn có chắc chắn muốn xóa hóa đơn này không?"
+               onConfirm={handleDelete}
+               onCancel={handleCancelDelete}
+            />
 
             {/* Phân trang với thiết kế mới */}
             <ul style={{ marginLeft: "15px" }} className="pagination-one d-flex align-items-center style-none pt-40">
