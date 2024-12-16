@@ -6,11 +6,13 @@ import { toast } from "react-toastify";
 import Loading from "@/components/Loading";
 import "./css/RoomDetailsModal.css"
 import UpdateTenantModal from "./UpdateTenantModal";
+import { useRouter } from "next/navigation";
 // import DatePicker from "react-datepicker";
 interface RoomDetailsModalProps {
     isOpen: boolean;
     onClose: () => void;
     roomId: string;
+    onSuccess: () => void;
 }
 
 interface RoomInfoDetail {
@@ -81,7 +83,7 @@ interface RoomDetailsData {
     roomRepairHostory: RoomRepairHistory | null;
 }
 
-const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, roomId }) => {
+const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, roomId, onSuccess }) => {
     const [roomDetails, setRoomDetails] = useState<RoomDetailsData | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -92,6 +94,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
     const [newEndDate, setNewEndDate] = useState<Date | null>(null);
     const [showUpdateModal, setShowUpdateModal] = useState(false);
     const [selectedTenantId, setSelectedTenantId] = useState<string>('');
+    const route = useRouter();
     useEffect(() => {
         if (isOpen && roomId) {
             fetchRoomDetails();
@@ -166,6 +169,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
             if (response.status === 200 && response.data.succeeded) {
                 toast.success(response.data.message, { position: "top-center" });
                 fetchRoomDetails();
+                onSuccess();
             }
         } catch (error: any) {
             toast.error("Có lỗi xảy ra khi chấm dứt hợp đồng", { position: "top-center" });
