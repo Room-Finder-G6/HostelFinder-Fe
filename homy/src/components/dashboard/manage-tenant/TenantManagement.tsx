@@ -26,6 +26,7 @@ interface Tenant {
     email: string;
     phone: string;
     moveInDate: string;
+    moveOutDate: string;
     status: string;
     province: string;
     district: string;
@@ -475,6 +476,7 @@ const TenantManagement = () => {
                                         <th>Số điện thoại</th>
                                         <th>Phòng</th>
                                         <th>Ngày vào</th>
+                                        <th>Ngày rời phòng</th>
                                         <th>Trạng thái</th>
                                         <th>Hành động</th> {/* Cột mới cho nút Move Out */}
                                     </tr>
@@ -495,6 +497,7 @@ const TenantManagement = () => {
                                             <td>{tenant.phone}</td>
                                             <td>{tenant.roomName}</td>
                                             <td>{tenant.moveInDate}</td>
+                                            <td>{tenant.moveOutDate}</td>
                                             <td style={{ color: tenant.status === 'Đã rời phòng' ? 'red' : 'black' }}>
                                                 {tenant.status}
                                             </td>

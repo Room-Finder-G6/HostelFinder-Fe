@@ -270,6 +270,10 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                     <div className="nav-title">Dành cho hội viên</div>
                                 </li>
                                 <li className="plr">
+                                    <Link href="/dashboard/dashboard-index" className={`d-flex w-100 align-items-center ${pathname === '/dashboard/dashboard-index' ? 'active' : ''}`}>
+                                        <Image src={pathname === '/dashboard/dashboard-index' ? dashboardIconActive_1 : dashboardIcon_1} alt="Dashboard" />
+                                        <span>Thông tin chung</span>
+                                    </Link>
                                     <Link href="/dashboard/reports"
                                         className={`d-flex w-100 align-items-center ${pathname === '/dashboard/reports' ? 'active' : ''}`}>
                                         <Image
