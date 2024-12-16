@@ -1,10 +1,9 @@
-import {useState, useEffect, useCallback} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {toast} from "react-toastify";
+import {Wallet, CreditCard, ArrowUpCircle} from "lucide-react";
 import apiInstance from "@/utils/apiInstance";
 import {jwtDecode} from "jwt-decode";
 import Loading from "@/components/Loading";
-import './WalletManagement.css';
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 
 interface JwtPayload {
     UserId: string;
@@ -85,7 +84,6 @@ const WalletManagement = () => {
             formData.append('UserId', userId ?? '');
             formData.append('Amount', depositAmount.toString());
 
-            // Gửi yêu cầu nạp tiền
             const response = await apiInstance.post(`/Membership/Deposit`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -97,11 +95,8 @@ const WalletManagement = () => {
                     toast.success("Yêu cầu nạp tiền thành công! Vui lòng hoàn tất thanh toán.");
                 }, 2000);
 
-                // Lưu payment URL
                 const paymentUrl = response.data.data.paymentUrl;
                 setPaymentUrl(paymentUrl);
-
-                // Chuyển hướng người dùng đến trang thanh toán ngay lập tức
                 window.location.href = paymentUrl;
             } else {
                 toast.error(response.data.message || "Nạp tiền thất bại.");
@@ -123,57 +118,116 @@ const WalletManagement = () => {
     };
 
     const handleDepositInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value.replace(/\D/g, ""); // Chỉ cho phép nhập số
+        const value = e.target.value.replace(/\D/g, "");
         setDepositAmount(Number(value));
     };
-
 
     if (isLoading) {
         return <Loading/>;
     }
 
+    const predefinedAmounts = [
+        {value: 10000, label: "10,000"},
+        {value: 50000, label: "50,000"},
+        {value: 100000, label: "100,000"},
+        {value: 200000, label: "200,000"},
+        {value: 500000, label: "500,000"},
+        {value: 1000000, label: "1,000,000"}
+    ];
+
     return (
         <div className="dashboard-body">
-            <DashboardHeaderTwo title="Quản lý ví"/>
-            <div className="dashboard-container">
+            <div className="container py-4">
+                {/* Welcome Card */}
                 {fullName && (
-                    <div className="user-name">
-                        <h4>Chào mừng, {fullName}!</h4>
+                    <div className="card mb-4 bg-success bg-opacity-75 text-white">
+                        <div className="card-body">
+                            <div className="d-flex align-items-center gap-3">
+                                <Wallet className="fs-1"/>
+                                <div>
+                                    <p className="mb-0">Xin chào</p>
+                                    <h2 className="mb-0">{fullName}</h2>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 )}
-                {error && <div className="error-message">{error}</div>}
 
-                <div className="wallet-card">
-                    <h3 className="wallet-header">Số dư tài khoản</h3>
-                    <div className="wallet-balance">
-                        <p>{balance !== null ? `${formatCurrency(balance)} VND` : "Đang tải..."}</p>
+                {/* Balance Card */}
+                <div className="card mb-4">
+                    <div className="card-header bg-white">
+                        <h5 className="card-title mb-0">Số dư tài khoản</h5>
+                    </div>
+                    <div className="card-body">
+                        <div className="bg-light p-4 rounded">
+                            <div className="d-flex justify-content-between align-items-center">
+                                <div className="d-flex align-items-center gap-2">
+                                    <CreditCard className="text-success"/>
+                                    <span>Tổng số dư</span>
+                                </div>
+                                <span className="fs-4 fw-bold text-success">
+                                  {balance !== null ? `${formatCurrency(balance)} VND` : "Đang tải..."}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="deposit-card">
-                    <h4 className="deposit-header">Nạp tiền vào tài khoản</h4>
-                    <div className="amount-selection">
-                        <button className="amount-button" onClick={() => handleSelectAmount(10000)}>10,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(50000)}>50,000 VND</button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(100000)}>100,000 VND
-                        </button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(200000)}>200,000 VND
-                        </button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(500000)}>500,000 VND
-                        </button>
-                        <button className="amount-button" onClick={() => handleSelectAmount(1000000)}>1,000,000 VND
-                        </button>
+                {/* Deposit Card */}
+                <div className="card">
+                    <div className="card-header bg-white">
+                        <h5 className="card-title mb-0 d-flex align-items-center gap-2">
+                            <ArrowUpCircle className="text-success"/>
+                            <span>Nạp tiền vào tài khoản</span>
+                        </h5>
                     </div>
+                    <div className="card-body">
+                        {/* Amount Selection Grid */}
+                        <div className="row g-3 mb-4">
+                            {predefinedAmounts.map((amount) => (
+                                <div key={amount.value} className="col-6 col-md-4">
+                                    <button
+                                        onClick={() => handleSelectAmount(amount.value)}
+                                        className={`btn w-100 ${
+                                            depositAmount === amount.value
+                                                ? 'btn-success'
+                                                : 'btn-outline-success'
+                                        }`}
+                                    >
+                                        {amount.label} VND
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
 
-                    <input
-                        className="deposit-input"
-                        type="text"
-                        value={depositAmount ? depositAmount.toLocaleString("vi-VN") : ""}
-                        onChange={handleDepositInputChange}
-                        placeholder="Số tiền muốn nạp"
-                    />
+                        {/* Custom Amount Input */}
+                        <div className="mb-4">
+                            <div className="d-flex justify-content-center">
+                                <input
+                                    type="text"
+                                    value={depositAmount ? depositAmount.toLocaleString("vi-VN") : ""}
+                                    onChange={handleDepositInputChange}
+                                    placeholder="Nhập số tiền muốn nạp"
+                                    className="form-control form-control-lg mb-3 w-50 text-center"
+                                />
+                            </div>
 
-                    <button className="deposit-button" onClick={handleDeposit}>Nạp tiền</button>
+                            <div className="d-flex justify-content-center">
+                                <button
+                                    onClick={handleDeposit}
+                                    className="btn btn-success btn-lg w-25"
+                                >
+                                    Xác nhận nạp tiền
+                                </button>
+                            </div>
+                        </div>
+
+                        {error && (
+                            <div className="alert alert-danger">
+                                {error}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
