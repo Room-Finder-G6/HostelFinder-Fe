@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Dropdown, Table } from 'react-bootstrap';
-import { FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash } from 'react-icons/fa';
-import { TfiWrite } from 'react-icons/tfi';
-import { toast } from "react-toastify";
+import React, {useEffect, useState} from 'react';
+import {Dropdown, Table} from 'react-bootstrap';
+import {FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash} from 'react-icons/fa';
+import {TfiWrite} from 'react-icons/tfi';
+import {toast} from "react-toastify";
 import apiInstance from '@/utils/apiInstance';
 import Loading from '@/components/Loading';
 import CreateContractModal from './popup-modal/CreateContractModal';
@@ -11,6 +11,8 @@ import CreateInvoiceModal from './popup-modal/CreateInvoiceModal';
 import MeterReadingForm from './popup-modal/MeterReadingModal';
 import EditRoomModal from './popup-modal/EditRoomModal';
 import "./popup-modal/css/RoomDetailsModal.css"
+import DeleteModal from "@/modals/DeleteModal";
+
 interface Room {
     id: string;
     roomName: string;
@@ -30,7 +32,7 @@ interface RoomTableBodyProps {
     setRefreshRooms: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh, setRefreshRooms }) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFloor, refresh, setRefreshRooms}) => {
     // State hooks
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -43,6 +45,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     const [invoiceRoomId, setInvoiceRoomId] = useState<string>('');
     const [isMeterReadingModalOpen, setIsMeterReadingModalOpen] = useState<boolean>(false);
     const [isEditRoomModalOpen, setIsEditRoomModalOpen] = useState<boolean>(false);
+    const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false)
 
     const formatDate = (dateString: any) => {
         const date = new Date(dateString);
@@ -89,29 +92,26 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         setIsEditRoomModalOpen(true);
     };
 
-    const handleDelete = async (roomId: string) => {
+    const handleDelete = async () => {
+        if (!selectedRoomId) return
         try {
-            const checkResponse = await apiInstance.get(`/rooms/check-delete-room?roomId=${roomId}`);
-            console.log(checkResponse.data)
-            console.log(checkResponse.data)
-            if (checkResponse.data.succeeded && checkResponse.status === 200 && checkResponse.data.data === false) {
-                toast.error(checkResponse.data.message);
-                return;
+            const response = await apiInstance.delete(`/rooms/${selectedRoomId}`)
+            if (response.data.succeeded) {
+                toast.success("Xóa phòng thành công")
+                setRefreshRooms(prev => prev + 1)
             }
-            const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa phòng này?");
-            if (confirmDelete) {
-                const deleteResponse = await apiInstance.delete(`/rooms/${roomId}`);
-                if (deleteResponse.data.succeeded) {
-                    alert("Phòng đã được xóa thành công.");
-                    setRefreshRooms(prev => prev + 1);
-                } else {
-                    alert("Có lỗi xảy ra khi xóa phòng.");
-                }
-            }
-        } catch {
-            alert();
+        } catch (error: any) {
+            console.log(error)
+            toast.error("Có lỗi xảy ra khi xóa phòng")
+        } finally {
+            setShowDeleteModal(false)
         }
     };
+
+    const handleDeleteClick = (roomId: string) => {
+        setSelectedRoomId(roomId)
+        setShowDeleteModal(true)
+    }
 
     const handleCreateContract = async (roomId: string) => {
         try {
@@ -122,18 +122,15 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 if (response.data) {
                     toast.error("Phòng này đã có hợp đồng. Không thể tạo thêm hợp đồng mới.");
                 }
-            }
-            else {
+            } else {
                 setSelectedRoomId(roomId);
                 setIsModalOpen(true);
             }
-        }
-        catch (error: any) {
+        } catch (error: any) {
             // Xử lý lỗi khi gọi API
             console.error("Error checking contract existence:", error);
             toast.error("Có lỗi xảy ra khi kiểm tra hợp đồng của phòng này.");
-        }
-        finally {
+        } finally {
             setLoading(false);
         }
     };
@@ -174,15 +171,19 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
         setSelectedRoomId('');
     };
 
+    const handleSuccessInformationRoom = () => {
+        setRefreshRooms(prev => prev + 1);
+    };
+
     // Render loading, error, or rooms
     if (loading) {
         return (
             <tbody>
-                <tr>
-                    <td colSpan={5}>
-                        <Loading />
-                    </td>
-                </tr>
+            <tr>
+                <td colSpan={5}>
+                    <Loading/>
+                </td>
+            </tr>
             </tbody>
         );
     }
@@ -191,104 +192,104 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
     if (rooms.length === 0) {
         return (
             <tbody>
-                <tr>
-                    <td
-                        colSpan={5}
-                        className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
-                    >
-                        Hiện tại chưa có phòng trọ nào
-                    </td>
-                </tr>
+            <tr>
+                <td
+                    colSpan={5}
+                    className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
+                >
+                    Hiện tại chưa có phòng trọ nào
+                </td>
+            </tr>
             </tbody>
         );
     }
     return (
         <>
             <tbody>
-                {rooms.map((room) => (
-                    <tr key={room.id} className="room-row">
-                        <td>
-                            <div className="room-info">
-                                <div className="room-image">
-                                    <img
-                                        src={room.imageRoom}
-                                        alt={room.roomName}
-                                        className="room-thumbnail"
-                                    />
-                                </div>
-                                <div className="room-details">
-                                    <h6 className="room-name">{room.roomName}</h6>
-                                    <div className="specs">
+            {rooms.map((room) => (
+                <tr key={room.id} className="room-row">
+                    <td>
+                        <div className="room-info">
+                            <div className="room-image">
+                                <img
+                                    src={room.imageRoom}
+                                    alt={room.roomName}
+                                    className="room-thumbnail"
+                                />
+                            </div>
+                            <div className="room-details">
+                                <h6 className="room-name">{room.roomName}</h6>
+                                <div className="specs">
                                         <span className="spec-item">
                                             <i className="bi bi-building text-primary"></i>
                                             Tầng {room.floor ?? 'N/A'}
                                         </span>
-                                        <span className="spec-item">
+                                    <span className="spec-item">
                                             <i className="bi bi-arrows-angle-expand text-success"></i>
-                                            {room.size} m²
+                                        {room.size} m²
                                         </span>
-                                        <span className="spec-item">
+                                    <span className="spec-item">
                                             <i className="bi bi-people text-info"></i>
-                                            {room.maxRenters} người
+                                        {room.maxRenters} người
                                         </span>
-                                    </div>
                                 </div>
                             </div>
-                        </td>
-                        <td>
-                            <div className="date-info">
-                                <div className="date">{formatDate(room.createdOn)}</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div className="price-info">
+                        </div>
+                    </td>
+                    <td>
+                        <div className="date-info">
+                            <div className="date">{formatDate(room.createdOn)}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div className="price-info">
                                 <span className="price">
                                     {new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ
                                 </span>
-                                <small className="text-muted">/tháng</small>
-                            </div>
-                        </td>
-                        <td>
+                            <small className="text-muted">/tháng</small>
+                        </div>
+                    </td>
+                    <td>
                             <span className={`status-badge ${room.isAvailable ? 'available' : 'occupied'}`}>
                                 {room.isAvailable ? 'Còn trống' : 'Đã thuê'}
                             </span>
-                        </td>
-                        <td>
-                            <Dropdown align="end">
-                                <Dropdown.Toggle variant="light" className="btn-icon">
-                                    <FaEllipsisV />
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu className="action-menu">
-                                    <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
-                                        <FaInfoCircle className="icon-primary" />
-                                        <span>Thông tin phòng</span>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleEdit(room.id)}>
-                                        <FaEdit className="icon-warning" />
-                                        <span>Chỉnh sửa</span>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleDelete(room.id)}>
-                                        <FaTrash className="icon-danger" />
-                                        <span>Xóa</span>
-                                    </Dropdown.Item>
-                                    <Dropdown.Divider />
-                                    <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
-                                        <FaFileContract className="icon-success" />
-                                        <span>Tạo hợp đồng</span>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
-                                        <FaFileInvoice className="icon-info" />
-                                        <span>Tạo hóa đơn</span>
-                                    </Dropdown.Item>
-                                    <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
-                                        <TfiWrite className="icon-secondary" />
-                                        <span>Ghi số dịch vụ</span>
-                                    </Dropdown.Item>
-                                </Dropdown.Menu>
-                            </Dropdown>
-                        </td>
-                    </tr>
-                ))}
+                    </td>
+                    <td>
+                        <Dropdown align="end">
+                            <Dropdown.Toggle variant="light" className="btn-icon">
+                                <FaEllipsisV/>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu className="action-menu">
+                                <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
+                                    <FaInfoCircle className="icon-primary"/>
+                                    <span>Thông tin phòng</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleEdit(room.id)}>
+                                    <FaEdit className="icon-warning"/>
+                                    <span>Chỉnh sửa</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleDeleteClick(room.id)}>
+                                    <FaTrash className="icon-danger"/>
+                                    <span>Xóa</span>
+                                </Dropdown.Item>
+                                <Dropdown.Divider/>
+                                <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
+                                    <FaFileContract className="icon-success"/>
+                                    <span>Tạo hợp đồng</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                    <FaFileInvoice className="icon-info"/>
+                                    <span>Tạo hóa đơn</span>
+                                </Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
+                                    <TfiWrite className="icon-secondary"/>
+                                    <span>Ghi số dịch vụ</span>
+                                </Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </td>
+                </tr>
+            ))}
             </tbody>
             <CreateContractModal
                 isOpen={isModalOpen}
@@ -301,6 +302,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                 isOpen={isRoomDetailsModalOpen}
                 onClose={handleCloseRoomDetailsModal}
                 roomId={roomDetailsId}
+                onSuccess={handleSuccessInformationRoom}
             />
             <CreateInvoiceModal
                 isOpen={isInvoiceModalOpen}
@@ -325,8 +327,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedF
                     setRefreshRooms(prev => prev + 1);
                 }}
             />
-        </>
 
+            <DeleteModal show={showDeleteModal} title={"Xác nhận xóa"} message={"Bạn có chắc chắn muốn xóa phòng này"}
+                         onConfirm={handleDelete} onCancel={() => setShowDeleteModal(false)}/>
+
+        </>
     );
 };
 

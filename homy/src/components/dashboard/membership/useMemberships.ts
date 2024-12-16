@@ -81,11 +81,8 @@ const useMemberships = () => {
         }
 
         try {
-            console.log("User ID:", userId);
-            console.log("Membership ID:", membershipId);
-
             const apiUrl = `/users/BuyMembership?userId=${userId}&membershipId=${membershipId}`;
-
+            setLoading(true);
             const response = await apiInstance.post(
                 apiUrl,
                 {},
@@ -97,14 +94,12 @@ const useMemberships = () => {
             );
 
             if (response.status === 200) {
-                setTimeout(() => {
-                    toast.success("Mua gói thành viên thành công! Vui lòng đăng nhập lại để tiếp tục.");
-                }, 2000);
-                // Logout sau khi mua thành công
+                toast.success("Mua gói thành viên thành công! Vui lòng đăng nhập lại để tiếp tục.");
                 setTimeout(() => {
                     localStorage.removeItem("token"); // Xóa token
-                    window.location.href = "/"; // Chuyển hướng về trang đăng nhập
-                }, 3000); // Thời gian chờ 3 giây để hiển thị thông báo
+                    router.push('/'); // Chuyển hướng về trang chủ
+                }, 4000);
+
             } else {
                 const errorMessage = response.data.message;
                 console.log("Backend error message:", errorMessage);
@@ -138,6 +133,8 @@ const useMemberships = () => {
             } else {
                 toast.error("Đã xảy ra lỗi.");
             }
+        } finally {
+            setLoading(false)
         }
     };
 

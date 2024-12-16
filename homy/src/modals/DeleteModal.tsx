@@ -22,8 +22,8 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ show, title, message, onConfi
                           <h2>{title}</h2>
                           <p>{message}</p>
                           <div className="button-group d-inline-flex justify-content-center align-items-center pt-15">
-                             <button className="confirm-btn fw-500 tran3s me-3" onClick={onConfirm}>Yes</button>
-                             <button type="button" className="btn-close fw-500 ms-3" onClick={onCancel}>Cancel</button>
+                             <button className="confirm-btn fw-500 tran3s me-3" onClick={onConfirm}>Đồng ý</button>
+                             <button type="button" className="btn-close fw-500 ms-3" onClick={onCancel}>Hủy</button>
                           </div>
                        </div>
                     </div>

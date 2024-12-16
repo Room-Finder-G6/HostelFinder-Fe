@@ -161,8 +161,8 @@ const InvoiceBody = () => {
    return (
       <div className="dashboard-body">
          <div className="position-relative">
-            <DashboardHeaderTwo title="Quản lí hóa đơn" />
-            <h2 className="main-title d-block d-lg-none">Quản lí hóa đơn</h2>
+            <DashboardHeaderTwo title="Quản lý hợp đồng" />
+            <h2 className="main-title d-block d-lg-none">Quản lý hợp đồng</h2>
 
             {/* Chọn nhà trọ */}
             <HostelSelector

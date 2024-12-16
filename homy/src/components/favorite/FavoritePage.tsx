@@ -2,14 +2,12 @@
 import React, {useEffect, useState} from "react";
 import apiInstance from "@/utils/apiInstance";
 import {FilteredPosts} from "@/models/filteredPosts"; // Assuming this is the correct type
-import {FilterPostData} from "@/models/filterPostData";  // Assuming this is already defined
 import Loading from "@/components/Loading";
 import {jwtDecode} from "jwt-decode";
 import Link from "next/link";
 import Image from "next/image";
 import {toast} from 'react-toastify'; // Import react-toastify
-import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import useNavData from "@/layouts/headers/Menu/useNavData";
+
 const truncateText = (text: string, maxLength: number = 100) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + "...";
@@ -151,7 +149,7 @@ const FavoritesPage = () => {
                                 />
                             </div>
                             <div className="property-info">
-                                <Link href={`/post-details/${item.id}`} className="title tran3s mb-15">
+                                <Link href={`/post-details/${item.postId}`} className="title tran3s mb-15">
                                     {item.title}
                                 </Link>
                                 <div className="address">
