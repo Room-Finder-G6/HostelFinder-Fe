@@ -17,12 +17,12 @@ const HomeOne = () => {
             <Banner/>
             {/* <Feedback /> */}
             <BLockFeatureOne/>
-            <BLockFeatureThree/>
+            {/*<BLockFeatureThree/>*/}
             <Property/>
             {/* <FancyBannerOne style={false} /> */}
             {/* <AgentArea style={false} /> */}
             {/*<BLockFeatureFour />*/}
-            <BLockFeatureTwo/>
+            {/*<BLockFeatureTwo/>*/}
             <BLockFeatureFive style={false}/>
             <FancyBanner style={false}/>
             {/*<FancyBannerThree />*/}

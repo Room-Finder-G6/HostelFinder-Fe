@@ -7,7 +7,6 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import Image from "next/image";
 import OpenEye from "@/assets/images/icon/icon_68.svg";
 import apiInstance from "@/utils/apiInstance";
-import {useRouter} from "next/navigation";
 
 interface FormData {
     userName: string;
