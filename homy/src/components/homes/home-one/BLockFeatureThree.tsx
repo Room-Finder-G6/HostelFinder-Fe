@@ -70,9 +70,7 @@ const BLockFeatureThree = () => {
               <div className={`location-card-one position-relative z-1 d-flex align-items-end ${item.item_bg}`}>
                 <div className="content text-center w-100 tran3s">
                   <h5 className="text-white fw-normal">{item.title}</h5>
-                  <p className="text-white fw-light">{item.desc}</p>
                 </div>
-                <Link href="/listing_01" className="stretched-link"></Link>
               </div>
             </div>
           ))}

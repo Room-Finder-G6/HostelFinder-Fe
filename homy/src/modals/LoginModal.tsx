@@ -1,20 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
 import LoginForm from "@/components/forms/LoginForm";
-import { useEffect, useState } from "react";
-import loginIcon_1 from "@/assets/images/icon/google.png";
-import loginIcon_2 from "@/assets/images/icon/facebook.png";
+import { useState } from "react";
 import RegisterForm from "@/components/forms/RegisterForm";
 import ForgotPassword from "@/components/forms/ForgotPassword";
-import { signIn } from "next-auth/react";
-import apiInstance from "@/utils/apiInstance";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 
 const tabTitle: string[] = ["Đăng nhập", "Đăng ký"];
 
-const LoginModal = ({ loginModal, setLoginModal }: any) => {
-   const router = useRouter();
+const LoginModal = () => {
    const [activeTab, setActiveTab] = useState(0);
    const [showForgotPassword, setShowForgotPassword] = useState(false);
 
@@ -23,11 +15,6 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
       setActiveTab(index);
       setShowForgotPassword(false); // Reset Forgot Password when switching tabs
    };
-
-   const handleGoogleSign = () => {
-      signIn("google");
-   }
-
 
    return (
       <div className="modal fade" id="loginModal" tabIndex={-1} aria-hidden="true">
@@ -54,7 +41,7 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                                  <div className="text-center mb-20">
                                     <h2>Chào mừng bạn!</h2>
                                     <p className="fs-20 color-dark">
-                                       Nếu bạn chưa có tài khoản? <Link href="#" onClick={() => handleTabClick(1)}>Đăng ký</Link>
+                                       Bạn chưa có tài khoản? <Link href="#" onClick={() => handleTabClick(1)}>Đăng ký</Link>
                                     </p>
                                  </div>
                                  <LoginForm setShowForgotPassword={setShowForgotPassword} />
@@ -68,7 +55,7 @@ const LoginModal = ({ loginModal, setLoginModal }: any) => {
                               <div className="text-center mb-20">
                                  <h2>Đăng ký</h2>
                                  <p className="fs-20 color-dark">
-                                    Nếu bạn đã có tài khoản? <Link href="#" onClick={() => handleTabClick(0)}>Đăng nhập</Link>
+                                    Bạn đã có tài khoản? <Link href="#" onClick={() => handleTabClick(0)}>Đăng nhập</Link>
                                  </p>
                               </div>
                               <RegisterForm />
