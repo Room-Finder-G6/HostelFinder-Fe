@@ -1,4 +1,5 @@
 export interface MaintenanceRecord {
+    id: string;
     hostelId: string | null;
     roomId: string | null;
     hostelName: string | null;

@@ -10,6 +10,7 @@ import apiInstance from "@/utils/apiInstance";
 import {toast} from "react-toastify";
 import {useRouter} from 'next/navigation';
 import {getUserIdFromToken} from "@/utils/tokenUtils";
+import Loading from "@/components/Loading";
 
 const UserPostManagement = () => {
     const {posts, totalPages, pageIndex, setPageIndex, loading, fetchPostsByUser} = usePostsByUser();
@@ -19,6 +20,7 @@ const UserPostManagement = () => {
     const prevPageIndexRef = useRef(pageIndex);
     const prevSortOptionRef = useRef(sortOption);
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const selectHandler = (e: any) => {
         const selectedValue = e.target.value;
@@ -30,6 +32,7 @@ const UserPostManagement = () => {
         if (!selectedPostId) return;
 
         try {
+            setIsLoading(true);
             const response = await apiInstance.delete(`/posts/${selectedPostId}`, {
                 params: {
                     postId: selectedPostId
@@ -37,9 +40,8 @@ const UserPostManagement = () => {
             });
             if (response.data.succeeded) {
                 toast.success(response.data.message);
+                await fetchPostsByUser(pageIndex, sortOption);
             }
-            await fetchPostsByUser(pageIndex, sortOption);
-            window.location.reload();
 
         } catch (error) {
             console.error("Error deleting post:", error);
@@ -47,6 +49,7 @@ const UserPostManagement = () => {
         } finally {
             setShowDeleteModal(false);
             setSelectedPostId(null);
+            setIsLoading(false);
         }
     };
 
@@ -95,6 +98,9 @@ const UserPostManagement = () => {
     return (
         <div className="dashboard-body">
             <div className="position-relative">
+
+                {isLoading && <Loading/>}
+
                 <DashboardHeaderTwo title="Bài đăng của tôi"/>
                 <div className="d-flex align-items-center justify-content-between mb-25">
                     <div className="d-flex align-items-center ms-auto">

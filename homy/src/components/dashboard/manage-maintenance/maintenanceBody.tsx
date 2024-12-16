@@ -1,5 +1,5 @@
 // components/MainTenanceBody.tsx
-import { useCallback, useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,14 +7,26 @@ import dashboardIcon_1 from "@/assets/images/dashboard/icon/icon_43.svg";
 import icon_1 from "@/assets/images/icon/icon_46.svg";
 import apiInstance from "@/utils/apiInstance";
 import HostelSelector from "../manage-room/HostelSelector";
-import { toast } from "react-toastify";
-import { Button, ButtonGroup, ButtonToolbar, Form, Modal, Table, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { MdEmail } from 'react-icons/md';
-import { MaintenanceRecord, PagedResponse, SortDirection } from "@/models/maintenanceRecord";
-import { jwtDecode } from "jwt-decode";
+import {toast} from "react-toastify";
+import {
+    Button,
+    ButtonGroup,
+    ButtonToolbar,
+    Form,
+    Modal,
+    Table,
+    Spinner,
+    OverlayTrigger,
+    Tooltip
+} from "react-bootstrap";
+import {MdEmail} from 'react-icons/md';
+import {MaintenanceRecord, PagedResponse, SortDirection} from "@/models/maintenanceRecord";
+import {jwtDecode} from "jwt-decode";
 import MaintenanceModal from "./Add/MaintenanceModal";
-import { FaEye, FaPlus, FaTrash } from "react-icons/fa";
+import {FaEye, FaPlus, FaTrash} from "react-icons/fa";
 import Loading from "@/components/Loading";
+import EditMaintenanceModal from "@/components/dashboard/manage-maintenance/Edit/EditMaintenanceModal";
+import DeleteModal from "@/modals/DeleteModal";
 
 interface JwtPayload {
     UserId: string;
@@ -32,6 +44,10 @@ const MainTenanceBody = () => {
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [selectedRecordId, setSelectedRecordId] = useState<string | null>(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
 
     // Lấy UserId từ token JWT
     const getUserIdFromToken = useCallback((): string | null => {
@@ -156,11 +172,11 @@ const MainTenanceBody = () => {
     };
 
     const maintenanceTypeOptions = [
-        { label: 'Sửa điện', value: 0 },
-        { label: 'Sửa ống nước', value: 1 },
-        { label: 'Sửa tường', value: 2 },
-        { label: 'Sửa chữa chung', value: 3 },
-        { label: 'Khác', value: 4 }
+        {label: 'Sửa điện', value: 0},
+        {label: 'Sửa ống nước', value: 1},
+        {label: 'Sửa tường', value: 2},
+        {label: 'Sửa chữa chung', value: 3},
+        {label: 'Khác', value: 4}
     ];
 
     const getMaintenanceTypeLabel = (maintenanceType: number) => {
@@ -168,11 +184,41 @@ const MainTenanceBody = () => {
         return option ? option.label : 'Không xác định';
     };
 
+    const handleEditClick = (recordId: string) => {
+        setSelectedRecordId(recordId);
+        setShowEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setSelectedRecordId(null);
+        setShowEditModal(false);
+    };
+
+    const handleDeleteMaintenance = async () => {
+        if (!selectedRecordId) return;
+        try {
+            const response = await apiInstance.delete(`/maintenance-record/${selectedRecordId}`);
+            if (response.data.succeeded) {
+                toast.success("Xóa bản ghi bảo trì thành công!");
+                fetchMaintenanceRecords();
+            }
+        } catch (error) {
+            console.error("Error deleting maintenance record:", error);
+            toast.error("Lỗi khi xóa bản ghi bảo trì.");
+        } finally {
+            setShowDeleteModal(false);
+        }
+    };
+
+    const handleDeleteClick = (recordId: string) => {
+        setSelectedRecordId(recordId);
+        setShowDeleteModal(true);
+    };
 
     return (
         <div className="dashboard-body">
             <div className="position-relative">
-                <DashboardHeaderTwo title="Quản lí sửa chữa" />
+                <DashboardHeaderTwo title="Quản lí sửa chữa"/>
                 <h2 className="main-title d-block d-lg-none">Quản lí sửa chữa, bảo dưỡng</h2>
 
                 {/* Chọn nhà trọ */}
@@ -193,7 +239,7 @@ const MainTenanceBody = () => {
                                 onChange={handleSearchChange}
                             />
                             <button type="submit" className="btn btn-primary">
-                                <Image src={dashboardIcon_1} alt="search-icon" className="lazy-img" />
+                                <Image src={dashboardIcon_1} alt="search-icon" className="lazy-img"/>
                             </button>
                         </form>
                     </div>
@@ -205,9 +251,9 @@ const MainTenanceBody = () => {
                 <Button variant="btn btn-success btn-sm d-flex align-items-center" onClick={handleShowModal}>
                     <div
                         className="d-flex align-items-center justify-content-center me-2 bg-light rounded"
-                        style={{ width: '24px', height: '24px', color: 'green' }}
+                        style={{width: '24px', height: '24px', color: 'green'}}
                     >
-                        <FaPlus size={14} />
+                        <FaPlus size={14}/>
                     </div>
                     Thêm mới
                 </Button>
@@ -215,65 +261,61 @@ const MainTenanceBody = () => {
                 <div className="bg-white card-box p-0 border-20">
                     <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
                         {loading ? (
-                            <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-                                <Spinner animation="border" variant="primary" />
-                            </div>
+                            <Loading/>
                         ) : (
                             <Table className="saved-search-table" hover={false}>
                                 <thead>
-                                    <tr>
-                                        <th scope="col">Tên phòng</th>
-                                        <th scope="col">Tiêu đề</th>
-                                        <th scope="col">Mô tả</th>
-                                        <th scope="col">Ngày bảo trì</th>
-                                        <th scope="col">Số tiền</th>
-                                        <th scope="col">Loại</th>
-                                        <th scope="col" className="text-end">Hành động</th>
-                                    </tr>
+                                <tr>
+                                    <th scope="col">Tên phòng</th>
+                                    <th scope="col">Tiêu đề</th>
+                                    <th scope="col">Mô tả</th>
+                                    <th scope="col">Ngày bảo trì</th>
+                                    <th scope="col">Số tiền</th>
+                                    <th scope="col">Loại</th>
+                                    <th scope="col" className="text-end">Hành động</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    {maintenanceRecords.length > 0 ? (
-                                        maintenanceRecords.map((record) => (
-                                            <tr key={record.hostelId + record.maintenanceDate}>
-                                                <td>
+                                {maintenanceRecords.length > 0 ? (
+                                    maintenanceRecords.map((record) => (
+                                        <tr key={record.hostelId + record.maintenanceDate}>
+                                            <td>
                                                     <span className="color-dark fw-500">
                                                         {record.roomName || "N/A"}
                                                     </span>
-                                                </td>
-                                                <td>{record.title}</td>
-                                                <td>{record.description || "N/A"}</td>
-                                                <td>{new Date(record.maintenanceDate).toLocaleDateString()}</td>
-                                                <td className="cost-cell">
-                                                    {record.cost.toLocaleString('vi-VN')} ₫
-                                                </td>
-                                                <td className="type-cell">{getMaintenanceTypeLabel(record.maintenanceType)}</td>
-                                                <td className="action-column">
-                                                    <div className="btns-group">
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 me-3"
-                                                        // onClick={() => onViewDetails(record)}
-                                                        >
-                                                            <i className="fa-sharp fa-regular fa-eye" data-bs-toggle="tooltip" title="Xem"></i>
-                                                        </Button>
-                                                        <Button
-                                                            variant="link"
-                                                            className="p-0 btn-delete"
-                                                        // onClick={() => onDeleteRecord(record)}
-                                                        >
-                                                            <i className="fa-regular fa-trash" data-bs-toggle="tooltip" title="Xóa"></i>
-                                                        </Button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan={7} className="table-empty-state">
-                                                Không có bản ghi bảo trì
+                                            </td>
+                                            <td>{record.title}</td>
+                                            <td>{record.description || "N/A"}</td>
+                                            <td>{new Date(record.maintenanceDate).toLocaleDateString()}</td>
+                                            <td>{record.cost.toLocaleString('vi-VN')} ₫</td>
+                                            <td>{getMaintenanceTypeLabel(record.maintenanceType)}</td>
+
+                                            <td>
+                                                <div className="d-flex justify-content-end btns-group">
+                                                    <ButtonToolbar className="ms-3"
+                                                                   onClick={() => handleEditClick(record.id)}
+                                                                   data-bs-toggle="tooltip" title="Chỉnh sửa"
+                                                                   style={{cursor: 'pointer'}}>
+                                                        <i className="fa-regular fa-pen-to-square"></i>
+                                                    </ButtonToolbar>
+
+                                                    <ButtonToolbar className="ms-3" data-bs-toggle="tooltip" title="Xóa"
+                                                                   style={{cursor: 'pointer'}}
+                                                                   onClick={() => handleDeleteClick(record.id)}>
+                                                        <i className="fa-regular fa-trash"></i>
+                                                    </ButtonToolbar>
+                                                </div>
                                             </td>
                                         </tr>
-                                    )}
+
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan={7} className="table-empty-state">
+                                            Không có bản ghi bảo trì
+                                        </td>
+                                    </tr>
+                                )}
                                 </tbody>
                             </Table>
                         )}
@@ -289,9 +331,26 @@ const MainTenanceBody = () => {
                     reloadTable={reloadTable}
                 />
 
+                <EditMaintenanceModal
+                    show={showEditModal}
+                    onClose={handleCloseEditModal}
+                    onSuccess={() => {
+                        handleCloseEditModal();
+                        reloadTable();
+                    }}
+                    selectedHostel={selectedHostel}
+                    reloadTable={reloadTable}
+                    recordId={selectedRecordId}
+                />
+
+                <DeleteModal show={showDeleteModal} title={"Xác nhận xóa?"}
+                             message={"Bạn có muốn xóa lịch sử bảo trì này không?"} onConfirm={handleDeleteMaintenance}
+                             onCancel={() => setShowDeleteModal(false)}/>
+
                 {/* Phân trang với thiết kế mới */}
                 {totalPages > 1 && (
-                    <ul style={{ marginLeft: "15px" }} className="pagination-one d-flex align-items-center style-none pt-40">
+                    <ul style={{marginLeft: "15px"}}
+                        className="pagination-one d-flex align-items-center style-none pt-40">
                         <li className="me-3">
                             <Link
                                 href="#"
@@ -331,13 +390,13 @@ const MainTenanceBody = () => {
                                     handlePageChange(totalPages);
                                 }}
                             >
-                                Trang cuối <Image src={icon_1} alt="" className="ms-2" />
+                                Trang cuối <Image src={icon_1} alt="" className="ms-2"/>
                             </Link>
                         </li>
                     </ul>
                 )}
             </div>
-        </div >
+        </div>
     );
 };
 
