@@ -149,7 +149,7 @@ const FavoritesPage = () => {
                                 />
                             </div>
                             <div className="property-info">
-                                <Link href={`/post-details/${item.postId}`} className="title tran3s mb-15">
+                                <Link href={`/post-details/${item.id}`} className="title tran3s mb-15">
                                     {item.title}
                                 </Link>
                                 <div className="address">
