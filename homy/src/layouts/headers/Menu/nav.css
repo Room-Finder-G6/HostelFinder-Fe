@@ -36,3 +36,45 @@
 .nav-item.favorites {
     position: relative;  /* Để badge hiển thị đúng vị trí */
 }
+/* Container bao quanh HeartButton */
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip mini thông báo */
+.tooltip-text {
+    visibility: hidden;
+    width: 100px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 120%; /* Hiển thị trên button */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+font-size: 12px;
+    opacity: 0;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Mũi tên nhỏ chỉ xuống */
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Gắn mũi tên bên dưới tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+/* Hiển thị tooltip khi di chuột vào HeartButton */
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

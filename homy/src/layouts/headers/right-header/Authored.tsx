@@ -106,9 +106,13 @@ const Authored = () => {
         <>
             {isLoggedIn ? (
                 <div className="user-data d-flex align-items-center position-relative">
-                    <ul className="nav-item favorites">
-                        <HeartButton wishlistCount={wishlistCount} /> {/* Sử dụng HeartButton và truyền dữ liệu */}
-                    </ul>
+                    <div className="me-3 position-relative" style={{ cursor: "pointer" }}>
+                        <div className="tooltip-container">
+                            <HeartButton wishlistCount={wishlistCount} />
+                            <span className="tooltip-text">Danh sách tin đã lưu</span>
+                        </div>
+                    </div>
+
                     <button
                         className="user-avatar online position-relative rounded-circle dropdown-toggle"
                         type="button"
