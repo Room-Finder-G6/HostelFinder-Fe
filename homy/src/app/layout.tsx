@@ -14,11 +14,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" suppressHydrationWarning={isDev}>
       <head>
         <meta name="keywords" content="Real estate, Property sale, Property buy" />
-        <meta name="description" content="Homy is a beautiful website template designed for Real Estate Agency." />
+        <meta name="description" content="Hostel Finder là nền tảng tìm trọ và quản lý trọ trực tuyến." />
         <meta property="og:site_name" content="Homy" />
         <meta property="og:url" content="https://creativegigstf.com" />
         <meta property="og:type" content="website" />
-        <meta property="og:title" content="Homy - Real Estate React Next js Template" />
+        <meta property="og:title" content="Hostel Finder" />
         <meta name='og:image' content='images/assets/ogg.png' />
         {/* Các thẻ meta khác */}
         <link rel="icon" href="/favicon.png" sizes="any" />

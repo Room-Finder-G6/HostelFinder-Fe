@@ -335,7 +335,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 </li>
                                 <li className="plr bottom-line">
                                     <Link href="/dashboard/manage-tenant"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center mb-5 ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3}
                                             alt="Reviews" />
@@ -343,16 +343,16 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                     </Link>
                                 </li>
 
-                                <li className="pt-20">
-                                    <div className="nav-title">Tìm Người Ở Ghép</div>
+                                {/*<li className="pt-20">
+                                    <div className="nav-title">Tìm người ở ghép</div>
                                 </li>
                                 <li className="plr">
                                     <Link href="/dashboard/manage-find-roommates"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
+                                          className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-find-roommates' ? 'active' : ''}`}>
                                         <i className="bi bi-card-text"></i>
                                         <span>Đăng bài ở ghép</span>
                                     </Link>
-                                </li>
+                                </li>*/}
                             </>
                         )}
                     </ul>
@@ -361,7 +361,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 {/* Profile Completion Section */}
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-line position-relative">
-                        <div className="inner-line" style={{ width: "100%" }}></div>
+                        <div className="inner-line" style={{width: "100%"}}></div>
                     </div>
                 </div>
             </div>

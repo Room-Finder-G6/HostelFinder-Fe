@@ -11,12 +11,12 @@ const AboutUsOne = () => {
    return (
       <>
          <HeaderOne style={true} />
-         <BreadcrumbOne title="About Agency" sub_title="About us" style={false} />
+         <BreadcrumbOne title="Phongtro247.net" style={false} />
          <BLockFeatureOne />
-         <BLockFeatureFive style={true} />
          <AgentArea style={false} />
+         {/*<BLockFeatureFive style={true} />
          <Brand />
-         <FancyBanner style={false} />
+         <FancyBanner style={false} />*/}
          <FooterFour />
       </>
    )

@@ -2,6 +2,7 @@ import {Address} from "@/models/address";
 
 export interface FilteredPosts {
     id: string;
+    postId: string;
     wishlistId: string;  // Thêm wishlistId vào đây
     title: string;
     description: string;

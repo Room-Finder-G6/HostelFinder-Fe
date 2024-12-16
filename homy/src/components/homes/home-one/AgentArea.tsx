@@ -39,12 +39,11 @@ const AgentArea = ({ style }: any) => {
    }
 
    return (
-      <div className={`agent-section-one position-relative z-1 xl-mt-120 ${style ? "mt-170" : "mt-150"}`}>
+      <div className={`agent-section-one position-relative z-1 xl-mt-100 ${style ? "mt-150" : "mt-130"}`}>
          <div className={`container ${style ? "container-large" : ""}`}>
             <div className="position-relative">
                <div className="title-one mb-85 lg-mb-50 wow fadeInLeft">
-                  <h3>Our <span>Agents{style?"":<Image src={titleShape} alt="" className="lazy-img" />}</span></h3>
-                  <p className="fs-22 mt-xs">Lorem  is placeholder text commonly used  graphic </p>
+                  <h3>Các <span>thành viên{style?"":<Image src={titleShape} alt="" className="lazy-img" />}</span></h3>
                </div>
 
                <div className="wrapper position-relative z-1">
@@ -65,9 +64,9 @@ const AgentArea = ({ style }: any) => {
                   </Slider>
                </div>
 
-               <div className="section-btn text-center md-mt-60">
+               {/*<div className="section-btn text-center md-mt-60">
                   <Link href="agent" className={` ${style ? "btn-eight" : "btn-one fw-normal"}`}>Meet Entire Team</Link>
-               </div>
+               </div>*/}
             </div>
          </div>
       </div>

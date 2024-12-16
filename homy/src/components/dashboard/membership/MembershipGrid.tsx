@@ -3,13 +3,14 @@
 import React from "react";
 import styles from "./MembershipGrid.module.css"; // Import CSS
 import useMemberships from "./useMemberships";
+import Loading from "@/components/Loading";
 
 const MembershipGrid = () => {
   const { memberships, loading, error, buyMembership } = useMemberships();
 
   if (loading) {
     return (
-      <div className={styles.spinner}></div> // Hiển thị vòng xoay khi đang tải dữ liệu
+      <Loading/>
     );
   }
   
