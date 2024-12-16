@@ -122,6 +122,12 @@ const WalletManagement = () => {
         setDepositAmount(amount);
     };
 
+    const handleDepositInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value.replace(/\D/g, ""); // Chỉ cho phép nhập số
+        setDepositAmount(Number(value));
+    };
+
+
     if (isLoading) {
         return <Loading/>;
     }
@@ -162,10 +168,11 @@ const WalletManagement = () => {
                     <input
                         className="deposit-input"
                         type="text"
-                        value={depositAmount}
-                        onChange={(e) => setDepositAmount(Number(e.target.value))}
+                        value={depositAmount ? depositAmount.toLocaleString("vi-VN") : ""}
+                        onChange={handleDepositInputChange}
                         placeholder="Số tiền muốn nạp"
                     />
+
                     <button className="deposit-button" onClick={handleDeposit}>Nạp tiền</button>
                 </div>
             </div>
