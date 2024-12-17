@@ -17,7 +17,7 @@ const FancyBanner = ({ style }: any) => {
                   <div className="form-wrapper me-auto ms-auto me-lg-0">
                      <form onSubmit={(e) => e.preventDefault()}>
                         <input type="email" placeholder="Địa chỉ email" className={style ? "rounded-0" : ""} />
-                        <button className={style ? "rounded-0" : ""}>Đăng ký</button>
+                        <button className={style ? "rounded-0" : ""}><Link href="#" className={"text-decoration-none text-white"} data-bs-toggle="modal" data-bs-target="#loginModal">Đăng ký</Link></button>
                      </form>
                      <div className="fs-16 mt-10 text-white">Đã có tài khoản? <Link href="#" data-bs-toggle="modal" data-bs-target="#loginModal">Đăng nhập.</Link></div>
                   </div>

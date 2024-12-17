@@ -78,35 +78,30 @@ const feature_data: DataType[] = [
       page: "home_1_feature_2",
       item_bg: "card-1",
       title: "Cầu Giấy",
-      desc: "130 Properties",
    },
    {
       id: 2,
       page: "home_1_feature_2",
       item_bg: "card-2",
       title: "Hòa Lạc",
-      desc: "190 Properties",
    },
    {
       id: 3,
       page: "home_1_feature_2",
       item_bg: "card-3",
       title: "Tân Xã",
-      desc: "110 Properties",
    },
    {
       id: 4,
       page: "home_1_feature_2",
       item_bg: "card-5",
       title: "Nam Từ Liêm",
-      desc: "70 Properties",
    },
    {
       id: 5,
       page: "home_1_feature_2",
       item_bg: "card-5",
       title: "Long Biên",
-      desc: "160 Properties",
    },
 
    // home_1_feature_3

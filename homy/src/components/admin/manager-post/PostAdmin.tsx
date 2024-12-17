@@ -12,13 +12,7 @@ const PostAdmin = () => {
     return (
         <div className="dashboard-body">
             <AdminHeaderTwo title="TẤT CẢ BÀI ĐĂNG" />
-            <div className="d-sm-flex align-items-center justify-content-between mb-25">
-                <li className="d-none d-md-inline-block ms-3">
-                    <Link href="/dashboard/create-post" className="btn-two" target="_blank">
-                        <span>Tạo bài đăng</span>
-                    </Link>
-                </li>
-            </div>
+            
 
             <div className="bg-white card-box p0 border-20">
                 <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
@@ -28,9 +22,6 @@ const PostAdmin = () => {
                                 <th scope="col">Tiêu đề</th>
                                 <th scope="col">Ngày Tạo</th>
                                 <th scope="col">Trạng thái</th>
-                                <th scope="col">Mô tả</th> 
-                                <th scope="col">Địa chỉ</th> 
-                                <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <PostAdminBody posts={posts} loading={loading} />
