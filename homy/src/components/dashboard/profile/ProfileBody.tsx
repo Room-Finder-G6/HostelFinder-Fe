@@ -1,5 +1,5 @@
 // components/dashboard/profile/ProfileBody.tsx
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Image from "next/image";
 import UserAvatarSetting from "./UserAvatarSetting";
@@ -9,6 +9,7 @@ import apiInstance from "@/utils/apiInstance";
 import {User} from "@/models/user";
 import Loading from "@/components/Loading";
 import Link from "next/link";
+import {getUserIdFromToken} from "@/utils/tokenUtils";
 
 interface CustomJwtPayload {
     UserId: string;
@@ -19,6 +20,11 @@ interface ValidationErrors {
     fullName?: string;
     email?: string;
     phone?: string;
+}
+
+interface JwtPayload {
+    UserId: string;
+    Role: string;
 }
 
 const ProfileBody: React.FC = () => {
@@ -34,6 +40,26 @@ const ProfileBody: React.FC = () => {
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [role, setRole] = useState<string | null>(null);
+
+    const getUserIdFromToken = useCallback(() => {
+        const token = window.localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+                setRole(decodedToken.Role);
+                return decodedToken.UserId;
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                return null;
+            }
+        }
+        return null;
+    }, []);
+
+    useEffect(() => {
+        getUserIdFromToken();
+    });
 
     // Validation functions
     const validateEmail = (email: string): boolean => {
@@ -309,10 +335,11 @@ const ProfileBody: React.FC = () => {
                                     <span className="btn-link">Đổi mật khẩu</span>
                                 </Link>
                             </p>
-
-                            <Link className="ms-5" href="/dashboard/payment-info" passHref>
-                                <span className="btn-link">Thêm thông tin thanh toán</span>
-                            </Link>
+                            {role === "Landlord" && (
+                                <Link className="ms-5" href="/dashboard/payment-info" passHref>
+                                    <span className="btn-link">Thêm thông tin thanh toán</span>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>
