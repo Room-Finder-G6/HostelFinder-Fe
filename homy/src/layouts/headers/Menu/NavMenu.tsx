@@ -61,7 +61,7 @@ const NavMenu = () => {
       )}
       {role === 'Admin' && (
         <li className="nav-item admin-menu">
-          <Link className="nav-link" href="/admin/admin-index">Admin</Link>
+          <Link className="nav-link" href="admin/dashboard-membership">Admin</Link>
         </li>
       )}
       <li className="nav-item posts">
@@ -76,7 +76,7 @@ const NavMenu = () => {
       {/* <ul className="nav-item favorites">
         <HeartButton wishlistCount={wishlistCount} /> 
       </ul> */}
-     
+
     </ul>
 
   );
