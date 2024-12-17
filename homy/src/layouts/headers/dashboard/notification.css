@@ -1,80 +1,143 @@
-/* Cập nhật cho container chứa các nút thông báo */
-.profile-notification {
-  display: flex;
-  align-items: center; /* Căn chỉnh các items theo chiều dọc */
-  gap: 10px; /* Khoảng cách giữa các nút */
-}
-
-/* Cài đặt chung cho các nút thông báo và trái tim */
-.profile-notification .notification-btn,
-.profile-notification .heart-btn {
-  padding: 8px; /* Đệm xung quanh nội dung nút */
-  border: none; /* Loại bỏ viền nút */
-  background: none; /* Nền trong suốt */
-  cursor: pointer; /* Con trỏ khi di chuột qua */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Khi hover qua nút, hiển thị bóng mờ nhẹ */
-.profile-notification .notification-btn:hover,
-.profile-notification .heart-btn:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-/* Đặt bảng thông báo rộng hơn và có thanh cuộn khi cần */
+/* Cập nhật bảng thông báo để rộng hơn */
 .profile-notification .dropdown-menu {
-  width: 400px; /* Chiều rộng bảng */
-  max-height: 400px; /* Chiều cao tối đa */
-  overflow-y: auto; /* Thanh cuộn dọc khi cần */
-  overflow-x: auto; /* Thanh cuộn ngang khi cần */
-  padding: 10px; /* Đệm xung quanh */
-  border-radius: 8px; /* Bo tròn các góc */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Bóng mờ xung quanh */
-  background-color: #fff; /* Nền trắng */
-  position: relative; /* Định vị tương đối */
+  width: 400px; /* Đặt chiều rộng lớn hơn */
+  max-height: 400px; /* Giới hạn chiều cao tối đa */
+  overflow-y: auto; /* Thêm thanh cuộn dọc khi vượt quá chiều cao tối đa */
+  overflow-x: auto; /* Thêm thanh cuộn ngang khi cần thiết */
+  padding: 10px; /* Thêm padding để tránh thông báo dính vào các cạnh */
+  border-radius: 8px; /* Bo tròn các góc của bảng */
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1); /* Thêm bóng đổ cho bảng */
+  background-color: #fff; /* Màu nền của bảng thông báo */
+  position: relative; /* Đảm bảo nút đóng nằm trong vùng này */
 }
+  
+  /* Cập nhật kiểu cho thông báo */
+  .profile-notification .dropdown-menu .notify-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  .profile-notification .dropdown-menu::-webkit-scrollbar {
+    height: 8px; /* Giảm độ cao của thanh cuộn ngang */
+  }
+  
+  .profile-notification .dropdown-menu::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.3); /* Màu thanh cuộn */
+    border-radius: 4px; /* Bo tròn các góc của thanh cuộn */
+  }
+  
+  .profile-notification .dropdown-menu::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Màu nền của track thanh cuộn */
+    border-radius: 4px; /* Bo tròn các góc của track */
+  }
+  .profile-notification .dropdown-menu .notify-list li {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+  
+  .profile-notification .dropdown-menu .notify-list li .icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+  }
+  
+  .profile-notification .dropdown-menu .notify-list li h6 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .profile-notification .dropdown-menu .notify-list li .time {
+    font-size: 12px;
+    color: #888;
+  }
+  
+  .profile-notification .dropdown-menu .notify-list li.unread h6 {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .profile-notification .dropdown-menu .notify-list li:hover {
+    background-color: #f5f5f5;
+  }
+  
+  /* Thêm hiệu ứng cho chi tiết thông báo */
+  .notification-detail {
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .notification-detail p {
+    margin: 5px 0;
+  }
+  
 
-/* Hiệu ứng cuộn cho bảng thông báo */
-.profile-notification .dropdown-menu::-webkit-scrollbar {
-  width: 8px; /* Độ rộng thanh cuộn */
-}
 
-.profile-notification .dropdown-menu::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.3); /* Màu của thanh cuộn */
-  border-radius: 4px; /* Bo tròn thanh cuộn */
-}
-
-.profile-notification .dropdown-menu::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Màu nền của track */
-  border-radius: 4px; /* Bo tròn track */
-}
-
-/* Cải thiện giao diện cho từng mục thông báo */
-.profile-notification .dropdown-menu .notify-list li {
+  /* Overlay nền mờ phía sau */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
   display: flex;
+  justify-content: center;
   align-items: center;
-  padding: 15px;
-  border-bottom: 1px solid #f0f0f0; /* Đường viền phân cách */
-  cursor: pointer;
-  margin-right: 20px; /* Cách mép phải */
+  z-index: 1000;
 }
 
-.profile-notification .dropdown-menu .notify-list li .icon {
-  width: 40px;
-  height: 40px;
-  margin-right: 10px; /* Cách giữa icon và text */
+/* Popup chi tiết thông báo */
+.notification-detail-popup {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 350px;
+  max-width: 90%;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
 }
 
-/* Mục thông báo khi chưa đọc sẽ đậm và nổi bật hơn */
-.profile-notification .dropdown-menu .notify-list li.unread h6 {
-  font-weight: bold;
+/* Nút đóng (X) */
+.notification-detail-popup .close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #f44336; /* Màu đỏ nổi bật */
+  color: white; /* Màu chữ trắng */
+  border: none; /* Loại bỏ viền */
+  border-radius: 50%; /* Làm nút tròn */
+  padding: 5px; /* Giảm kích thước padding */
+  width: 24px; /* Đặt chiều rộng cụ thể */
+  height: 24px; /* Đặt chiều cao cụ thể */
+  display: flex; /* Để căn giữa chữ X */
+  justify-content: center;
+  align-items: center;
+  font-size: 14px; /* Giảm kích thước font */
+  cursor: pointer; /* Biểu tượng con trỏ */
+}
+
+.notification-detail-popup .close-btn:hover {
+  background-color: #d32f2f; /* Màu đậm hơn khi hover */
+}
+
+
+/* Nội dung trong popup */
+.notification-detail-popup h4 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.notification-detail-popup p {
+  margin: 10px 0;
+  font-size: 14px;
   color: #333;
 }
-
-/* Hiệu ứng khi di chuột qua mục thông báo */
-.profile-notification .dropdown-menu .notify-list li:hover {
-  background-color: #f5f5f5; /* Nền khi hover */
-}
-

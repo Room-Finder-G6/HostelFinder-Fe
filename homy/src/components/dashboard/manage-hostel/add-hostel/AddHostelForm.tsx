@@ -433,7 +433,7 @@ const AddHostelForm: React.FC = () => {
                     <div className="bg-white border-20 col-md-12 mb-10">
                         <h4 className="dash-title-three">Thêm ảnh của nhà trọ</h4>
                         <div className="dash-input-wrapper mb-20">
-                            <label htmlFor="">File Attachment*</label>
+                            <label htmlFor="">File đính kèm*</label>
 
                             <div className="d-flex align-items-center mb-15">
                                 {selectedFiles.length > 0 && (
@@ -465,7 +465,7 @@ const AddHostelForm: React.FC = () => {
 
                         <div className="dash-btn-one d-inline-block position-relative me-3">
                             <i className="bi bi-plus"></i>
-                            Upload Image
+                            Tải ảnh lên
                             <input
                                 type="file"
                                 id="uploadCV"
@@ -476,7 +476,7 @@ const AddHostelForm: React.FC = () => {
                                 required
                             />
                         </div>
-                        <small>Upload file .jpg, .png</small>
+                        <small>Tải lên file .jpg, .png</small>
                     </div>
 
 

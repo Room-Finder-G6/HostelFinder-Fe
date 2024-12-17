@@ -1,160 +1,168 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 import Link from "next/link";
-import { toast } from "react-toastify"; // Assuming you're using toast for notifications
+import {toast} from "react-toastify"; // Assuming you're using toast for notifications
 import apiInstance from "@/utils/apiInstance"; // Assuming axios instance configuration
-import { jwtDecode } from "jwt-decode";
-import { signOut } from "next-auth/react";
+import {jwtDecode} from "jwt-decode";
+import {signOut} from "next-auth/react";
+
 interface JwtPayload {
-  UserId: string;
-  Username: string;
+    UserId: string;
+    Username: string;
 }
+
 const PasswordChangeBody = () => {
-  const [userName, setUserName] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    const [userName, setUserName] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-  const handleLogout = async () => {
-    localStorage.removeItem("userName");
-    localStorage.removeItem("token");
-    // Lấy callbackUrl từ biến môi trường
-    await signOut({
-      redirect: false,
+    const handleLogout = async () => {
+        localStorage.removeItem("userName");
+        localStorage.removeItem("token");
+        // Lấy callbackUrl từ biến môi trường
+        await signOut({
+            redirect: false,
+        });
+        const callbackUrl = process.env.NEXTAUTH_URL || "/";
+        window.location.href = callbackUrl;
+    };
+
+    // Hàm lấy userId từ token JWT
+    const getUserInfoFromToken = useCallback(() => {
+        const token = window.localStorage.getItem("token");
+        if (token) {
+            try {
+                const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); // Giải mã token để lấy userId
+                setUserName(decodedToken.Username);
+            } catch (error) {
+                console.error("Error decoding token:", error);
+                setError("Error decoding user token");
+            }
+        }
+        setError("No token found");
+        return null;
+    }, []);
+
+    useEffect(() => {
+        getUserInfoFromToken();
+    }, [getUserInfoFromToken]);
+
+    const [formData, setFormData] = useState({
+        username: "", // Replace with actual username from user context or session if available
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
     });
-    const callbackUrl = process.env.NEXTAUTH_URL || "/";
-    window.location.href = callbackUrl;
-  };
+    useEffect(() => {
+        if (userName) {
+            setFormData((prevData) => ({
+                ...prevData,
+                username: userName,
+            }));
+        }
+    }, [userName]);
 
-  // Hàm lấy userId từ token JWT
-  const getUserInfoFromToken = useCallback(() => {
-    const token = window.localStorage.getItem("token");
-    if (token) {
-      try {
-        const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token); // Giải mã token để lấy userId
-        setUserName(decodedToken.Username);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        setError("Error decoding user token");
-      }
-    }
-    setError("No token found");
-    return null;
-  }, []);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const {name, value} = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
-  useEffect(() => {
-    getUserInfoFromToken();
-  }, [getUserInfoFromToken]);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-  const [formData, setFormData] = useState({
-    username: "", // Replace with actual username from user context or session if available
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-  useEffect(() => {
-    if (userName) {
-      setFormData((prevData) => ({
-        ...prevData,
-        username: userName,
-      }));
-    }
-  }, [userName]);
+        // Basic validation
+        if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
+            toast.error("Tất cả các trường đều bắt buộc", {position: "top-center"});
+            return;
+        }
+        if (formData.newPassword !== formData.confirmPassword) {
+            toast.error("Mật khẩu không khớp", {position: "top-center"});
+            return;
+        }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+        try {
+            const response = await apiInstance.post("/auth/change-password", {
+                username: formData.username,
+                currentPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
+                confirmPassword: formData.confirmPassword,
+            });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+            if (response.status === 200) {
+                toast.success(response.data.message, {position: "top-center"});
+                setFormData({...formData, currentPassword: "", newPassword: "", confirmPassword: ""});
+                handleLogout();
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data.message, {position: "top-center"});
+        }
+    };
 
-    // Basic validation
-    if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      toast.error("Tất cả các trường đều bắt buộc", { position: "top-center" });
-      return;
-    }
-    if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("Mật khẩu không khớp", { position: "top-center" });
-      return;
-    }
+    return (
+        <div className="dashboard-body">
+            <div className="position-relative">
+                <DashboardHeaderTwo title="Change Password"/>
+                <div className="bg-white card-box border-20">
+                    <form onSubmit={handleSubmit}>
+                        <div className="row">
+                            <div className="col-12">
+                                <div className="dash-input-wrapper mb-20">
+                                    <label htmlFor="currentPassword">Mật khẩu cũ <span
+                                        style={{color: 'red'}}>*</span></label>
+                                    <input
+                                        type="password"
+                                        name="currentPassword"
+                                        placeholder="Nhập mật khẩu cũ"
+                                        value={formData.currentPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-12">
+                                <div className="dash-input-wrapper mb-20">
+                                    <label htmlFor="newPassword">Mật khẩu mới <span
+                                        style={{color: 'red'}}>*</span></label>
+                                    <input
+                                        type="password"
+                                        name="newPassword"
+                                        placeholder="Nhập mật khẩu mới"
+                                        value={formData.newPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="col-12">
+                                <div className="dash-input-wrapper mb-20">
+                                    <label htmlFor="Xác nhận mật khẩu">Xác nhận mật khẩu <span
+                                        style={{color: 'red'}}>*</span></label>
+                                    <input
+                                        type="password"
+                                        name="confirmPassword"
+                                        placeholder="Nhập lại mật khẩu mới"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
 
-    try {
-      const response = await apiInstance.post("/auth/change-password", {
-        username: formData.username,
-        currentPassword: formData.currentPassword,
-        newPassword: formData.newPassword,
-        confirmPassword: formData.confirmPassword,
-      });
-
-      if (response.status === 200) {
-        toast.success(response.data.message, { position: "top-center" });
-        setFormData({ ...formData, currentPassword: "", newPassword: "", confirmPassword: "" });
-        handleLogout();
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data.message, { position: "top-center" });
-    }
-  };
-
-  return (
-    <div className="dashboard-body">
-      <div className="position-relative">
-        <DashboardHeaderTwo title="Change Password" />
-        <div className="bg-white card-box border-20">
-          <form onSubmit={handleSubmit}>
-            <div className="row">
-              <div className="col-12">
-                <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="currentPassword">Mật khẩu cũ <span style={{ color: 'red' }}>*</span></label>
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    placeholder="Nhập mật khẩu cũ"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                    required
-                  />
+                        <div className="button-group d-inline-flex align-items-center">
+                            <button type="submit" className="dash-btn-two tran3s me-3">Cập nhật</button>
+                            <Link href="/dashboard/profile" className="dash-cancel-btn tran3s">
+                                Hủy
+                            </Link>
+                        </div>
+                    </form>
                 </div>
-              </div>
-              <div className="col-12">
-                <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="newPassword">Mật khẩu mới <span style={{ color: 'red' }}>*</span></label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    placeholder="Nhập mật khẩu mới"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="dash-input-wrapper mb-20">
-                  <label htmlFor="Xác nhận mật khẩu">Xác nhận mật khẩu <span style={{ color: 'red' }}>*</span></label>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    placeholder="Nhập lại mật khẩu mới"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
             </div>
-
-            <div className="button-group d-inline-flex align-items-center">
-              <button type="submit" className="dash-btn-two tran3s">Lưu và cập nhật</button>
-            </div>
-          </form>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default PasswordChangeBody;

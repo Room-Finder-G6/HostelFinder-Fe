@@ -1,6 +1,3 @@
-import Link from "next/link"
-import Count from "@/components/common/Count";
-
 interface ContentType {
     sub_title: string;
     desc_1: JSX.Element;
