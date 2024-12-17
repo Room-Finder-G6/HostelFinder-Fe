@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import logo from "@/assets/images/logo/logo_06.svg";
 import '@/styles/index.scss'; // File chứa các thiết lập CSS
-import './nav.css';
+
 import HeartButton from "./HeartButton";
 import useNavData from '../Menu/useNavData';
 import { jwtDecode } from "jwt-decode";
