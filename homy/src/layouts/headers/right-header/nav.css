@@ -1,5 +1,5 @@
 .nav-item.favorites .fa-heart {
-    font-size: 25px;
+    
     color: #ff1c1c;
 }
 
@@ -77,4 +77,9 @@ font-size: 12px;
 .tooltip-container:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+}
+.header-controls {
+    display: flex;
+    align-items: center; /* Căn giữa các items theo chiều dọc */
+    gap: 20px; /* Khoảng cách giữa các nút */
 }
