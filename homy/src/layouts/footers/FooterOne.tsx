@@ -20,7 +20,7 @@ const FooterOne = ({style}: any) => {
                                 <div className="bg-wrapper">
                                     <div className="logo mb-20">
                                         <Link href="/">
-                                            <Image src={style ? footerLogo_2 : footerLogo_1} alt=""/>
+                                            <Image src={ footerLogo_2 } alt=""/>
                                         </Link>
                                     </div>
                                     <p className="mb-60 lg-mb-40 md-mb-20">Khu CNC Hòa Lạc, Thạch Thất, Hà Nội</p>

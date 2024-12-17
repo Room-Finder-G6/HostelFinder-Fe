@@ -1,40 +1,67 @@
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import React, { useState } from "react";
+import React, {useState, useEffect} from "react";
 import apiInstance from "@/utils/apiInstance";
-import { getUserIdFromToken } from "@/utils/tokenUtils";
-import { toast } from "react-toastify";
+import {getUserIdFromToken} from "@/utils/tokenUtils";
+import {toast} from "react-toastify";
+import Loading from "@/components/Loading";
+
+interface PaymentInfo {
+    bankName: string;
+    accountNumber: string;
+    qrCode: string;
+}
 
 const PaymentInfoBody = () => {
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null); // State for image preview
+    const [qrCodeUrl, setQrCodeUrl] = useState<string>("");
     const [bankName, setBankName] = useState<string>("");
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const landlordId = getUserIdFromToken();
 
     const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB
+
+    useEffect(() => {
+        fetchPaymentInfo();
+    }, []);
+
+    const fetchPaymentInfo = async () => {
+        try {
+            setIsLoading(true);
+            const response = await apiInstance.get(`/users/${landlordId}`);
+
+            if (response.data.succeeded && response.data.data) {
+                const paymentInfo: PaymentInfo = response.data.data;
+                setBankName(paymentInfo.bankName);
+                setAccountNumber(paymentInfo.accountNumber);
+                setQrCodeUrl(paymentInfo.qrCode);
+            }
+        } catch (error) {
+            console.error('Error fetching payment info:', error);
+            toast.error("Không thể tải thông tin thanh toán");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
                 setErrorMessage("File size exceeds 3MB. Please select a smaller file.");
+                setSelectedImage(null);
             } else {
                 setErrorMessage(null);
                 setSelectedImage(file);
-                setImagePreview(URL.createObjectURL(file)); // Set the preview URL
             }
         }
     };
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        console.log('Selected Image:', selectedImage);
-        console.log('Bank Name:', bankName);
-        console.log('Account Number:', accountNumber);
-        console.log('Landlord ID:', landlordId);
         if (!selectedImage) {
-            setErrorMessage("Please upload a QR code image.");
+            setErrorMessage("Vui lòng tải lên ảnh mã QR.");
             return;
         }
 
@@ -52,10 +79,8 @@ const PaymentInfoBody = () => {
 
             if (response.data.succeeded) {
                 toast.success("Thêm thông tin thanh toán thành công!");
-                setSelectedImage(null); // Clear the selected image after successful upload
-                setImagePreview(null);  // Clear preview
-                setBankName("");
-                setAccountNumber("");
+                setSelectedImage(null);
+                fetchPaymentInfo(); // Refresh the data after successful update
             } else {
                 toast.error("Lỗi khi tải lên thông tin thanh toán.");
             }
@@ -67,8 +92,9 @@ const PaymentInfoBody = () => {
 
     return (
         <div className="dashboard-body">
+            {isLoading && <Loading/>}
             <div className="position-relative">
-                <DashboardHeaderTwo title="Thêm thông tin thanh toán" />
+                <DashboardHeaderTwo title="Thêm thông tin thanh toán"/>
                 <div className="bg-white card-box border-20">
                     <form onSubmit={handleSubmit}>
                         <div className="row">
@@ -82,20 +108,33 @@ const PaymentInfoBody = () => {
                                         id="qrCodeImage"
                                         name="qrCodeImage"
                                         accept="image/*"
-                                        required
                                         onChange={handleFileChange}
+                                        required
                                     />
                                 </div>
                                 <small>Tải lên file .jpg, .png</small>
                                 {errorMessage && <p className="text-danger">{errorMessage}</p>}
 
-                                {/* Preview image */}
-                                {imagePreview && (
+                                {/* Show current QR code from URL */}
+                                {qrCodeUrl && !selectedImage && (
                                     <div className="mt-3">
+                                        <p className="mb-2">Mã QR hiện tại:</p>
                                         <img
-                                            src={imagePreview}
-                                            alt="QR Code Preview"
-                                            style={{ width: "200px", height: "auto" }}
+                                            src={qrCodeUrl}
+                                            alt="Current QR Code"
+                                            style={{width: "200px", height: "auto"}}
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Show preview of selected file */}
+                                {selectedImage && (
+                                    <div className="mt-3">
+                                        <p className="mb-2">Ảnh đã chọn:</p>
+                                        <img
+                                            src={URL.createObjectURL(selectedImage)}
+                                            alt="Selected QR Code"
+                                            style={{width: "200px", height: "auto"}}
                                         />
                                     </div>
                                 )}
@@ -104,7 +143,7 @@ const PaymentInfoBody = () => {
                             <div className="col-12">
                                 <div className="dash-input-wrapper mb-20">
                                     <label htmlFor="bankName">
-                                        Tên ngân hàng <span style={{ color: 'red' }}>*</span>
+                                        Tên ngân hàng <span style={{color: 'red'}}>*</span>
                                     </label>
                                     <input
                                         type="text"
@@ -120,7 +159,7 @@ const PaymentInfoBody = () => {
                             <div className="col-12">
                                 <div className="dash-input-wrapper mb-20">
                                     <label htmlFor="accountNumber">
-                                        Số tài khoản <span style={{ color: 'red' }}>*</span>
+                                        Số tài khoản <span style={{color: 'red'}}>*</span>
                                     </label>
                                     <input
                                         type="text"
