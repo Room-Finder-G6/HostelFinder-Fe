@@ -40,7 +40,9 @@ const UserPostManagement = () => {
             });
             if (response.data.succeeded) {
                 toast.success(response.data.message);
-                await fetchPostsByUser(pageIndex, sortOption);
+                setTimeout(() => {
+                    window.location.href = '/dashboard/manage-post';
+                }, 2000)
             }
 
         } catch (error) {
