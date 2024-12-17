@@ -196,15 +196,26 @@ const CreateInvoiceModal: React.FC<CreateInvoiceModalProps> = ({ isOpen, onClose
                     {/* Status Alerts */}
                     <div className="alert-section">
                         {invoiceExists ? (
-                            <Alert variant="warning" className="invoice-alert">
-                                <div className="d-flex">
-                                    <i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
-                                    <div>
-                                        <div className="fw-bold">Đã tồn tại hóa đơn!</div>
-                                        <div>Bạn đã lập hóa đơn cho tháng {billingMonth}. Thay đổi có thể được thực hiện ở phần ghi dịch vụ phòng.</div>
+                            <>
+                                <Alert variant="warning" className="invoice-alert">
+                                    <div className="d-flex">
+                                        <i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                                        <div>
+                                            <div className="fw-bold">Đã tồn tại hóa đơn!</div>
+                                            <div>Bạn đã lập hóa đơn cho tháng {billingMonth}. Thay đổi có thể được thực hiện ở phần ghi dịch vụ phòng.</div>
+                                        </div>
                                     </div>
-                                </div>
-                            </Alert>
+                                </Alert>
+                                <Alert variant="warning" className="invoice-alert">
+                                    <div className="d-flex">
+                                        <i className="bi bi-exclamation-triangle-fill fs-4 me-2"></i>
+                                        <div>
+                                            <div className="fw-bold">Chú ý!</div>
+                                            <div>Nếu hóa đơn đã được tạo vui lòng xóa và tạo lại.</div>
+                                        </div>
+                                    </div>
+                                </Alert>
+                            </>
                         ) : (
                             <Alert variant="info" className="invoice-alert">
                                 <div className="d-flex">
