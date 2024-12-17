@@ -13,20 +13,20 @@ import FancyBanner from "@/components/common/FancyBanner"
 const HomeOne = () => {
     return (
         <>
-            <HeaderOne style={false}/>
-            <Banner/>
+            <HeaderOne style={false} />
+            <Banner />
             {/* <Feedback /> */}
-            <BLockFeatureOne/>
+            <BLockFeatureOne />
             {/*<BLockFeatureThree/>*/}
-            <Property/>
+            <Property />
             {/* <FancyBannerOne style={false} /> */}
             {/* <AgentArea style={false} /> */}
             {/*<BLockFeatureFour />*/}
             {/*<BLockFeatureTwo/>*/}
-            <BLockFeatureFive style={false}/>
-            <FancyBanner style={false}/>
+            <BLockFeatureFive style={false} />
+            <FancyBanner style={false} />
             {/*<FancyBannerThree />*/}
-            <FooterOne style={false}/>
+            {/* <FooterOne style={false}/> */}
         </>
     )
 }

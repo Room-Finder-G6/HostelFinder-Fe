@@ -11,16 +11,6 @@
     align-items: center; /* Căn giữa nội dung theo chiều dọc */
     margin-left: 10px;
 }
-.dropdown-menu {
-    display: block; /* Đảm bảo dropdown hiển thị */
-    position: absolute;
-    background: #fff;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    z-index: 1000; /* Đảm bảo nội dung nằm trên các phần tử khác */
-    width: 200px; /* Đặt chiều rộng phù hợp */
-}
 
 
 .notification-btn,

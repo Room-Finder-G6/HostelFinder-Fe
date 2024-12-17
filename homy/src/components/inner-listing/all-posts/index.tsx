@@ -9,7 +9,7 @@ const ListingSix = () => {
          <HeaderOne style={true} />
          <ListingFourArea />
          <FancyBanner />
-         <FooterFour />
+         {/* <FooterFour /> */}
       </>
    )
 }

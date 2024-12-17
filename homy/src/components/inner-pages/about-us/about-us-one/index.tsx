@@ -17,7 +17,7 @@ const AboutUsOne = () => {
          {/*<BLockFeatureFive style={true} />
          <Brand />
          <FancyBanner style={false} />*/}
-         <FooterFour />
+         {/* <FooterFour /> */}
       </>
    )
 }

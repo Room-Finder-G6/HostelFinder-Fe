@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import logo from "@/assets/images/logo/logo_06.svg";
 import '@/styles/index.scss'; // File chứa các thiết lập CSS
-import './nav.css';
+
 import HeartButton from "./HeartButton";
 import useNavData from '../Menu/useNavData';
 import { jwtDecode } from "jwt-decode";
@@ -61,7 +61,7 @@ const NavMenu = () => {
       )}
       {role === 'Admin' && (
         <li className="nav-item admin-menu">
-          <Link className="nav-link" href="/admin/admin-index">Admin</Link>
+          <Link className="nav-link" href="admin/dashboard-membership">Admin</Link>
         </li>
       )}
       <li className="nav-item posts">
@@ -76,7 +76,7 @@ const NavMenu = () => {
       {/* <ul className="nav-item favorites">
         <HeartButton wishlistCount={wishlistCount} /> 
       </ul> */}
-     
+
     </ul>
 
   );

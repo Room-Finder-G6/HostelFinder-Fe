@@ -62,7 +62,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
           router.push("/dashboard/reports");
         }
         else if (responseData.role === "Admin") {
-          router.push("/admin/admin-index");
+          router.push("/admin/dashboard-membership");
         }
       }
     } catch (error: any) {
@@ -82,7 +82,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
         <div className="row">
           <div className="col-12">
             <div className="input-group-meta position-relative mb-25">
-              <label>Tên đăng nhập<span style={{color:'red'}}>*</span></label>
+              <label>Tên đăng nhập<span style={{ color: 'red' }}>*</span></label>
               <input
                 type="text"
                 {...register("userName")}
@@ -93,9 +93,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ setShowForgotPassword }) => {
           </div>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-20">
-              <label>Mật khẩu<span style={{color: 'red'}}>*</span></label>
+              <label>Mật khẩu<span style={{ color: 'red' }}>*</span></label>
               <input
-                  type={isPasswordVisible ? "text" : "password"}
+                type={isPasswordVisible ? "text" : "password"}
                 {...register("password")}
                 placeholder="Nhập mật khẩu"
                 className="pass_log_id"

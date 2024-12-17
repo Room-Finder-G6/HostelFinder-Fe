@@ -12,11 +12,11 @@ import AdminHeaderTwo from "@/layouts/headers/admin/AdminHeaderTwo";
 const UserManagement = () => {
     const { users, loading, totalPages, pageIndex, setPageIndex } = useUsers();
     const selectHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const selectedOption = event.target.value;
-      console.log("Selected sort option:", selectedOption);
-  };
-  
-    
+        const selectedOption = event.target.value;
+        console.log("Selected sort option:", selectedOption);
+    };
+
+
 
     return (
         <div className="dashboard-body">
@@ -53,7 +53,7 @@ const UserManagement = () => {
                                 <th scope="col">Email</th>
                                 <th scope="col">Số điện thoại</th>
                                 <th scope="col">Trạng thái</th>
-                                <th scope="col">Actions</th>
+                                <th scope="col">Hành động</th>
                             </tr>
                         </thead>
                         <UserTableBody users={users} loading={loading} />

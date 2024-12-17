@@ -14,9 +14,7 @@ const HeartButton: React.FC<HeartButtonProps> = ({ wishlistCount }) => {
         <span className="wishlist-badge" >
           {wishlistCount}
         </span>
-        
       )}
-      
     </Link>
   );
 };

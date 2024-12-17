@@ -51,7 +51,7 @@ const MembershipTableBody: React.FC<MembershipTableBodyProps> = ({ memberships, 
                 <tr key={membership.id}>
                     <td>{membership.name}</td>
                     <td>{membership.description}</td>
-                    <td>${membership.price}</td>
+                    <td>{membership.price.toLocaleString('vi-VN')} VNĐ</td>
                     <td>{membership.duration}</td>
                     <td>
                         <div className="action-dots float-end">
