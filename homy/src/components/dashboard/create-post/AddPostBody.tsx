@@ -156,10 +156,11 @@ const AddPostBody: React.FC = () => {
                 <div className="bg-white card-box border-20 mt-10">
                     <h4 className="dash-title-three">Hình ảnh</h4>
                     <UploadImage onImageUpload={handleImageUpload} multiple={true}/>
+                    <small>Tải lên file .jpg, .png</small>
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    <div className="button-group d-inline-flex align-items-center mt-30">
+                <div className="button-group d-inline-flex align-items-center mt-30">
                         <button type="submit" className="dash-btn-two tran3s me-3">
                             Đăng bài
                         </button>

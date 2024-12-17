@@ -11,7 +11,7 @@ const AboutUsOne = () => {
    return (
       <>
          <HeaderOne style={true} />
-         <BreadcrumbOne title="Phongtro247.net" style={false} />
+         <BreadcrumbOne title="PHONGTRO247.NET" style={false} />
          <BLockFeatureOne />
          <AgentArea style={false} />
          {/*<BLockFeatureFive style={true} />
