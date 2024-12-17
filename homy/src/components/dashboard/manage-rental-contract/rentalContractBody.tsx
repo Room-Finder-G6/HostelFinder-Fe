@@ -149,8 +149,11 @@ const InvoiceBody = () => {
       if (status == "Trong thời hạn") {
          return "bg-success text-white";  // Màu xanh lá cho "Đang trong thời hạn"
       }
+      if (status == "Chưa bắt đầu") {
+         return "bg-secondary text-gray";  // Màu xanh lá cho "Đang trong thời hạn"
+      }
 
-      return "bg-secondary text-gray";  // Màu xám cho "Chưa bắt đầu"
+      return "";  // Màu xám cho "Chưa bắt đầu"
    };
 
    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -212,7 +215,7 @@ const InvoiceBody = () => {
                            <th scope="col">Tiền thuê hằng tháng</th>
                            <th scope="col">Tiền cọc</th>
                            <th scope="col">Trạng thái</th>
-                           <th scope="col">Hành động</th>
+                           {/* <th scope="col">Hành động</th> */}
                         </tr>
                      </thead>
                      <tbody className="border-0">
@@ -238,14 +241,14 @@ const InvoiceBody = () => {
                                     {rentalContract.status}
                                  </span>
                               </td>
-                              <td>
+                              {/* <td>
                                  <div className="d-flex justify-content-end btns-group">
 
                                     <ButtonToolbar className="ms-5" data-bs-toggle="tooltip" title="Delete">
                                        <i className="fa-regular fa-trash"></i>
                                     </ButtonToolbar>
                                  </div>
-                              </td>
+                              </td> */}
                            </tr>
                         ))}
                      </tbody>
