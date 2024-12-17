@@ -8,14 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
- 
+
 interface Address {
   province: string;
   district: string;
   commune: string;
   detailAddress: string;
 }
- 
+
 interface DataType {
   id: string;
   hostelName: string;
@@ -25,11 +25,11 @@ interface DataType {
   createdOn: string;
   size: number | 0;
 }
- 
+
 interface JwtPayload {
   UserId: string;
 }
- 
+
 const PropertyTableHostel = ({
   pageNumber,
   pageSize,
@@ -68,7 +68,7 @@ const PropertyTableHostel = ({
     setError("No token found");
     return null;
   }, []);
- 
+
   // Fetching landlordId from the token when component mounts
   useEffect(() => {
     const userId = getUserIdFromToken();
@@ -76,22 +76,22 @@ const PropertyTableHostel = ({
       setLandlordId(userId);
     }
   }, [getUserIdFromToken]);
- 
+
   // Fetching hostel data for the current landlord
   const fetchHostels = useCallback(async () => {
     if (!landlordId) {
       return;
     }
- 
+
     setIsLoading(true);
     setError(null);
- 
+
     try {
       const token = window.localStorage.getItem("token");
       if (!token) {
         throw new Error("No token found");
       }
- 
+
       const response = await apiInstance.get(
         `hostels/GetHostelsByLandlordId/${landlordId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
       );
@@ -105,49 +105,47 @@ const PropertyTableHostel = ({
       setIsLoading(false);
     }
   }, [landlordId, pageNumber, pageSize]);
- 
+
   // Fetching data when landlordId is set
   useEffect(() => {
     if (landlordId) {
       fetchHostels();
     }
   }, [landlordId, fetchHostels]);
- 
+
   // Handle delete hostel
   const handleDelete = async (id: string) => {
-    setIsLoading(true);
-    setError(null);
     try {
       const token = window.localStorage.getItem("token");
       if (!token) {
         throw new Error("No token found");
       }
- 
-      await apiInstance.delete(`hostels/DeleteHostel/${id}`);
- 
+
+      var response = await apiInstance.delete(`hostels/DeleteHostel/${id}`);
+
       // Refetch the data after successful deletion
+      toast.success(response.data.message);
       await fetchHostels();
-      toast.success("Hostel deleted successfully");
     } catch (error: any) {
-      console.error("Error deleting hostel:", error);
-      setError(error.message || "An error occurred while deleting the hostel");
-    } finally {
-      setIsLoading(false);
+      if (error.status === 400) {
+        console.log("Error deleting hostel:", error);
+        toast.error(error.response?.data.message || "Lỗi khi xóa phòng trọ");
+      }
     }
   };
- 
+
   // Open delete modal
   const openDeleteModal = (id: string) => {
     setDeleteId(id);
     setShowModal(true);
   };
- 
+
   // Close delete modal
   const closeDeleteModal = () => {
     setShowModal(false);
     setDeleteId(null);
   };
- 
+
   // Loading, error or no data handling
   if (isLoading) {
     return (
@@ -156,17 +154,9 @@ const PropertyTableHostel = ({
       </tbody>
     );
   }
- 
-  if (error) {
-    return (
-      <tbody>
-        <tr>
-          <td colSpan={4}>Error: {error}</td>
-        </tr>
-      </tbody>
-    );
-  }
- 
+
+
+
   if (hostels.length === 0) {
     return (
       <tbody>
@@ -176,7 +166,7 @@ const PropertyTableHostel = ({
       </tbody>
     );
   }
- 
+
   return (
     <>
       <DeleteModal
@@ -258,5 +248,5 @@ const PropertyTableHostel = ({
     </>
   );
 };
- 
+
 export default PropertyTableHostel;
