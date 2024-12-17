@@ -69,7 +69,7 @@ const MembershipTableBody: React.FC<MembershipTableBodyProps> = ({ memberships, 
                                         className="dropdown-item"
                                         onClick={() => onEdit(membership)} // Gọi hàm onEdit khi click
                                     >
-                                        Edit
+                                        Cập nhật
                                     </button>
                                 </li>
                                 <li>
@@ -77,7 +77,7 @@ const MembershipTableBody: React.FC<MembershipTableBodyProps> = ({ memberships, 
                                         className="dropdown-item"
                                         onClick={() => onDelete(membership.id)} // Gọi hàm xóa khi click
                                     >
-                                        Delete
+                                        Xóa
                                     </button>
                                 </li>
                             </ul>

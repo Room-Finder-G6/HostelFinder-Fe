@@ -89,7 +89,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                     href: "/admin/manager-membership",
                     activeIcon: dashboardIconActive_8,
                     inactiveIcon: dashboardIcon_8,
-                    label: "Quản Lý MemberShip"
+                    label: "Quản Lý Gói Hội Viên"
                 },
 
                 {
