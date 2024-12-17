@@ -35,8 +35,8 @@ const MembershipManagement = () => {
         setEditingMembership(null); // Đóng form mà không lưu
     };
 
-    
-    
+
+
 
     return (
         <div className="dashboard-body membership-management">
@@ -51,7 +51,7 @@ const MembershipManagement = () => {
                 <>
                     <div className="d-sm-flex align-items-center justify-content-between mb-25">
                         <div className="short-filter d-flex align-items-center ms-sm-auto">
-                             {/* <NiceSelect
+                            {/* <NiceSelect
                                 className="nice-select"
                                 options={[
                                     { value: "1", text: "Mới nhất" },
@@ -78,7 +78,7 @@ const MembershipManagement = () => {
                                         <th scope="col">Gói Thành Viên</th>
                                         <th scope="col">Miêu tả</th>
                                         <th scope="col">Giá</th>
-                                        <th scope="col">Thời Gian</th>
+                                        <th scope="col">Số lượt đăng bài</th>
                                         <th scope="col">Hành Động</th>
                                     </tr>
                                 </thead>
