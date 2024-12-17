@@ -309,6 +309,10 @@ const ProfileBody: React.FC = () => {
                                     <span className="btn-link">Đổi mật khẩu</span>
                                 </Link>
                             </p>
+
+                            <Link className="ms-5" href="/dashboard/payment-info" passHref>
+                                <span className="btn-link">Thêm thông tin thanh toán</span>
+                            </Link>
                         </div>
                     </div>
                 </div>

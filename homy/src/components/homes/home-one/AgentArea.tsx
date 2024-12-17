@@ -43,7 +43,7 @@ const AgentArea = ({ style }: any) => {
          <div className={`container ${style ? "container-large" : ""}`}>
             <div className="position-relative">
                <div className="title-one mb-85 lg-mb-50 wow fadeInLeft">
-                  <h3>Các <span>thành viên{style?"":<Image src={titleShape} alt="" className="lazy-img" />}</span></h3>
+                  <h3><span>Co - Founder{style?"":<Image src={titleShape} alt="" className="lazy-img" />}</span></h3>
                </div>
 
                <div className="wrapper position-relative z-1">
