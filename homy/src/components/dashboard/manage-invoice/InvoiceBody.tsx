@@ -227,9 +227,18 @@ const InvoiceBody = () => {
       setSendingEmail(true);
       setEmailMessage(null);
       setEmailError(null);
+      const landlordId = getUserIdFromToken();
+
+      if (!landlordId) {
+         setSendingEmail(false);
+         return;
+      }
       try {
          const response = await apiInstance.post(`/invoices/send-email`, null, {
-            params: { invoiceId: invoiceDetails.id },
+            params: {
+               landlordId: landlordId,
+               invoiceId: invoiceDetails.id
+            },
          });
 
          if (response.data.succeeded) {
