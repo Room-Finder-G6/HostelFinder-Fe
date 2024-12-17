@@ -22,25 +22,6 @@ const UserManagement = () => {
         <div className="dashboard-body">
             <AdminHeaderTwo title="User Management" />
             <div className="d-sm-flex align-items-center justify-content-between mb-25">
-                <div className="short-filter d-flex align-items-center ms-sm-auto">
-                    <NiceSelect
-                        className="nice-select"
-                        options={[
-                            { value: "1", text: "Newest" },
-                            { value: "2", text: "Active Users" },
-                            { value: "3", text: "Inactive Users" },
-                        ]}
-                        defaultCurrent={0}
-                        onChange={selectHandler}
-                        name="sortOptions"
-                        placeholder="Sort Users"
-                    />
-                </div>
-                <li className="d-none d-md-inline-block ms-3">
-                    <Link href="/dashboard/create-user" className="btn-two" target="_blank">
-                        <span>Thêm người dùng</span>
-                    </Link>
-                </li>
             </div>
 
             <div className="bg-white card-box p0 border-20">

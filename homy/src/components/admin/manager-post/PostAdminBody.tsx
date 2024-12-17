@@ -97,30 +97,6 @@ function PostAdminBody({ posts, loading }: PostAdminBodyProps) {
                             >
                                 {post.status ? "Hoạt động" : "Không hoạt động"}
                             </span>
-                            {/* Dropdown */}
-                            <div className="dropdown d-inline-block" style={{ position: "relative" }}>
-                                <button
-                                    className="btn btn-light dropdown-toggle p-0"
-                                    type="button"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                    style={{ border: "none", background: "none" }}
-                                >
-                                    <span className="vertical-dots" style={{ fontSize: "20px", lineHeight: "1" }}>⋮</span>
-                                </button>
-                                <ul className="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <Link className="dropdown-item" href={`/dashboard/edit-post/${post.id}`}>
-                                            <Image src={icon_3} alt="Edit" width={16} height={16} /> Cập nhật
-                                        </Link>
-                                    </li>
-                                    <li>
-                                        <Link className="dropdown-item" href="#">
-                                            <Image src={icon_4} alt="Delete" width={16} height={16} /> Xóa
-                                        </Link>
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
                     </td>
                 </tr>

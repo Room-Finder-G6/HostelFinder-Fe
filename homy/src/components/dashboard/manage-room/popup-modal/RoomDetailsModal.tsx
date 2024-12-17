@@ -901,19 +901,7 @@ const RoomDetailsModal: React.FC<RoomDetailsModalProps> = ({ isOpen, onClose, ro
                                     )}
                                 </section>
                             </Tab>
-                            <Tab eventKey="repairs" title={<span><FaWrench className="me-2" />Lịch sử sửa chữa</span>}>
-                                {/* Lịch sử sửa chữa */}
-                                <section className="mb-3">
-                                    <h5>Lịch sử sửa chữa</h5>
-                                    {roomDetails.roomRepairHostory ? (
-                                        <div>
-                                            {/* Hiển thị lịch sử sửa chữa tại đây */}
-                                        </div>
-                                    ) : (
-                                        <p>Không có lịch sử sửa chữa.</p>
-                                    )}
-                                </section>
-                            </Tab>
+                          
                         </Tabs>
                     </div>
                 ) : (
