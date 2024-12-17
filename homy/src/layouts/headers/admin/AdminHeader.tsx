@@ -67,24 +67,8 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
 
     // Định nghĩa navigation items để dễ quản lý và maintain
     const navigationItems = [
-        {
-            section: "main",
-            items: [
-                {
-                    href: "/admin/admin-index",
-                    activeIcon: dashboardIconActive_1,
-                    inactiveIcon: dashboardIcon_1,
-                    label: "Admin"
-                },
-                {
-                    href: "/dashboard/message",
-                    activeIcon: dashboardIconActive_2,
-                    inactiveIcon: dashboardIcon_2,
-                    label: "Message"
-                }
-            ]
-        },
-   
+
+
         {
             section: "listing",
             title: "Listing",
@@ -107,7 +91,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                     inactiveIcon: dashboardIcon_8,
                     label: "Quản Lý MemberShip"
                 },
-                
+
                 {
                     href: "/admin/manager-post",
                     activeIcon: dashboardIconActive_6,
@@ -120,7 +104,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                     inactiveIcon: dashboardIcon_3,
                     label: "Quản Lý Người Dùng"
                 },
-             
+
             ]
         }
     ];
@@ -185,16 +169,16 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                 </nav>
 
                 {/* Profile Completion Section */}
-                <div className="profile-complete-status bottom-line pb-35 plr">
+                {/* <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-value fw-500">82%</div>
                     <div className="progress-line position-relative">
                         <div className="inner-line" style={{ width: "80%" }}></div>
                     </div>
                     <p>Profile Complete</p>
-                </div>
+                </div> */}
 
                 {/* Logout Button */}
-                <div className="plr">
+                {/* <div className="plr">
                     <Link
                         href="#"
                         className="d-flex w-100 align-items-center logout-btn"
@@ -205,10 +189,10 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ isActive, setIsActive }) => {
                         </div>
                         <span>Logout</span>
                     </Link>
-                </div>
+                </div> */}
             </div>
         </aside>
     );
 };
 
-export default React.memo( AdminHeader);
+export default React.memo(AdminHeader);

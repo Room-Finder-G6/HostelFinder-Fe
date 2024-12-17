@@ -5,6 +5,7 @@ import apiInstance from "@/utils/apiInstance";
 import { jwtDecode } from "jwt-decode";
 import Loading from '@/components/Loading';
 import { FaArrowDown, FaBuilding, FaCalendar, FaChartBar, FaChartLine, FaCoins, FaMoneyBillWave } from "react-icons/fa";
+import Link from "next/link";
 
 // Kiểu dữ liệu của chi tiết doanh thu phòng
 interface RoomRevenue {
@@ -254,17 +255,19 @@ const PropertyTableBody = () => {
                            </Card>
                         </Col>
                         <Col sm={4}>
-                           <Card bg="custom-danger" text="white" className="mb-2 shadow">
-                              <Card.Body>
-                                 <Card.Title className="d-flex align-items-center">
-                                    <FaArrowDown className="mr-2" />
-                                    Tổng Chi
-                                 </Card.Title>
-                                 <Card.Text className="h4 font-weight-bold mb-0">
-                                    {formatCurrency(viewMode === "year" ? yearlyRevenue?.totalCostOfMaintenance || 0 : 0)}
-                                 </Card.Text>
-                              </Card.Body>
-                           </Card>
+                           <Link href="/dashboard/manage-maintenance" className="text-decoration-none d-block w-100">
+                              <Card bg="custom-danger" text="white" className="mb-2 shadow cursor-pointer hover:opacity-90 w-100">
+                                 <Card.Body>
+                                    <Card.Title className="d-flex align-items-center">
+                                       <FaArrowDown className="mr-2" />
+                                       Tổng Chi
+                                    </Card.Title>
+                                    <Card.Text className="h4 font-weight-bold mb-0">
+                                       {formatCurrency(viewMode === "year" ? yearlyRevenue?.totalCostOfMaintenance || 0 : 0)}
+                                    </Card.Text>
+                                 </Card.Body>
+                              </Card>
+                           </Link>
                         </Col>
                         <Col sm={4}>
                            <Card bg="custom-info" text="white" className="mb-2 shadow">
