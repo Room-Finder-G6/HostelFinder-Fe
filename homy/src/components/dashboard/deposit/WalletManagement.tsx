@@ -4,6 +4,7 @@ import {Wallet, CreditCard, ArrowUpCircle} from "lucide-react";
 import apiInstance from "@/utils/apiInstance";
 import {jwtDecode} from "jwt-decode";
 import Loading from "@/components/Loading";
+import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
 
 interface JwtPayload {
     UserId: string;
@@ -137,6 +138,7 @@ const WalletManagement = () => {
 
     return (
         <div className="dashboard-body">
+            <DashboardHeaderTwo title="Quản lý ví"/>
             <div className="container py-4">
                 {/* Welcome Card */}
                 {fullName && (

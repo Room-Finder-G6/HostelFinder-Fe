@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {Dropdown, Table} from 'react-bootstrap';
-import {FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash} from 'react-icons/fa';
-import {TfiWrite} from 'react-icons/tfi';
-import {toast} from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import { Dropdown, Table } from 'react-bootstrap';
+import { FaEdit, FaEllipsisV, FaFileContract, FaFileInvoice, FaInfoCircle, FaTrash } from 'react-icons/fa';
+import { TfiWrite } from 'react-icons/tfi';
+import { toast } from "react-toastify";
 import apiInstance from '@/utils/apiInstance';
 import Loading from '@/components/Loading';
 import CreateContractModal from './popup-modal/CreateContractModal';
@@ -32,7 +32,7 @@ interface RoomTableBodyProps {
     setRefreshRooms: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFloor, refresh, setRefreshRooms}) => {
+const RoomTableBody: React.FC<RoomTableBodyProps> = ({ selectedHostel, selectedFloor, refresh, setRefreshRooms }) => {
     // State hooks
     const [rooms, setRooms] = useState<Room[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -102,7 +102,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFl
             }
         } catch (error: any) {
             console.log(error)
-            toast.error("Có lỗi xảy ra khi xóa phòng")
+            toast.error(error.response.data.message)
         } finally {
             setShowDeleteModal(false)
         }
@@ -179,11 +179,11 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFl
     if (loading) {
         return (
             <tbody>
-            <tr>
-                <td colSpan={5}>
-                    <Loading/>
-                </td>
-            </tr>
+                <tr>
+                    <td colSpan={5}>
+                        <Loading />
+                    </td>
+                </tr>
             </tbody>
         );
     }
@@ -192,104 +192,104 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFl
     if (rooms.length === 0) {
         return (
             <tbody>
-            <tr>
-                <td
-                    colSpan={5}
-                    className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
-                >
-                    Hiện tại chưa có phòng trọ nào
-                </td>
-            </tr>
+                <tr>
+                    <td
+                        colSpan={5}
+                        className="text-center py-5 text-muted fs-5 fw-semibold fst-italic bg-light"
+                    >
+                        Hiện tại chưa có phòng trọ nào
+                    </td>
+                </tr>
             </tbody>
         );
     }
     return (
         <>
             <tbody>
-            {rooms.map((room) => (
-                <tr key={room.id} className="room-row">
-                    <td>
-                        <div className="room-info">
-                            <div className="room-image">
-                                <img
-                                    src={room.imageRoom}
-                                    alt={room.roomName}
-                                    className="room-thumbnail"
-                                />
-                            </div>
-                            <div className="room-details">
-                                <h6 className="room-name">{room.roomName}</h6>
-                                <div className="specs">
+                {rooms.map((room) => (
+                    <tr key={room.id} className="room-row">
+                        <td>
+                            <div className="room-info">
+                                <div className="room-image">
+                                    <img
+                                        src={room.imageRoom}
+                                        alt={room.roomName}
+                                        className="room-thumbnail"
+                                    />
+                                </div>
+                                <div className="room-details">
+                                    <h6 className="room-name">{room.roomName}</h6>
+                                    <div className="specs">
                                         <span className="spec-item">
                                             <i className="bi bi-building text-primary"></i>
                                             Tầng {room.floor ?? 'N/A'}
                                         </span>
-                                    <span className="spec-item">
+                                        <span className="spec-item">
                                             <i className="bi bi-arrows-angle-expand text-success"></i>
-                                        {room.size} m²
+                                            {room.size} m²
                                         </span>
-                                    <span className="spec-item">
+                                        <span className="spec-item">
                                             <i className="bi bi-people text-info"></i>
-                                        {room.maxRenters} người
+                                            {room.maxRenters} người
                                         </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div className="date-info">
-                            <div className="date">{formatDate(room.createdOn)}</div>
-                        </div>
-                    </td>
-                    <td>
-                        <div className="price-info">
+                        </td>
+                        <td>
+                            <div className="date-info">
+                                <div className="date">{formatDate(room.createdOn)}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div className="price-info">
                                 <span className="price">
                                     {new Intl.NumberFormat('vi-VN').format(room.monthlyRentCost)} đ
                                 </span>
-                            <small className="text-muted">/tháng</small>
-                        </div>
-                    </td>
-                    <td>
+                                <small className="text-muted">/tháng</small>
+                            </div>
+                        </td>
+                        <td>
                             <span className={`status-badge ${room.isAvailable ? 'available' : 'occupied'}`}>
                                 {room.isAvailable ? 'Còn trống' : 'Đã thuê'}
                             </span>
-                    </td>
-                    <td>
-                        <Dropdown align="end">
-                            <Dropdown.Toggle variant="light" className="btn-icon">
-                                <FaEllipsisV/>
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu className="action-menu">
-                                <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
-                                    <FaInfoCircle className="icon-primary"/>
-                                    <span>Thông tin phòng</span>
-                                </Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleEdit(room.id)}>
-                                    <FaEdit className="icon-warning"/>
-                                    <span>Chỉnh sửa</span>
-                                </Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleDeleteClick(room.id)}>
-                                    <FaTrash className="icon-danger"/>
-                                    <span>Xóa</span>
-                                </Dropdown.Item>
-                                <Dropdown.Divider/>
-                                <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
-                                    <FaFileContract className="icon-success"/>
-                                    <span>Tạo hợp đồng</span>
-                                </Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
-                                    <FaFileInvoice className="icon-info"/>
-                                    <span>Tạo hóa đơn</span>
-                                </Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
-                                    <TfiWrite className="icon-secondary"/>
-                                    <span>Ghi số dịch vụ</span>
-                                </Dropdown.Item>
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </td>
-                </tr>
-            ))}
+                        </td>
+                        <td>
+                            <Dropdown align="end">
+                                <Dropdown.Toggle variant="light" className="btn-icon">
+                                    <FaEllipsisV />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu className="action-menu">
+                                    <Dropdown.Item onClick={() => handleViewRoomDetails(room.id)}>
+                                        <FaInfoCircle className="icon-primary" />
+                                        <span>Thông tin phòng</span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleEdit(room.id)}>
+                                        <FaEdit className="icon-warning" />
+                                        <span>Chỉnh sửa</span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleDeleteClick(room.id)}>
+                                        <FaTrash className="icon-danger" />
+                                        <span>Xóa</span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item onClick={() => handleCreateContract(room.id)}>
+                                        <FaFileContract className="icon-success" />
+                                        <span>Tạo hợp đồng</span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleCreateInvoice(room.id)}>
+                                        <FaFileInvoice className="icon-info" />
+                                        <span>Tạo hóa đơn</span>
+                                    </Dropdown.Item>
+                                    <Dropdown.Item onClick={() => handleMeterReading(room.id)}>
+                                        <TfiWrite className="icon-secondary" />
+                                        <span>Ghi số dịch vụ</span>
+                                    </Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
+                    </tr>
+                ))}
             </tbody>
             <CreateContractModal
                 isOpen={isModalOpen}
@@ -329,7 +329,7 @@ const RoomTableBody: React.FC<RoomTableBodyProps> = ({selectedHostel, selectedFl
             />
 
             <DeleteModal show={showDeleteModal} title={"Xác nhận xóa"} message={"Bạn có chắc chắn muốn xóa phòng này"}
-                         onConfirm={handleDelete} onCancel={() => setShowDeleteModal(false)}/>
+                onConfirm={handleDelete} onCancel={() => setShowDeleteModal(false)} />
 
         </>
     );

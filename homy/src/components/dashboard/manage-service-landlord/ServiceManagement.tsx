@@ -1,256 +1,408 @@
-"use client";
-import React, { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DashboardHeaderTwo from "@/layouts/headers/dashboard/DashboardHeaderTwo";
-import { toast } from "react-toastify";
+import Image from "next/image";
+import Link from "next/link";
+import icon_1 from "@/assets/images/icon/icon_46.svg";
 import apiInstance from "@/utils/apiInstance";
-import { FaMoneyBill, FaPlus, FaTrash } from 'react-icons/fa';
-import { useSearchParams } from "next/navigation";
-import './service.css';
-import HostelSelector from "./HostelSelector";
-interface ServiceCost {
+import { jwtDecode } from "jwt-decode";
+import HostelSelector from "../manage-room/HostelSelector";
+import { toast } from "react-toastify";
+import { Button, Card, Form, InputGroup, Modal } from "react-bootstrap";
+import { FaSearch, FaPencilAlt, FaTrashAlt } from "react-icons/fa";
+import DeleteModal from "@/modals/DeleteModal";
+
+interface MeterReading {
    id: string;
+   roomId: string;
+   roomName: string;
    serviceId: string;
    serviceName: string;
-   unitCost: number;
-   unit: number;
-   effectiveFrom: string;
-   effectiveTo: string | null;
+   reading: number;
+   billingMonth: number;
+   billingYear: number;
 }
 
-interface Service {
-   id: string;
-   serviceId: string;
-   hostelId: string;
-   serviceName: string;
-   hostelName: string;
-   chargingMethod: number;
-   serviceCost: ServiceCost[];
+interface PagedResponse {
+   pageIndex: number;
+   pageSize: number;
+   totalPages: number;
+   totalRecords: number;
+   succeeded: boolean;
+   message: string | null;
+   errors: string[] | null;
+   data: MeterReading[];
 }
 
-interface Hostel {
-   id: string;
-   name: string;
+interface JwtPayload {
+   UserId: string;
 }
 
-const ServiceManagement = () => {
-   const searchParams = useSearchParams();
-   const hostelId = searchParams.get('hostelId');  // ID của nhà trọ từ URL (nếu có)
+interface EditModalProps {
+   show: boolean;
+   onHide: () => void;
+   meterReading: MeterReading | null;
+   onSubmit: (id: string, reading: number) => Promise<void>;
+}
 
-   const [selectedHostel, setSelectedHostel] = useState<string>('');
-   const [hostels, setHostels] = useState<Hostel[]>([]);
-   const [services, setServices] = useState<Service[]>([]);
-   const [isServicePriceModalOpen, setIsServicePriceModalOpen] = useState(false);
-   const [selectedService, setSelectedService] = useState<Service | null>(null);
-   const [newPrice, setNewPrice] = useState<number>(0);
-   const [isAddServiceModalOpen, setIsAddServiceModalOpen] = useState(false);  // Modal trạng thái
-   const [newService, setNewService] = useState({
-      serviceName: '',
-      chargingMethod: 0,
-   });
-
-   const unitOptions = [
-      { value: 0, label: 'Không có đơn vị' },
-      { value: 1, label: 'kWh' },
-      { value: 2, label: 'Khối' },
-      { value: 3, label: 'Theo người' },
-      { value: 4, label: 'Theo tháng' },
-   ];
-
-   const chargingMethodLabels: { [key: number]: string } = {
-      0: 'Không tính phí',
-      1: 'Phí theo kWh',
-      2: 'Phí theo Khối',
-      3: 'Phí theo người',
-      4: 'Phí theo tháng',
-   };
+const EditModal: React.FC<EditModalProps> = ({ show, onHide, meterReading, onSubmit }) => {
+   const [reading, setReading] = useState<number>(meterReading?.reading || 0);
+   const [isSubmitting, setIsSubmitting] = useState(false);
 
    useEffect(() => {
-      if (!selectedHostel) return;
-
-      const fetchServices = async () => {
-         try {
-            const response = await apiInstance.get(`/services/hostels/${selectedHostel}`);
-            if (response.data.succeeded) {
-               setServices(response.data.data);
-            } else {
-               setServices([]);
-            }
-         } catch (error) {
-            toast.error("Không thể lấy danh sách dịch vụ của nhà trọ.", { position: "top-center" });
-         }
-      };
-      fetchServices();
-   }, [selectedHostel]);
-
-   const handleHostelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const hostelId = e.target.value;
-      setSelectedHostel(hostelId);
-   };
-
-   const toggleAddServiceModal = () => {
-      setIsAddServiceModalOpen(!isAddServiceModalOpen);
-   };
-
-   const handleAddServiceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      const { name, value } = e.target;
-      if (name === "chargingMethod") {
-         setNewService({
-            ...newService,
-            [name]: Number(value),
-         });
-      } else {
-         setNewService({
-            ...newService,
-            [name]: value,
-         });
+      if (meterReading) {
+         setReading(meterReading.reading);
       }
-   };
-   const handleDeleteService = async (id: string) => {
+   }, [meterReading]);
+
+   const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!meterReading) return;
+
+      setIsSubmitting(true);
       try {
-         const response = await apiInstance.delete(`/services/DeleteService/${id}`);
-         if (response.data.succeeded) {
-            toast.success("Xóa dịch vụ thành công.", { position: "top-center" });
-            // Cập nhật lại danh sách dịch vụ sau khi xóa
-            setServices(services.filter(service => service.id !== id));  // Dùng đúng 'id'
-         } else {
-            toast.error("Xóa dịch vụ thất bại.", { position: "top-center" });
-         }
+         await onSubmit(meterReading.id, reading);
+         onHide();
       } catch (error) {
-         toast.error("Có lỗi xảy ra khi xóa dịch vụ.", { position: "top-center" });
+         console.error('Error submitting form:', error);
+      } finally {
+         setIsSubmitting(false);
       }
    };
 
-
-   const handleAddServiceSubmit = async () => {
-      if (!newService.serviceName || newService.serviceName.trim() === "") {
-         toast.warning("Vui lòng nhập tên dịch vụ.", { position: "top-center" });
-         return;
-      }
-
-      const payload = {
-         serviceName: newService.serviceName,
-         hostelId: selectedHostel,
-         chargingMethod: parseInt(newService.chargingMethod.toString(), 10),
-      };
-
-      try {
-         const response = await apiInstance.post('/services/AddService', payload);
-         if (response.data.succeeded) {
-            toast.success("Thêm dịch vụ thành công.", { position: "top-center" });
-            setIsAddServiceModalOpen(false);
-            setServices([...services, response.data.data]);
-         } else {
-            toast.error("Thêm dịch vụ thất bại.", { position: "top-center" });
-         }
-      } catch (error) {
-         toast.error("Dịch vụ đã tồn tại. Hãy truy cập quản lý nhà trọ để thêm", { position: "top-center" });
-      }
-   };
-   const handleDeleteButtonClick = (id: string) => {
-      if (window.confirm("Bạn có chắc chắn muốn xóa dịch vụ này?")) {
-         handleDeleteService(id);  // Truyền id thay vì serviceId
-      }
-   };
    return (
-      <div className="dashboard-body">
-         <div className="position-relative">
-            <DashboardHeaderTwo title="Quản lí nhà trọ và dịch vụ" />   
-            <h2 className="main-title d-block d-lg-none">Quản lí nhà trọ và dịch vụ</h2>
-            {/* Chọn nhà trọ */}
-            <div className="d-flex align-items-center gap-4 mb-4">
-               <HostelSelector
-                  selectedHostel={selectedHostel}
-                  onHostelChange={handleHostelChange}
-               />
-               <div className="d-flex align-items-center gap-4">
-                  <button className="btn btn-success btn-sm" onClick={toggleAddServiceModal}>
-                     <FaPlus size={14} /> Thêm dịch vụ
-                  </button>
+      <Modal show={show} onHide={onHide} centered>
+         <Modal.Header closeButton>
+            <Modal.Title>Chỉnh sửa chỉ số</Modal.Title>
+         </Modal.Header>
+         <Modal.Body>
+            <Form onSubmit={handleSubmit}>
+               <Form.Group className="mb-3">
+                  <Form.Label>Phòng</Form.Label>
+                  <Form.Control type="text" value={meterReading?.roomName || ''} disabled />
+               </Form.Group>
+               <Form.Group className="mb-3">
+                  <Form.Label>Dịch vụ</Form.Label>
+                  <Form.Control type="text" value={meterReading?.serviceName || ''} disabled />
+               </Form.Group>
+               <Form.Group className="mb-3">
+                  <Form.Label>Chỉ số mới</Form.Label>
+                  <Form.Control
+                     type="number"
+                     value={reading}
+                     onChange={(e) => setReading(Number(e.target.value))}
+                     min={0}
+                     required
+                  />
+               </Form.Group>
+               <div className="d-flex justify-content-end gap-2">
+                  <Button variant="secondary" onClick={onHide}>
+                     Hủy
+                  </Button>
+                  <Button type="submit" variant="primary" disabled={isSubmitting}>
+                     {isSubmitting ? 'Đang lưu...' : 'Lưu thay đổi'}
+                  </Button>
                </div>
-            </div>
-            {services.length > 0 && (
-               <div className="service-list">
-                  <h4>Dịch vụ của nhà trọ:</h4>
-                  <div className="bg-white card-box p-4 border-20">
-                     <div className="table-responsive">
-                        <table className="table property-list-table"></table>
-                        <ul>
-                           {services.map(service => (
-                              <li key={service.id} className="d-flex justify-content-between align-items-center">
-                                 <span>{service.serviceName}</span>
-
-                                 <span>
-                                    {chargingMethodLabels[service.chargingMethod]}
-                                 </span>
-                                 <button
-                                    className="btn btn-danger btn-sm"
-                                    onClick={() => handleDeleteButtonClick(service.id)}
-                                 >
-                                    <FaTrash size={14} />
-                                 </button>
-                              </li>
-                           ))}
-                        </ul>
-                     </div>
-                  </div>
-               </div>
-            )}
-            {/* Modal Add Service */}
-            {isAddServiceModalOpen && (
-               <div className="modal-service">
-                  <div className="modal-service1">
-                     <div className="modal-service2">
-                        <h5 className="modal-title">Thêm dịch vụ</h5>
-                        <button onClick={toggleAddServiceModal}>&times;</button>
-                     </div>
-
-                     <div className="modal-body">
-                        <form onSubmit={(e) => e.preventDefault()}>
-                           <div className="form-group">
-                              <label htmlFor="serviceName">Tên dịch vụ</label>
-                              <input
-                                 type="text"
-                                 id="serviceName"
-                                 name="serviceName"
-                                 value={newService.serviceName}
-                                 onChange={handleAddServiceChange}
-                                 className="form-control"
-                              />
-                           </div>
-
-                           <div className="form-group">
-                              <label htmlFor="chargingMethod">Cách tính phí</label>
-                              <select
-                                 name="chargingMethod"
-                                 id="chargingMethod"
-                                 value={newService.chargingMethod}
-                                 onChange={handleAddServiceChange}
-                                 className="form-control"
-                              >
-                                 {unitOptions.map(option => (
-                                    <option key={option.value} value={option.value}>
-                                       {option.label}
-                                    </option>
-                                 ))}
-                              </select>
-                           </div>
-
-                           <button
-                              type="submit"
-                              className="btn btn-success mt-3"
-                              onClick={handleAddServiceSubmit}
-                           >
-                              Thêm dịch vụ
-                           </button>
-                        </form>
-                     </div>
-                  </div>
-               </div>
-            )}
-         </div>
-      </div>
-
+            </Form>
+         </Modal.Body>
+      </Modal>
    );
 };
 
-export default ServiceManagement;
+const MeterReadingBody = () => {
+   // State Management
+   const [selectedHostel, setSelectedHostel] = useState<string>('');
+   const [meterReadings, setMeterReadings] = useState<MeterReading[]>([]);
+   const [totalRecords, setTotalRecords] = useState<number>(0);
+   const [pageIndex, setPageIndex] = useState<number>(1);
+   const [pageSize, setPageSize] = useState<number>(10);
+   const [totalPages, setTotalPages] = useState<number>(1);
+   const [searchRoom, setSearchRoom] = useState<string>("");
+   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
+   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+   const [showEditModal, setShowEditModal] = useState(false);
+   const [selectedMeterReading, setSelectedMeterReading] = useState<MeterReading | null>(null);
+   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+   const getUserIdFromToken = useCallback((): string | null => {
+      const token = window.localStorage.getItem("token");
+      if (token) {
+         try {
+            const decodedToken: JwtPayload = jwtDecode<JwtPayload>(token);
+            return decodedToken.UserId;
+         } catch (error) {
+            console.error("Error decoding token:", error);
+            return null;
+         }
+      }
+      return null;
+   }, []);
+
+   const fetchMeterReadings = async () => {
+      if (!selectedHostel) {
+         setMeterReadings([]);
+         return;
+      }
+
+      try {
+         const formData = new FormData();
+         formData.append('hostelId', selectedHostel);
+         if (searchRoom) formData.append('roomName', searchRoom);
+         if (selectedMonth) formData.append('month', selectedMonth.toString());
+         if (selectedYear) formData.append('year', selectedYear.toString());
+
+         const response = await apiInstance.post(
+            `/meterReadings/paged?pageIndex=${pageIndex}&pageSize=${pageSize}`,
+            formData
+         );
+
+         if (response.status === 200 && response.data.succeeded) {
+            const data: PagedResponse = response.data;
+            setMeterReadings(data.data);
+            setTotalRecords(data.totalRecords);
+            setTotalPages(data.totalPages);
+         }
+      } catch (error) {
+         console.error("Error fetching meter readings:", error);
+         toast.error("Có lỗi khi tải dữ liệu");
+         setMeterReadings([]);
+      }
+   };
+
+   useEffect(() => {
+      fetchMeterReadings();
+   }, [selectedHostel, pageIndex, pageSize, searchRoom, selectedMonth, selectedYear]);
+
+   const handlePageChange = (newPageIndex: number) => {
+      if (newPageIndex >= 1 && newPageIndex <= totalPages) {
+         setPageIndex(newPageIndex);
+      }
+   };
+
+   const handleHostelChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      setSelectedHostel(event.target.value);
+      setPageIndex(1);
+   };
+
+   const handleEdit = (meterReading: MeterReading) => {
+      setSelectedMeterReading(meterReading);
+      setShowEditModal(true);
+   };
+   const handleDelete = (meterReading: MeterReading) => {
+      setSelectedMeterReading(meterReading);
+      setShowDeleteModal(true);
+   };
+
+   const handleDeleteConfirm = async () => {
+      if (!selectedMeterReading) return;
+
+      try {
+         const response = await apiInstance.delete(`/meterReadings/${selectedMeterReading.id}`);
+
+         if (response.status === 200) {
+            toast.success('Xóa chỉ số thành công');
+            await fetchMeterReadings();
+         }
+      } catch (error) {
+         console.error('Error deleting meter reading:', error);
+         toast.error('Có lỗi xảy ra khi xóa chỉ số');
+      } finally {
+         setShowDeleteModal(false);
+         setSelectedMeterReading(null);
+      }
+   };
+
+   const handleEditSubmit = async (id: string, reading: number) => {
+      try {
+         const formData = new FormData();
+         formData.append('reading', reading.toString());
+
+         const response = await apiInstance.put(`/meterReadings/${id}`, formData);
+
+         if (response.status === 200) {
+            toast.success('Cập nhật chỉ số thành công');
+            await fetchMeterReadings();
+         }
+      } catch (error: any) {
+         console.error('Error updating meter reading:', error);
+         toast.error(error.response.data.message);
+      }
+   };
+
+   return (
+      <div className="dashboard-body">
+         <div className="position-relative">
+            <DashboardHeaderTwo title="Quản lý chỉ số điện nước" />
+            <h2 className="main-title d-block d-lg-none">Quản lý chỉ số điện nước</h2>
+
+            {/* Chọn nhà trọ */}
+            <HostelSelector
+               selectedHostel={selectedHostel}
+               onHostelChange={handleHostelChange}
+            />
+
+            {/* Form tìm kiếm và lọc */}
+            {selectedHostel && (
+               <Card className="mb-4">
+                  <Card.Body>
+                     <div className="row g-3">
+                        <div className="col-md-4">
+                           <InputGroup>
+                              <Form.Control
+                                 type="text"
+                                 placeholder="Tìm kiếm theo tên phòng"
+                                 value={searchRoom}
+                                 onChange={(e) => setSearchRoom(e.target.value)}
+                              />
+                              <Button variant="primary">
+                                 <FaSearch />
+                              </Button>
+                           </InputGroup>
+                        </div>
+                        <div className="col-md-4">
+                           <Form.Select
+                              value={selectedMonth}
+                              onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                           >
+                              {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
+                                 <option key={month} value={month}>
+                                    Tháng {month}
+                                 </option>
+                              ))}
+                           </Form.Select>
+                        </div>
+                        <div className="col-md-4">
+                           <Form.Select
+                              value={selectedYear}
+                              onChange={(e) => setSelectedYear(Number(e.target.value))}
+                           >
+                              {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i).map((year) => (
+                                 <option key={year} value={year}>
+                                    Năm {year}
+                                 </option>
+                              ))}
+                           </Form.Select>
+                        </div>
+                     </div>
+                  </Card.Body>
+               </Card>
+            )}
+
+            {/* Bảng dữ liệu */}
+            <div className="bg-white card-box p0 border-20">
+               <div className="table-responsive pt-25 pb-25 pe-4 ps-4">
+                  <table className="table saved-search-table">
+                     <thead>
+                        <tr>
+                           <th scope="col">Tên phòng</th>
+                           <th scope="col">Loại dịch vụ</th>
+                           <th scope="col">Chỉ số</th>
+                           <th scope="col">Tháng</th>
+                           <th scope="col">Năm</th>
+                           <th scope="col">Hành động</th>
+                        </tr>
+                     </thead>
+                     <tbody className="border-0">
+                        {meterReadings.map((reading) => (
+                           <tr key={reading.id}>
+                              <td>{reading.roomName}</td>
+                              <td>{reading.serviceName}</td>
+                              <td>{reading.reading}</td>
+                              <td>{reading.billingMonth}</td>
+                              <td>{reading.billingYear}</td>
+                              <td>
+                                 <div className="d-flex justify-content-end">
+                                    <Button
+                                       variant="outline-primary"
+                                       size="sm"
+                                       className="me-2"
+                                       title="Sửa"
+                                       onClick={() => handleEdit(reading)}
+                                    >
+                                       <FaPencilAlt className="me-1" /> Sửa
+                                    </Button>
+                                    <Button
+                                       variant="outline-danger"
+                                       size="sm"
+                                       title="Xóa"
+                                       onClick={() => handleDelete(reading)}
+                                    >
+                                       <FaTrashAlt className="me-1" /> Xóa
+                                    </Button>
+                                 </div>
+                              </td>
+                           </tr>
+                        ))}
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+
+            {/* Phân trang */}
+            <ul className="pagination-one d-flex align-items-center style-none pt-40">
+               <li className="me-3">
+                  <Link
+                     href="#"
+                     onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageIndex - 1);
+                     }}
+                     className={pageIndex === 1 ? "disabled" : ""}
+                  >
+                     Trang trước
+                  </Link>
+               </li>
+
+               {[...Array(totalPages)].map((_, index) => (
+                  <li key={index} className={pageIndex === index + 1 ? "selected" : ""}>
+                     <Link
+                        href="#"
+                        onClick={(e) => {
+                           e.preventDefault();
+                           handlePageChange(index + 1);
+                        }}
+                     >
+                        {index + 1}
+                     </Link>
+                  </li>
+               ))}
+
+               <li className="ms-2">
+                  <Link
+                     href="#"
+                     onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageIndex + 1);
+                     }}
+                     className={pageIndex === totalPages ? "disabled" : ""}
+                  >
+                     Trang sau <Image src={icon_1} alt="" className="ms-2" />
+                  </Link>
+               </li>
+            </ul>
+
+            {/* Edit Modal */}
+            <EditModal
+               show={showEditModal}
+               onHide={() => {
+                  setShowEditModal(false);
+                  setSelectedMeterReading(null);
+               }}
+               meterReading={selectedMeterReading}
+               onSubmit={handleEditSubmit}
+            />
+            <DeleteModal
+               show={showDeleteModal}
+               title="Xóa số liệu"
+               message={`Bạn có chắc chắn muốn xóa chỉ số ${selectedMeterReading?.serviceName?.toLowerCase()} của ${selectedMeterReading?.roomName} không?`}
+               onConfirm={handleDeleteConfirm}
+               onCancel={() => {
+                  setShowDeleteModal(false);
+                  setSelectedMeterReading(null);
+               }}
+            />
+         </div>
+      </div>
+   );
+};
+
+export default MeterReadingBody;

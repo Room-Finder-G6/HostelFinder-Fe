@@ -227,9 +227,18 @@ const InvoiceBody = () => {
       setSendingEmail(true);
       setEmailMessage(null);
       setEmailError(null);
+      const landlordId = getUserIdFromToken();
+
+      if (!landlordId) {
+         setSendingEmail(false);
+         return;
+      }
       try {
          const response = await apiInstance.post(`/invoices/send-email`, null, {
-            params: { invoiceId: invoiceDetails.id },
+            params: {
+               landlordId: landlordId,
+               invoiceId: invoiceDetails.id
+            },
          });
 
          if (response.data.succeeded) {
@@ -557,12 +566,19 @@ const InvoiceBody = () => {
                                  </p>
                               </div>
                            </div>
-                           <div className="d-flex justify-content-end mt-3">
+                           <div className="d-flex justify-content-between align-items-center mb-3">
+                              <h5 className="mb-0 text-primary">Thông Tin Hóa Đơn</h5>
                               <Button
                                  onClick={handleSendEmail}
                                  disabled={sendingEmail}
-                                 variant="outline-light"
+                                 variant="outline-success" 
                                  className="d-flex align-items-center"
+                                 style={{
+                                    minWidth: '160px',
+                                    padding: '8px 16px',
+                                    fontSize: '14px',
+                                    fontWeight: 500,
+                                 }}
                               >
                                  {sendingEmail ? (
                                     <>
@@ -571,7 +587,7 @@ const InvoiceBody = () => {
                                     </>
                                  ) : (
                                     <>
-                                       <MdEmail className="me-2" />
+                                       <MdEmail className="me-2" size={18} />
                                        Gửi Email Thông Báo
                                     </>
                                  )}

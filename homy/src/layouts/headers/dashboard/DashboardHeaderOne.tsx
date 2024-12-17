@@ -313,10 +313,10 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                     </Link>
                                 </li>
                                 <li className="plr">
-                                    <Link href="/dashboard/manage-service-landlord"
-                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-service-landlord' ? 'active' : ''}`}>
+                                    <Link href="/dashboard/manage-data-record"
+                                        className={`d-flex w-100 align-items-center ${pathname === '/dashboard/manage-data-record' ? 'active' : ''}`}>
                                         <i className="bi bi-bag-heart"></i>
-                                        <span>Quản Lý Dịch Vụ</span>
+                                        <span>Quản Lý Ghi Số Liệu</span>
                                     </Link>
                                 </li>
                                 <li className="plr">
@@ -335,7 +335,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                                 </li>
                                 <li className="plr bottom-line">
                                     <Link href="/dashboard/manage-tenant"
-                                          className={`d-flex w-100 align-items-center mb-5 ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
+                                        className={`d-flex w-100 align-items-center mb-5 ${pathname === '/dashboard/manage-tenant' ? 'active' : ''}`}>
                                         <Image
                                             src={pathname === '/manage-tenant' ? dashboardIconActive_3 : dashboardIcon_3}
                                             alt="Reviews" />
@@ -361,7 +361,7 @@ const DashboardHeaderOne: React.FC<DashboardHeaderOneProps> = ({ isActive, setIs
                 {/* Profile Completion Section */}
                 <div className="profile-complete-status bottom-line pb-35 plr">
                     <div className="progress-line position-relative">
-                        <div className="inner-line" style={{width: "100%"}}></div>
+                        <div className="inner-line" style={{ width: "100%" }}></div>
                     </div>
                 </div>
             </div>

@@ -89,7 +89,9 @@ const MeterReadingForm: React.FC<MeterReadingFormProps> = ({ isOpen, onClose, ro
                 toast.error('Không thể lưu số liệu, vui lòng thử lại.');
             }
         } catch (error: any) {
-            toast.error(error.response.message);
+            if (error.status === 400) {
+                toast.error(error.response.data.message);
+            }
         } finally {
             setSaving(false);
         }
