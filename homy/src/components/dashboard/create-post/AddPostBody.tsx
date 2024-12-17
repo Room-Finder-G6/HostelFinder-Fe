@@ -132,7 +132,7 @@ const AddPostBody: React.FC = () => {
             });
         } catch (error: any) {
             const errorMessage =
-                error.response?.data || error.message || "Đã xảy ra lỗi không xác định.";
+                error.response?.data.message || error.message || "Đã xảy ra lỗi không xác định.";
             toast.error(errorMessage);
         } finally {
             setLoading(false)
