@@ -10,7 +10,7 @@ import apiInstance from '@/utils/apiInstance';
 import HeartButton from '../Menu/HeartButton';
 import useNavData from '../Menu/useNavData';
 import { usePathname } from 'next/navigation';  // Import đúng hook usePathname
-
+import './nav.css';
 interface JwtPayload {
     UserId: string;
 }
