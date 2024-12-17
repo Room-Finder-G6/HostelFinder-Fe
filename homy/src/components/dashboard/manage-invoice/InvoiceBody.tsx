@@ -243,6 +243,7 @@ const InvoiceBody = () => {
 
          if (response.data.succeeded) {
             setEmailMessage(response.data.message || "Gửi email thành công!");
+            toast.success("Gửi email thành công!")
          } else {
             setEmailError(response.data.message || "Gửi email thất bại!");
          }
