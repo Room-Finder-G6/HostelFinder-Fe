@@ -234,7 +234,6 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                                     <th scope="col" className="border-0 text-end">Đơn giá</th>
                                     <th scope="col" className="border-0">Đơn vị</th>
                                     <th scope="col" className="border-0">Hiệu lực từ</th>
-                                    <th scope="col" className="border-0">Hiệu lực đến</th>
                                     <th scope="col" className="border-0 text-center" style={{ width: '120px' }}>Hành động</th>
                                 </tr>
                             </thead>
@@ -264,13 +263,7 @@ const ServicePriceModal: React.FC<ServicePriceModalProps> = ({ isOpen, onClose, 
                                                     <i className="bi bi-calendar3 me-2 text-muted"></i>
                                                     {formatDate(servicePrice.effectiveFrom)}
                                                 </td>
-                                                <td className="align-middle">
-                                                    {servicePrice.effectiveTo ? (
-                                                        <><i className="bi bi-calendar3 me-2 text-muted"></i>{formatDate(servicePrice.effectiveTo)}</>
-                                                    ) : (
-                                                        <span className="badge bg-light text-dark">Không có</span>
-                                                    )}
-                                                </td>
+
                                                 <td className="align-middle text-center">
                                                     <div className="btn-group">
                                                         <button

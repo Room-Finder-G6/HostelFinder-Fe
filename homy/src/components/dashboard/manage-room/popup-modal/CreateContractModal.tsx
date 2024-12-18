@@ -175,6 +175,23 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
         }
     };
 
+    const getUnitTypeText = (value: number): string => {
+        switch (value) {
+            case 0:
+                return "None";
+            case 1:
+                return "Kwh";
+            case 2:
+                return "Khối";
+            case 3:
+                return "Người";
+            case 4:
+                return "Tháng";
+            default:
+                return "N/A";
+        }
+    };
+
     return (
         <Modal
             show={isOpen}
@@ -475,7 +492,7 @@ const CreateContractModal: React.FC<CreateContractModalProps> = ({
                                                         : <span className="badge bg-success">Miễn phí</span>
                                                     }
                                                 </td>
-                                                <td>{service.unit || "N/A"}</td>
+                                                <td>{service.unit ? getUnitTypeText(service.unit) : "N/A"}</td>
                                                 <td>{service.previousReading}</td>
                                                 <td>
                                                     <input
