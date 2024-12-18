@@ -202,9 +202,9 @@ const MeterReadingBody = () => {
             toast.success('Xóa chỉ số thành công');
             await fetchMeterReadings();
          }
-      } catch (error) {
+      } catch (error : any) {
          console.error('Error deleting meter reading:', error);
-         toast.error('Có lỗi xảy ra khi xóa chỉ số');
+         toast.error(error.response.data.message);
       } finally {
          setShowDeleteModal(false);
          setSelectedMeterReading(null);
